@@ -1,0 +1,58 @@
+name: rn-scan
+
+# Three scans a day, Pacific. Cron in Actions is UTC, so these are
+# 07:00 / 13:00 / 19:00 PST and shift an hour under PDT — fine for a
+# window that stays open for days.
+on:
+  schedule:
+    - cron: "0 15 * * *"
+    - cron: "0 21 * * *"
+    - cron: "0 3 * * *"
+  workflow_dispatch:        # lets you trigger a run by hand
+
+permissions:
+  contents: write           # needed to commit state/seen.json back
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run scan
+        env:
+          USAJOBS_KEY: ${{ secrets.USAJOBS_KEY }}
+          USAJOBS_EMAIL: ${{ secrets.USAJOBS_EMAIL }}
+        run: python3 run_scan.py
+
+      - name: Publish digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest
+          path: |
+            digest.html
+            postings.csv
+          retention-days: 30
+
+      # seen.json is what makes "new since last scan" mean anything.
+      # Without committing it back, every run reports everything as new.
+      - name: Commit state
+        run: |
+          git config user.name  "rn-scan"
+          git config user.email "rn-scan@users.noreply.github.com"
+          git add state/seen.json applications.csv digest.html DIGEST.md
+          git diff --staged --quiet || git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
+          git push
+
+# Runtime is roughly 8-10 minutes, dominated by the 1-second politeness
+# delay between requests. Three runs a day is ~30 minutes a month against
+# the free tier. Nothing here approaches a paid threshold.
+#
+# To serve digest.html as a web page, enable GitHub Pages on this repo and
+# point it at the branch root. Otherwise download it from the artifact,
+# or open it locally.

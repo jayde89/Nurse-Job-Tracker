@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+
+# Debug output from `python3 adapters.py` / `python3 classifier.py`
+postings.jsonl
+needs_review.jsonl
