@@ -30,14 +30,16 @@ from datetime import datetime, timezone
 import adapters
 import classifier as C
 import geo
+import highlights
 
 STATE_DIR = "state"
 SEEN_PATH = os.path.join(STATE_DIR, "seen.json")
 LEDGER_PATH = "applications.csv"
 
 LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Title",
-                 "Employer", "Location", "Drive time", "Requirement evidence",
-                 "Posted", "First seen", "Last seen", "URL"]
+                 "Details", "Employer", "Location", "Drive time",
+                 "Requirement evidence", "Posted", "First seen", "Last seen",
+                 "URL"]
 
 # Status values you set by hand. The scanner only ever writes "unapplied"
 # on a brand-new row, or "closed" when a posting disappears.
@@ -106,6 +108,9 @@ def scan(fetch_details=True):
                     print(f"     detail failed {p.req_id}: {e}")
             v = C.classify(p.title, p.description)
             p.bucket, p.evidence, p.why = v.bucket, v.evidence, v.reason
+            # What the job actually is — facility, setting, hours, pay — so
+            # a row reading "RN" is still triageable without opening it.
+            p.details = highlights.summarize(p)
             rows.append(p)
         review.extend(needs_review)
     return rows, review
@@ -136,7 +141,8 @@ def build(rows, review, quick=False):
             ledger[p.key] = {
                 "Key": p.key, "Status": "unapplied", "Applied On": "",
                 "Notes": "", "Bucket": BUCKET_LABEL.get(p.bucket, p.bucket),
-                "Title": p.title, "Employer": p.employer,
+                "Title": p.title, "Details": getattr(p, "details", ""),
+                "Employer": p.employer,
                 "Location": p.location, "Drive time": p.drive_time_bucket or "",
                 "Requirement evidence": (p.evidence or "")[:300],
                 "Posted": p.posted_date or "", "First seen": now,
@@ -146,7 +152,8 @@ def build(rows, review, quick=False):
             # Refresh what the employer controls; leave your columns alone.
             row.update({
                 "Bucket": BUCKET_LABEL.get(p.bucket, p.bucket),
-                "Title": p.title, "Location": p.location,
+                "Title": p.title, "Details": getattr(p, "details", ""),
+                "Location": p.location,
                 "Drive time": p.drive_time_bucket or "",
                 "Requirement evidence": (p.evidence or "")[:300],
                 "Last seen": now, "URL": p.url,
@@ -189,7 +196,12 @@ def render_md(shown, new, review, hidden, now):
     def row(p):
         drive = p.drive_time_bucket or "?"
         ev = (p.evidence or "").replace("|", "/").replace("\n", " ")[:150]
-        return (f"| {drive} | [{p.title}]({p.url}) | {p.employer} | "
+        # The detail line rides in the Role cell rather than in a column of
+        # its own: the table already carries six, and GitHub renders <br>
+        # inside a cell on both the mobile and the desktop view.
+        detail = (getattr(p, "details", "") or "").replace("|", "/")
+        role = f"[{p.title}]({p.url})" + (f"<br>{detail}" if detail else "")
+        return (f"| {drive} | {role} | {p.employer} | "
                 f"{p.location} | {BUCKET_LABEL.get(p.bucket, p.bucket)} | {ev} |")
 
     head = ("| Drive | Role | Employer | Location | Requirements | Evidence |\n"
@@ -258,6 +270,7 @@ def render(shown, new, review, hidden, now, quick):
       <li class="job {cls}">
         <div class="meta"><span class="drive">{drive}</span>{flag}</div>
         <h3><a href="{esc(p.url)}">{esc(p.title)}</a></h3>
+        {f'<p class="detail">{esc(getattr(p, "details", ""))}</p>' if getattr(p, "details", "") else ""}
         <p class="where">{esc(p.employer)} &middot; {esc(p.location)}</p>
         <p class="verdict">{esc(BUCKET_LABEL.get(p.bucket, p.bucket))}</p>
         <blockquote>{esc((p.evidence or '')[:260])}</blockquote>
@@ -308,6 +321,8 @@ def render(shown, new, review, hidden, now, quick):
         color:var(--dim);font-family:system-ui,sans-serif}}
   .drive{{font-variant-numeric:tabular-nums}}
   .new{{color:var(--signal);font-weight:600}}
+  .detail{{margin:.15rem 0 .1rem;font-size:.86rem;color:var(--ink);
+          font-family:system-ui,sans-serif}}
   .where{{margin:0;color:var(--dim);font-size:.88rem}}
   .verdict{{margin:.45rem 0 .3rem;font-size:.82rem;
            font-family:system-ui,sans-serif;color:var(--dim)}}

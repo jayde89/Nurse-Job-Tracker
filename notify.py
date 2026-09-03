@@ -66,8 +66,12 @@ def body(rows, repo):
         ev = (r.get("Requirement evidence") or "").replace("|", "/")
         ev = " ".join(ev.split())[:180]
         title = (r.get("Title") or "").replace("|", "/")
+        # The email is read on a phone, where "RN" and "RN" and "RN" is not
+        # a list you can act on. The detail line is what tells them apart.
+        detail = (r.get("Details") or "").replace("|", "/")
+        role = f"[{title}]({r.get('URL')})" + (f"<br>{detail}" if detail else "")
         lines.append(
-            f"| {r.get('Drive time') or '?'} | [{title}]({r.get('URL')}) | "
+            f"| {r.get('Drive time') or '?'} | {role} | "
             f"{r.get('Employer')} | {r.get('Location')} | {ev} |")
     lines += [
         "",

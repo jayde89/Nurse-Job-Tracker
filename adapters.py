@@ -1,7 +1,7 @@
 """
 RN Job Scanner — source adapters.
 
-Nine adapters, all verified against live endpoints 2026-09-03:
+Ten adapters, all verified against live endpoints 2026-09-03:
 
   WorkdayCXS     — native Workday tenants. One class, N tenants.
                    John Muir, Sutter, El Camino.
@@ -15,6 +15,8 @@ Nine adapters, all verified against live endpoints 2026-09-03:
   NeoGov         — governmentjobs.com. Six CA county and city agencies.
   Jibe           — Vibra / Kentfield, via the JSON API behind their JIBE site.
   SmartRecruiters — San Francisco DPH and citywide, via the open SR API.
+  SmartHires     — St. Rose Hospital, Hayward. Independent, so no other
+                   adapter reached it, and the only source on this ATS.
   USAJobs        — VA. Needs a key; still untested against live data.
 
 Design notes that came out of probing the live endpoints:
@@ -70,6 +72,11 @@ class Posting:
     department: str | None = None
     schedule: str | None = None
     shift: str | None = None
+    # What kind of nursing this is — set by the adapter, which knows what
+    # sort of employer it is reading, never mined out of the body text.
+    # "Skilled nursing experience preferred" in a hospital posting would
+    # otherwise relabel an ED job as a nursing home.
+    setting: str | None = None
     latitude: float | None = None
     longitude: float | None = None
     # populated by geo.partition()
@@ -451,6 +458,7 @@ class PACS:
                     department=facility,
                     url=f"https://pacs.wd108.myworkdayjobs.com/pacs{path}",
                     posted_date=None,
+                    setting="Skilled nursing",
                     source_adapter="workday:pacs",
                 ))
             offset += self.PAGE
@@ -531,6 +539,7 @@ class ScionHealth:
                         # geo.py judge it.
                         location=city.replace("-", " ").title(),
                         url=self.BASE + path,
+                        setting="Long-term acute care",
                         source_adapter="radancy:scionhealth",
                     ))
                 if new == 0:
@@ -895,6 +904,7 @@ class Jibe:
                     schedule=j.get("employment_type") or None,
                     latitude=self._f(j.get("latitude")),
                     longitude=self._f(j.get("longitude")),
+                    setting="Long-term acute care / rehab",
                     source_adapter=f"jibe:{self.host}",
                 ))
             if len(batch) < self.PER_PAGE:
@@ -987,6 +997,194 @@ class SmartRecruiters:
         return p
 
 
+# ── adapter 10: Smart Hires (St. Rose Hospital, Hayward) ─────────────
+
+class SmartHires:
+    """
+    St. Rose Hospital, Hayward.
+
+    Why it was missing: nothing here reached it. St. Rose is independent —
+    not Sutter, not John Muir, not Alameda Health, not a county — so no
+    adapter covered it, and it runs on Smart Hires, an ATS none of the other
+    nine speak. It is an acute-care hospital inside the `<30` bucket, with
+    its own subacute and skilled-nursing units, and it was invisible to
+    every scan this project has ever run.
+
+    The board looks client-rendered and is not. Paging, filtering and
+    sorting are all DWR calls made after load, which is what makes the page
+    look like an app, but the table itself is delivered complete in the
+    first response — every open requisition, no paging. That is the same
+    mistake NEOGOV nearly cost us: check whether the markup is really empty
+    before reaching for a browser.
+
+    Two useful things about the markup:
+
+    * Each row carries hidden inputs — hidjobId, hidpositiontitle,
+      hidjobType, hidencriptedJobId — holding the fields the visible cell
+      only shows as a truncated teaser ("Current valid CA Registered Nurse
+      license required. Curre..."). Parse the inputs, not the teaser.
+    * The listing states no location at all. The detail page states a full
+      street address. St. Rose is a single campus, so `location` is seeded
+      with it and then replaced by whatever the detail page actually says —
+      and if that turns out to be somewhere else, the drive-time bucket is
+      recomputed rather than left on the seeded value.
+
+    The detail page is also where the requirement lives, in two forms that
+    can disagree. The ED posting's prose says "Minimum two-years Emergency
+    Department experience preferred" while the structured field beneath it
+    says "Experience: Minimum 2 Years". Both go into the description on
+    purpose. The hard field is what stops a posting whose prose only ever
+    says "preferred" from reading as no-experience-required; keeping the
+    prose alongside it is what leaves you a sentence worth reading rather
+    than the two words "Minimum 2 Years".
+    """
+
+    BASE = "https://app.smarthires.com"
+
+    # id="hidpositiontitle623158" value="RN - Emergency 334"
+    RE_FIELD = re.compile(r'id="hid([A-Za-z]+?)(\d+)"\s+value="([^"]*)"')
+    # <div class="span5 joblabel">Job Location</div><div class="span7">...</div>
+    RE_LABEL = re.compile(
+        r'(?s)class="[^"]*joblabel[^"]*">\s*([^<]{2,40}?)\s*</div>\s*'
+        r'<div[^>]*>(.*?)</div>')
+    RE_SPAN = re.compile(r'(?s)<span id="(resSpan|reqQuliSpan)">(.*?)</span>')
+    RE_PARA = re.compile(r'(?s)<strong>\s*([^<:]{2,30}):\s*</strong>(.*?)</p>')
+
+    def __init__(self, employer="St. Rose Hospital",
+                 board="St.-Rose-Hospital-2",
+                 campus="Hayward, CA",
+                 setting="Acute hospital"):
+        self.employer, self.board = employer, board
+        self.campus, self.setting = campus, setting
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(f"{self.BASE}/jobopenings/{self.board}.htm")
+        jobs: dict[str, dict[str, str]] = {}
+        for field, job_id, value in self.RE_FIELD.findall(body):
+            jobs.setdefault(job_id, {})[field] = html.unescape(value)
+
+        out = []
+        for job_id, f in jobs.items():
+            enc = f.get("encriptedJobId")
+            if not enc or not f.get("positiontitle"):
+                continue
+            out.append(Posting(
+                employer=self.employer,
+                # The number the posting itself shows as its Position Id, so
+                # a row in the ledger can be matched against a confirmation
+                # email without translation.
+                req_id=f"STROS{job_id}",
+                title=f["positiontitle"].strip(),
+                location=self.campus,
+                url=f"{self.BASE}/showempjob.htm?viewId={enc}",
+                schedule=f.get("jobType") or None,
+                department=(f.get("department") or "").strip() or None,
+                setting=self.setting,
+                source_adapter="smarthires:st-rose",
+            ))
+        return out
+
+    # "Full-Time (0.9) NOC Shift (1900-0700) (Tues/Wed/Sat - Sun/Mon/Wed)"
+    # is how every St. Rose posting opens its responsibilities block, and it
+    # is the only place the shift is stated. Lift it into the record rather
+    # than leave the digest to find it in the middle of a wall of duties.
+    RE_FRONT = re.compile(
+        r"(?is)^(.{0,200}?)\s*(?:APPROXIMATE PAY RANGE|POSITION SUMMARY"
+        r"|JOB SUMMARY|Under general supervision)")
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+
+        def text(raw):
+            return re.sub(r"\s+", " ",
+                          html.unescape(re.sub(r"<[^>]+>", " ", raw or ""))).strip()
+
+        labels = {k.strip().lower(): text(v) for k, v in self.RE_LABEL.findall(body)}
+        spans = {k: text(v) for k, v in self.RE_SPAN.findall(body)}
+        paras = {k.strip().lower(): text(v) for k, v in self.RE_PARA.findall(body)}
+
+        # Requirements first: the licence and experience gates live in
+        # reqQuliSpan, and both the classifier's section parse and its
+        # free-form fallback read better when the qualifications are not
+        # buried under two thousand words of essential duties.
+        #
+        # Note what is NOT done here: no invented section heading is glued
+        # on the front. An earlier version prefixed this block with
+        # "Required Qualification:" to give the classifier something to
+        # anchor on, and that phrase promptly became a requirement clause in
+        # its own right — the Surgery posting came out GENERAL_EXPERIENCE
+        # quoting "Required Qualification: EDUCATION, EXPERIENCE, TRAINING
+        # 1." as its evidence, a quote that supports nothing. The posting's
+        # own words, in the posting's own order, or nothing.
+        parts = [spans.get("reqQuliSpan", ""), spans.get("resSpan", "")]
+
+        # Smart Hires also carries a structured experience field, and it can
+        # contradict the prose above it: the ED posting's qualifications say
+        # "Minimum two-years Emergency Department experience preferred"
+        # while this field says "Minimum 2 Years". Keep it — on a posting
+        # whose prose promises nothing, it is what trips the classifier's
+        # duration veto — but do NOT label it "Experience:", which would
+        # make it the parsed experience section and leave a two-word quote
+        # standing in for the fuller sentence above it.
+        if paras.get("experience"):
+            # Terminated with a full stop so the classifier's clause split
+            # keeps it separate. Without it the evidence quote reads
+            # "Minimum 2 Years Degree required: Associate/Diploma Or Higher",
+            # which buries the requirement in the credential line after it.
+            parts.append(f"Stated experience requirement: {paras['experience']}.")
+        if paras.get("degree required"):
+            parts.append(f"Degree required: {paras['degree required']}.")
+        p.description = " ".join(x for x in parts if x)
+
+        front = self.RE_FRONT.match(spans.get("resSpan", "") or "")
+        if front:
+            p.shift = front.group(1).strip(" .-|") or None
+
+        p.schedule = labels.get("job type") or p.schedule
+        # "1 Regular/Full time Jobs" — the leading count and trailing plural
+        # are Smart Hires chrome, not part of the job type.
+        if p.schedule:
+            p.schedule = re.sub(r"(?i)^\d+\s+|\s+jobs?$", "", p.schedule).strip()
+
+        where = labels.get("job location")
+        if where:
+            p.location = self._city(where)
+            # The listing had to assume the campus. If the detail page names
+            # somewhere else, re-run the geo call rather than keep a bucket
+            # that was derived from an assumption.
+            verdict, bucket, miles = geo.classify(p.location)
+            p.geo_verdict, p.drive_time_bucket = verdict.value, bucket
+            if miles is not None:
+                p.straight_line_mi = round(miles, 1)
+        return p
+
+    # "27200 Calaroga Avenue, HAYWARD, ALAMEDA, CALIFORNIA, UNITED STATES
+    #  - 94545" -> "Hayward, CA". geo.py matches the full string perfectly
+    # well, but this also lands in the digest's Location column and in your
+    # ledger, where a 60-character address beside a two-word city is
+    # unreadable.
+    STATES = {"CALIFORNIA": "CA", "NEVADA": "NV", "OREGON": "OR",
+              "ARIZONA": "AZ", "WASHINGTON": "WA"}
+    NOT_A_CITY = {"UNITED STATES", "USA", "US"}
+
+    @classmethod
+    def _city(cls, address: str) -> str:
+        segs = [s.strip(" -") for s in address.split(",") if s.strip(" -")]
+        # The street line is the one with a house number in it; the state,
+        # country and ZIP are named or numeric. What is left, first, is the
+        # city — and Smart Hires puts the county right after it, which is
+        # why this takes the first match and not the last.
+        city = next((s for s in segs
+                     if not re.search(r"\d", s)
+                     and s.upper() not in cls.STATES
+                     and s.upper() not in cls.NOT_A_CITY), "")
+        state = next((cls.STATES[s.upper()] for s in segs
+                      if s.upper() in cls.STATES), "")
+        if city.isupper():
+            city = city.title()
+        return ", ".join(x for x in (city, state) if x) or address
+
+
 # ── registry ─────────────────────────────────────────────────────────
 # Kaiser Permanente and Stanford Health Care are excluded by request.
 
@@ -1007,6 +1205,7 @@ ADAPTERS = [
     NeoGov(),                                             # verified — 6 CA county/city agencies, 220 postings
     Jibe(),                                               # verified — Vibra/Kentfield LTAC, 87 CA postings
     SmartRecruiters(),                                    # verified — SF DPH + citywide, 182 postings
+    SmartHires(),                                         # verified — St. Rose Hospital, Hayward
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
     # Add once host/site confirmed via DevTools:
     #   WorkdayCXS("MarinHealth", ...)

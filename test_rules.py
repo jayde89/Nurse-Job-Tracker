@@ -1,5 +1,6 @@
 """
-Regression tests for the title filter, the geo table and the classifier.
+Regression tests for the title filter, the geo table, the classifier and
+the front-of-list detail line.
 
 Every case here is a bug that actually shipped and cost real postings.
 Run before pushing a rule change:  python3 test_rules.py
@@ -13,6 +14,7 @@ import sys
 import adapters as A
 import classifier as C
 import geo
+import highlights as H
 
 
 CASES: list[tuple[str, bool, str]] = []          # (name, passed, detail)
@@ -174,6 +176,151 @@ check("marketing prose does not suppress a posting",
                  "strongly preferred. Our team fulfils the responsibilities "
                  "of the role of the hospital. Medical PPO plans.").bucket,
       "NO_EXPERIENCE")
+
+
+# ── front-of-list detail (highlights.py) ─────────────────────────────
+# The reason this module exists: PACS titles thirteen different jobs "RN",
+# and a digest row reading "RN" cannot be triaged without opening it.
+
+
+class _P:
+    """Just enough of a Posting for summarize()."""
+
+    def __init__(self, title="", description="", department=None,
+                 location="", setting=None, schedule=None, shift=None):
+        self.title, self.description = title, description
+        self.department, self.location = department, location
+        self.setting, self.schedule, self.shift = setting, schedule, shift
+
+
+# Moraga Post Acute, verbatim from the live posting. All four facts are
+# stated; all four must come back.
+check("labeled PACS block yields every stated fact",
+      H.summarize(_P(
+          title="Registered Nurse (RN)", location="Moraga",
+          department="Moraga Post Acute", setting="Skilled nursing",
+          description="Now Hiring: Registered Nurse (RN) - Full-Time AM Shift "
+                      "Position Details Position: Registered Nurse (RN) "
+                      "Employment Type: Full-Time Shift: AM Shift Schedule: "
+                      "Full-Time AM Pay Rate: $45.00-$52.00 per hour, DOE "
+                      "Location: Moraga Post Acute")),
+      "Moraga Post Acute · Skilled nursing · Full-time · AM · $45.00–$52.00/hr")
+
+# Sonoma Post Acute is pure marketing copy: it states no shift, no type and
+# no pay. Inventing any of them is the same class of error as a false
+# "no experience required", so the line stops at what is known.
+check("nothing is invented when the posting states nothing",
+      H.summarize(_P(title="RN", location="Sonoma",
+                     department="Sonoma Post Acute", setting="Skilled nursing",
+                     description="Join Our Team at Sonoma Post Acute! Are you a "
+                                 "compassionate and skilled Registered Nurse "
+                                 "looking for a rewarding career opportunity?")),
+      "Sonoma Post Acute · Skilled nursing")
+
+# One requisition, three arrangements — Napa advertises all of them, and
+# reporting only the first would misdescribe the job. Order follows the
+# posting, not the order of the table in highlights.py.
+check("multiple employment types keep the posting's order",
+      H.employment("Registered Nurse (RN)", {},
+                   "Full-Time, Part-Time & Per Diem Opportunities Available"),
+      "Full-time / Part-time / Per diem")
+
+# "PT" is Physical Therapy far more often than it is part time. A posting
+# that mentions the PT department must not come back as a part-time job.
+check("PT is not read as part time",
+      H.employment("RN - Subacute", {},
+                   "Coordinates with PT and OT on the rehabilitation plan."),
+      None)
+
+# A dollar figure with no unit and no range is as likely to be a sign-on
+# bonus as a wage.
+check("a bare bonus figure is not reported as pay",
+      H.pay({}, "Ask about our $5,000 sign-on bonus!"), None)
+check("a bonus range is not reported as pay",
+      H.pay({}, "Sign-on bonus of $5,000 - $10,000 available."), None)
+check("a stated hourly range is reported",
+      H.pay({}, "Pay Rate: $46.00-$47.00 per hour"), "$46.00–$47.00/hr")
+# Postings lead with the bonus. Stopping at the first "$" threw away the
+# wage three paragraphs down.
+check("a bonus before the wage does not hide the wage",
+      H.pay({}, "Ask about our $5,000 sign-on bonus! Pay is $46.00 - $47.00 "
+                "per hour."), "$46.00–$47.00/hr")
+check("an unlabeled hourly band is still read as hourly",
+      H.pay({}, "Pay: $48-$55/hour"), "$48–$55/hr")
+
+# "$45.00 per hour" contains "PM" nowhere, but earlier drafts of the shift
+# regex matched the bare tokens AM/PM anywhere and turned clock times and
+# stray letters into shifts. A shift has to be stated as a shift.
+check("a clock time is not a shift",
+      H.shift("Registered Nurse", {}, "Interviews are held at 9:00 AM daily."),
+      None)
+check("NOC shift in the title is read from the title",
+      H.shift("Part-Time NOC Shift Registered Nurse (RN)", {}, ""), "NOC")
+check("a multi-shift posting reports every shift it names",
+      H.shift("RN - On Call", {}, "Shifts: AM, PM & NOC Pay Rate: $51.00"),
+      "AM / PM / NOC")
+# St. Rose states the hours alongside the shift, and they are worth keeping.
+check("stated shift hours ride along with the shift",
+      H.shift("RN - Emergency 334", {}, "",
+              "Full-Time (0.9) NOC Shift (1900-0700)"), "NOC 1900-0700")
+
+# The facility is the point of the line for PACS, but repeating it when the
+# Location column already says the same thing is just width.
+check("facility is dropped when it duplicates the location",
+      H.summarize(_P(title="RN", location="Moraga Post Acute",
+                     department="Moraga Post Acute", setting="Skilled nursing")),
+      "Skilled nursing")
+
+
+# ── St. Rose / Smart Hires ───────────────────────────────────────────
+# St. Rose was missing from every scan because no adapter reached it: it is
+# independent, and it is the only source on this ATS.
+
+check("St. Rose is registered as a source",
+      any(type(a).__name__ == "SmartHires" for a in A.ADAPTERS), True)
+check("St. Rose RN titles pass the prefilter",
+      [A.title_passes(t) for t in ("RN - Emergency 334",
+                                   "Registered Nurse - Surgery 35",
+                                   "RN - Subacute Unit 28")],
+      [True, True, True])
+check("St. Rose non-nursing titles do not",
+      [A.title_passes(t) for t in ("CT Technologist - Diagnostic Imaging 73",
+                                   "CNA - Subacute Unit 31",
+                                   "Registrar - Admitting 109")],
+      [False, False, False])
+# The detail page states a full postal address; the digest gets a city.
+check("Smart Hires address condenses to a city",
+      A.SmartHires._city("27200 Calaroga Avenue, HAYWARD, ALAMEDA, "
+                         "CALIFORNIA, UNITED STATES - 94545"), "Hayward, CA")
+check("Hayward is in range", geo.classify("Hayward, CA")[1], "<30")
+# An address it cannot parse is passed through rather than blanked, so the
+# posting lands in the review bucket instead of vanishing.
+check("an unparseable address survives intact",
+      A.SmartHires._city("Remote"), "Remote")
+
+# The Surgery posting's only experience sentence hedges itself ("preferred")
+# while stating a duration. An earlier draft of the adapter prefixed the
+# description with an invented "Required Qualification:" heading, which
+# became a requirement clause of its own and produced GENERAL_EXPERIENCE
+# quoting "Required Qualification: EDUCATION, EXPERIENCE, TRAINING 1." —
+# a verdict resting on a quote that says nothing about experience.
+check("St. Rose Surgery posting reads as unclear, not general experience",
+      C.classify("Registered Nurse - Surgery 35",
+                 "EDUCATION, EXPERIENCE, TRAINING 1. Current valid CA "
+                 "Registered Nurse license required. 6. Current Pediatric "
+                 "Life Support (PALS) preferred. 7. Minimum one year "
+                 "experience in an acute care operating room preferred. "
+                 "FULL-TIME (1.0) AM SHIFT APPROXIMATE PAY RANGE: $60.64").bucket,
+      "UNCLEAR")
+# The structured field can contradict the prose above it. It is appended
+# under a name that is deliberately NOT "Experience:", so it still trips
+# the duration veto without becoming the parsed experience section and
+# shrinking the evidence to two words.
+check("the structured experience field still reaches the duration veto",
+      C.classify("RN - Emergency 334",
+                 "Current and valid CA Registered Nurse license required. "
+                 "Stated experience requirement: Minimum 2 Years.").bucket
+      != "NO_EXPERIENCE", True)
 
 
 if __name__ == "__main__":

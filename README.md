@@ -1,6 +1,6 @@
 # RN job scanner
 
-Scans fifteen employer and public-agency career systems three times a day
+Scans sixteen employer and public-agency career systems three times a day
 for staff RN openings within two hours of Oakland, reads each posting's
 actual requirements, and hides the ones that require acute-care experience.
 
@@ -52,6 +52,8 @@ When you're done the repo should look like this:
 adapters.py
 classifier.py
 geo.py
+highlights.py
+notify.py
 run_scan.py
 test_rules.py
 pacs_facilities.json
@@ -59,6 +61,9 @@ applications.csv
 state/seen.json
 README.md
 ```
+
+Every `.py` file has to be there — the scan imports all of them, and a
+missing one stops the run on the first line rather than halfway through.
 
 `applications.csv` and `state/seen.json` carry the current scan. Uploading
 them means your first automated run reports only genuinely new postings
@@ -121,6 +126,20 @@ Three scans a day, at 7am, 1pm and 7pm Pacific.
 **Read `DIGEST.md`.** The first section, *Worth applying to now*, is the one
 that matters: Level I roles and postings with no experience requirement.
 That is usually a couple of dozen out of a few hundred tracked.
+
+Under each job title is a line of detail the posting itself states — the
+facility, the kind of nursing, full-time or per diem, the shift, the pay:
+
+> **RN - On Call**
+> Medical Hill Healthcare Center · Skilled nursing · On-call / Per diem ·
+> AM / PM / NOC · $51.00–$52.50/hr
+
+That line exists because the title often doesn't say anything. Post-acute
+employers in particular title a dozen different jobs "RN", and a list of
+identical titles can't be triaged without opening every one of them. The
+same rule applies to it as to the requirement quote: **everything on that
+line is stated by the posting.** A blank where the shift should be means
+the posting never said, not that it's flexible.
 
 The rest are in *Not applied yet* on purpose. They require experience you
 don't have yet. They're there so you can watch them, not so you apply to
@@ -208,6 +227,7 @@ may need correcting.
 | City of Oakland | Working — NEOGOV |
 | Kentfield (Vibra, LTAC) | Working — JIBE JSON API, no Kentfield roles open today |
 | San Francisco DPH + citywide | Working — SmartRecruiters open API |
+| St. Rose Hospital, Hayward | Working — Smart Hires, whole board in one GET |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
 
@@ -223,6 +243,13 @@ browser, because the original read was of the wrong page:
 * **Vibra/Kentfield** was judged from the marketing site. The careers
   subdomain runs JIBE, which has an open JSON API at `/api/jobs` that
   returns full descriptions inline and filters by state server-side.
+* **St. Rose Hospital** was not blocked, it was simply never looked for.
+  It is independent — not part of Sutter, John Muir, Alameda Health or a
+  county — so no adapter reached it, and it runs on Smart Hires, an ATS
+  none of the other adapters speak. Its board pages, filters and sorts
+  itself with DWR calls after load, which makes it look like an app, but
+  the table arrives complete in the first response. One GET is the whole
+  board.
 * **San Francisco** runs SmartRecruiters, whose API is open and
   unauthenticated. The only hard part is the company identifier: every
   sensible spelling returns HTTP 200 with `totalFound: 0`, which reads as
