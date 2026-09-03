@@ -56,8 +56,19 @@ jobs:
           git push
 
 # Runtime is roughly 8-10 minutes, dominated by the 1-second politeness
-# delay between requests. Three runs a day is ~30 minutes a month against
-# the free tier. Nothing here approaches a paid threshold.
+# delay between requests. That is ~30 minutes a DAY across three runs, so
+# roughly 700-900 minutes a month — a third to a half of the 2,000 free
+# minutes a private repo gets. (An earlier version of this comment said
+# "~30 minutes a month", which was the daily figure mislabelled.) Comfortable,
+# but not free-and-unlimited: adding sources or dropping REQUEST_DELAY_SEC
+# moves this number, and a public repo would make it moot since Actions
+# minutes are only metered on private ones.
+#
+# GitHub disables scheduled workflows in a repo with no activity for 60
+# days and emails the owner. Don't assume this scan's own commits reset
+# that clock; if the digest ever goes stale, check the Actions tab first.
+# Scheduled runs are also queued rather than punctual — a few minutes late
+# is normal, and under load GitHub can skip one entirely.
 #
 # To serve digest.html as a web page, enable GitHub Pages on this repo and
 # point it at the branch root. Otherwise download it from the artifact,
