@@ -1,6 +1,6 @@
 # RN job scanner
 
-Scans fourteen employer and public-agency career systems three times a day
+Scans fifteen employer and public-agency career systems three times a day
 for staff RN openings within two hours of Oakland, reads each posting's
 actual requirements, and hides the ones that require acute-care experience.
 
@@ -184,12 +184,12 @@ may need correcting.
 | City of Berkeley | Working — NEOGOV |
 | City of Oakland | Working — NEOGOV |
 | Kentfield (Vibra, LTAC) | Working — JIBE JSON API, no Kentfield roles open today |
+| San Francisco DPH + citywide | Working — SmartRecruiters open API |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
-| SFDPH | Not built yet |
 
-Two of those moved out of "blocked" without a headless browser, because
-the original read was of the wrong page:
+Three of those moved out of "blocked" or "not built" without a headless
+browser, because the original read was of the wrong page:
 
 * **NEOGOV** (`governmentjobs.com`) looks client-rendered from every angle —
   `/careers/{agency}/jobs` serves a 976-byte shell, the agency root serves
@@ -200,6 +200,12 @@ the original read was of the wrong page:
 * **Vibra/Kentfield** was judged from the marketing site. The careers
   subdomain runs JIBE, which has an open JSON API at `/api/jobs` that
   returns full descriptions inline and filters by state server-side.
+* **San Francisco** runs SmartRecruiters, whose API is open and
+  unauthenticated. The only hard part is the company identifier: every
+  sensible spelling returns HTTP 200 with `totalFound: 0`, which reads as
+  an empty job board rather than a wrong name. The real one,
+  `CityAndCountyOfSanFrancisco1`, is in an apply link on careers.sf.gov.
+  If that adapter ever reports zero, check the identifier before the API.
 
 CalCareers is genuinely blocked: it is ASP.NET WebForms and renders its
 results grid through DevExpress AJAX callbacks, so a `__VIEWSTATE` POST

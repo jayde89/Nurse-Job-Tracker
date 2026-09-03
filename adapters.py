@@ -1,7 +1,7 @@
 """
 RN Job Scanner — source adapters.
 
-Eight adapters, all verified against live endpoints 2026-09-03:
+Nine adapters, all verified against live endpoints 2026-09-03:
 
   WorkdayCXS     — native Workday tenants. One class, N tenants.
                    John Muir, Sutter, El Camino.
@@ -14,6 +14,7 @@ Eight adapters, all verified against live endpoints 2026-09-03:
   HealthcareSource — Alameda Health System.
   NeoGov         — governmentjobs.com. Six CA county and city agencies.
   Jibe           — Vibra / Kentfield, via the JSON API behind their JIBE site.
+  SmartRecruiters — San Francisco DPH and citywide, via the open SR API.
   USAJobs        — VA. Needs a key; still untested against live data.
 
 Design notes that came out of probing the live endpoints:
@@ -905,6 +906,87 @@ class Jibe:
         return p
 
 
+# ── adapter 9: SmartRecruiters (San Francisco DPH and citywide) ──────
+
+class SmartRecruiters:
+    """
+    SmartRecruiters publishes an open, unauthenticated API:
+
+        GET https://api.smartrecruiters.com/v1/companies/{co}/postings
+        GET https://api.smartrecruiters.com/v1/companies/{co}/postings/{id}
+
+    San Francisco's careers site is a SmartRecruiters front end, which is
+    how SFDPH gets covered. The company identifier is not guessable — every
+    sensible spelling of it returns HTTP 200 with `totalFound: 0`, which
+    looks like an empty board rather than a wrong name. The real one,
+    CityAndCountyOfSanFrancisco1, is in an apply link on careers.sf.gov.
+    If this adapter ever reports zero, check that first.
+
+    Requirements live in jobAd.sections.qualifications, separate from the
+    duties in jobDescription. Send both to the classifier: SF states the
+    licence in one and the experience in the other.
+    """
+
+    HOST = "https://api.smartrecruiters.com/v1/companies"
+    PER_PAGE = 100
+    MAX_PAGES = 20
+
+    def __init__(self, employer="City & County of San Francisco",
+                 company="CityAndCountyOfSanFrancisco1"):
+        self.employer, self.company = employer, company
+        self.base = f"{self.HOST}/{company}/postings"
+
+    @staticmethod
+    def _clean(fragment: str) -> str:
+        return re.sub(r"\s+", " ",
+                      re.sub(r"<[^>]+>", " ",
+                             html.unescape(fragment or ""))).strip()
+
+    def fetch_listings(self) -> list[Posting]:
+        out: list[Posting] = []
+        for page in range(self.MAX_PAGES):
+            d = json.loads(_request(
+                f"{self.base}?limit={self.PER_PAGE}&offset={page * self.PER_PAGE}"))
+            batch = d.get("content") or []
+            if not batch:
+                break
+            for j in batch:
+                loc = j.get("location") or {}
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=str(j.get("id") or j.get("refNumber") or ""),
+                    title=j.get("name", ""),
+                    location=loc.get("city") or "",
+                    url=f"https://careers.sf.gov/role/?id={j.get('id')}",
+                    posted_date=(j.get("releasedDate") or "")[:10] or None,
+                    department=(j.get("department") or {}).get("label"),
+                    schedule=(j.get("typeOfEmployment") or {}).get("label"),
+                    source_adapter=f"smartrecruiters:{self.company}",
+                ))
+            if len(batch) < self.PER_PAGE:
+                break
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        d = json.loads(_request(f"{self.base}/{p.req_id}"))
+        sec = (d.get("jobAd") or {}).get("sections") or {}
+
+        def part(name):
+            v = sec.get(name)
+            return self._clean(v.get("text", "")) if isinstance(v, dict) else ""
+
+        # qualifications first: it holds the licence and experience gates,
+        # and the classifier reads from the front of what it is given.
+        # companyDescription is 2 KB of DEI boilerplate on every SF posting
+        # and is deliberately left out.
+        p.description = " ".join(filter(None, [
+            part("qualifications"), part("jobDescription"),
+            part("additionalInformation"),
+        ]))
+        p.url = d.get("postingUrl") or p.url
+        return p
+
+
 # ── registry ─────────────────────────────────────────────────────────
 # Kaiser Permanente and Stanford Health Care are excluded by request.
 
@@ -924,6 +1006,7 @@ ADAPTERS = [
     ScionHealth(),                                        # verified — Kindred LTAC, San Leandro
     NeoGov(),                                             # verified — 6 CA county/city agencies, 220 postings
     Jibe(),                                               # verified — Vibra/Kentfield LTAC, 87 CA postings
+    SmartRecruiters(),                                    # verified — SF DPH + citywide, 182 postings
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
     # Add once host/site confirmed via DevTools:
     #   WorkdayCXS("MarinHealth", ...)
