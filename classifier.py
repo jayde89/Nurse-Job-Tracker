@@ -67,16 +67,40 @@ SECTION_LABELS = (
     "JOB SHIFT", "SCHEDULE", "SHIFT HOURS", "DAYS OF THE WEEK",
     "WEEKEND REQUIREMENTS", "BENEFITS", "UNIONS", "POSITION STATUS",
     "PAY RANGE", "DEPARTMENT",
+    # Vibra's headings. Without these its postings parsed to no requirements
+    # section at all and the evidence shown was the marketing overview.
+    "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
+    "REQUIRED SKILLS",
 )
+# Several labels are also ordinary English words, and a bare match on one
+# mid-sentence is not a section header. Vibra writes "Previous acute care
+# experience is strongly preferred"; matching the bare word EXPERIENCE
+# inside that sentence made the requirement itself into a heading and left
+# the evidence as "is strongly preferred. Ability to project a professional
+# image" — a quote that supports nothing, in a system whose whole promise
+# is that you can audit the label against the quote. Require a colon for
+# these. The distinctive multi-word labels stay colon-optional, because
+# sources really do use them as bare headings.
+PROSE_LABELS = {
+    "EXPERIENCE", "EDUCATION", "SKILLS", "KNOWLEDGE", "CERTIFICATION",
+    "CERTIFICATIONS", "LICENSURE", "LICENSURES", "QUALIFICATIONS",
+    "BENEFITS", "SCHEDULE", "DEPARTMENT", "UNIONS",
+}
+
 # Longest label first. Regex alternation is first-match-wins, so listing
 # "EXPERIENCE" before "REQUIRED EXPERIENCE" made it match the short label
 # inside the long one and split the section at the wrong offset — which is
 # how John Muir's "Required Experience: 6 Months Nursing - Medical Acute
 # Care - Required" ended up unparsed.
+_DISTINCT_LABELS = sorted((s for s in SECTION_LABELS
+                           if s.upper() not in PROSE_LABELS),
+                          key=len, reverse=True)
+_PROSE_LABELS = sorted((s for s in SECTION_LABELS
+                        if s.upper() in PROSE_LABELS), key=len, reverse=True)
+
 _LABEL_RE = re.compile(
-    r"(?i)\b(" + "|".join(re.escape(s) for s in
-                          sorted(SECTION_LABELS, key=len, reverse=True))
-    + r")\s*:?\s")
+    r"(?i)\b(" + "|".join(re.escape(s) for s in _DISTINCT_LABELS) + r")\s*:?\s"
+    r"|\b(" + "|".join(re.escape(s) for s in _PROSE_LABELS) + r")\s*:\s")
 
 
 def clean(text: str) -> str:
@@ -89,7 +113,7 @@ def clean(text: str) -> str:
 def sections(description: str) -> dict[str, str]:
     """Split a posting into its labeled requirement sections."""
     txt = clean(description)
-    marks = [(m.start(), m.end(), m.group(1).upper())
+    marks = [(m.start(), m.end(), (m.group(1) or m.group(2)).upper())
              for m in _LABEL_RE.finditer(txt)]
     out: dict[str, str] = {}
     for i, (_s, e, label) in enumerate(marks):
@@ -114,17 +138,60 @@ def experience_section(description: str) -> tuple[str, bool] | None:
         return sec["PREFERRED EXPERIENCE"], True
     for key in ("TYPICAL EXPERIENCE", "MINIMUM EXPERIENCE",
                 "REQUIRED EXPERIENCE", "AS TYPICALLY ACQUIRED IN",
-                "MINIMUM QUALIFICATIONS", "EXPERIENCE"):
+                "MINIMUM QUALIFICATIONS", "EXPERIENCE",
+                # Vibra states its experience requirement here and nowhere
+                # else, so without this the posting reads as having no
+                # requirements at all.
+                "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
+                "REQUIRED SKILLS"):
         if key in sec:
             return sec[key], False
+
+    # Free-form postings have no headings to find. PACS writes pure
+    # marketing copy and states its requirement in an ordinary sentence:
+    # "...post-acute or long-term care setting is highly preferred, but
+    # passionate new grads are welcome to apply." Fall back to the
+    # sentences that actually mention experience. Whole sentences, never
+    # fragments — this is the text quoted back to you as evidence, and a
+    # truncated clause is what made thirteen PACS postings unreadable.
+    txt = clean(description)
+    said = [s for s in re.split(r"(?<=[.;!?])\s+", txt)
+            if re.search(r"(?i)\bexperience\b", s)]
+    if said:
+        return " ".join(said)[:600], False
     return None
 
+
+# Government and county postings write a duration as a spelled number
+# followed by the same number in parentheses: "One (1) year of full time
+# experience", "Two (2) years", "six (6) months". The parenthetical sits
+# between the number and its unit, and every duration pattern here used to
+# require them adjacent — so none of these matched at all. Six Contra Costa
+# RN postings demanding one to two years of acute-care experience were
+# classified NO_EXPERIENCE as a result, quoting the very sentence that
+# disqualified them. Allow the parenthetical everywhere a duration is read.
+_PAREN_NUM = r"(?:\s*\(\s*\d+\s*\))?"
+_NUM_WORD = (r"\d+(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine"
+             r"|ten|eleven|twelve|eighteen|twenty")
 
 # A bare duration statement anywhere in the posting that is not itself
 # hedged as preferred. Used as a veto on NO_EXPERIENCE verdicts.
 _HARD_DURATION = re.compile(
-    r"(?i)(minimum\s+(of\s+)?)?\b(\d+|one|two|three|four|five|six|twelve)[\s-]*"
-    r"(\+|plus)?\s*(year|yr|month|mo)s?\b[^.;]{0,80}")
+    r"(?i)(minimum\s+(of\s+)?)?\b(" + _NUM_WORD + r")" + _PAREN_NUM +
+    r"[\s-]*(\+|plus)?\s*(year|yr|month|mo)s?\b[^.;]{0,80}")
+
+
+# A duration counted forward from your start date is an onboarding
+# deadline, not experience you must already have: "must obtain ACLS within
+# six (6) months of hire" disqualifies nobody. Left in the veto it made
+# every Vibra posting UNCLEAR on a certification clause. Matching this is
+# what keeps the veto blunt about experience without being blunt about
+# everything that mentions a number and a month.
+_ONBOARDING = re.compile(
+    r"(?i)\bof\s+(hire|employment|date\s+of\s+hire|start(ing)?\s+date)"
+    r"|\bfrom\s+(hire|date\s+of\s+hire|start\s+date)"
+    r"|\b(within|after|following)\s+(hire|employment|orientation)"
+    r"|\bof\s+(the\s+)?(hire|appointment)\s+date")
 
 
 def _has_unhedged_duration(text: str) -> str | None:
@@ -143,8 +210,12 @@ def _has_unhedged_duration(text: str) -> str | None:
     labeled. Recovering the genuinely-preferred cases from UNCLEAR is the
     LLM stage's job, not this function's.
     """
-    m = _HARD_DURATION.search(text or "")
-    return m.group(0).strip() if m else None
+    for m in _HARD_DURATION.finditer(text or ""):
+        span = m.group(0).strip()
+        if _ONBOARDING.search(span):
+            continue          # a deadline after you start, not a prerequisite
+        return span
+    return None
 
 
 def _clauses(text: str) -> list[str]:
@@ -190,10 +261,10 @@ ACUTE = re.compile(
 REQUIRED_WORD = re.compile(r"(?i)\b(required|must have|minimum of|at least)\b")
 PREFERRED_ONLY = re.compile(r"(?i)\b(preferred|desirable|a plus|nice to have)\b")
 
-# "2 years", "1 year", "six months"
+# "2 years", "1 year", "six months", "One (1) year"
 DURATION = re.compile(
-    r"(?i)\b(\d+(?:\.\d+)?|one|two|three|four|five|six|twelve)\s*"
-    r"(\+|plus)?\s*(year|yr|month)s?\b")
+    r"(?i)\b(" + _NUM_WORD + r")" + _PAREN_NUM +
+    r"\s*(\+|plus)?\s*(year|yr|month)s?\b")
 
 NEW_GRAD = re.compile(
     r"(?i)\b(new grad(uate)?s?( are)?( welcome| encouraged| eligible)?"
@@ -277,6 +348,27 @@ def classify(title: str, description: str) -> Verdict:
             required_clauses.append(c)
 
     if not required_clauses:
+        # A clause naming acute-care experience inside a requirements
+        # section is a requirement even when it states no duration and
+        # never says "required". Sutter writes
+        #   "AS TYPICALLY ACQUIRED IN: Acute Care Previous experience as an
+        #    RN in an acute care hospital setting."
+        # which has neither, so no clause qualified, and the posting
+        # reached the recommendations labelled "no experience required"
+        # while quoting that exact sentence as its evidence. A clause that
+        # hedges itself as preferred is still optional and still skipped.
+        # The clause must be about experience, not merely contain a word
+        # that also appears in a hospital's marketing copy. Vibra's section
+        # runs on into its benefits blurb, where "fulfilling responsibilities
+        # of the role of the hospital" and a PPO plan description both match
+        # ACUTE and would otherwise suppress four postings whose one real
+        # requirement sentence says "strongly preferred".
+        for c in _clauses(exp):
+            if (ACUTE.search(c) and re.search(r"(?i)\bexperience\b", c)
+                    and not PREFERRED_ONLY.search(c)):
+                return Verdict("ACUTE_REQUIRED", c[:200],
+                               "names acute-care experience in a requirements "
+                               "section without hedging it as preferred")
         hard = _has_unhedged_duration(desc)
         if hard:
             return Verdict("UNCLEAR", hard,

@@ -24,6 +24,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Every case in here is a bug that already shipped once and cost real
+      # postings. Cheap to run, and a rule change that reintroduces one
+      # should stop the scan rather than quietly narrow it.
+      - name: Rule regression tests
+        run: python3 test_rules.py
+
       - name: Run scan
         env:
           USAJOBS_KEY: ${{ secrets.USAJOBS_KEY }}

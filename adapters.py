@@ -1,13 +1,20 @@
 """
 RN Job Scanner — source adapters.
 
-Two adapters, both verified working 2026-09-01:
+Eight adapters, all verified against live endpoints 2026-09-03:
 
-  WorkdayCXS   — native Workday tenants. One class, N tenants.
-                 Verified against John Muir Health.
-  SutterPhenom — Sutter's Phenom front-end. Its JSON API rejects
-                 anonymous callers, but the search page embeds its
-                 results server-side, so we parse those.
+  WorkdayCXS     — native Workday tenants. One class, N tenants.
+                   John Muir, Sutter, El Camino.
+  SutterPhenom   — Sutter's Phenom front-end. Kept for reference; Sutter is
+                   now read through its real Workday tenant instead, because
+                   Phenom returned 320-char marketing teasers with no
+                   requirements section.
+  PACS           — post-acute / skilled nursing, 70 facilities geolocated.
+  ScionHealth    — Kindred LTAC.
+  HealthcareSource — Alameda Health System.
+  NeoGov         — governmentjobs.com. Six CA county and city agencies.
+  Jibe           — Vibra / Kentfield, via the JSON API behind their JIBE site.
+  USAJobs        — VA. Needs a key; still untested against live data.
 
 Design notes that came out of probing the live endpoints:
 
@@ -682,6 +689,222 @@ class USAJobs:
         return p   # search response already carries the full summary
 
 
+# ── adapter 7: NEOGOV / governmentjobs.com (CA counties and cities) ──
+
+class NeoGov:
+    """
+    NEOGOV powers the HR site of most California county and city
+    governments. One class, N agencies.
+
+    This was written off as "needs a headless browser", and it looks that
+    way from the outside: /careers/{agency}/jobs serves a 976-byte shell,
+    the agency root serves 204 KB of Knockout scaffolding with no postings
+    in it, there is no JSON API, and /jobs/rss returns HTML. Every visible
+    signal says client-side rendering.
+
+    It isn't. The listing is rendered server-side, but only for a caller
+    that identifies as an XHR. Send X-Requested-With and the same agency
+    root returns the rows as HTML, ten to a page. No browser, no session,
+    no cookie.
+
+    Detail pages carry a JSON-LD JobPosting block. Prefer it to the
+    surrounding 130 KB of navigation: it holds the title, an ISO date, the
+    location and the entire requirements text in one object. Its
+    description field is double-escaped — unescape before stripping tags,
+    or the tags survive and the classifier reads markup as prose.
+    """
+
+    BASE = "https://www.governmentjobs.com/careers"
+    HOST = "https://www.governmentjobs.com"
+    XHR = {"X-Requested-With": "XMLHttpRequest"}
+    MAX_PAGES = 40          # 10 per page; largest agency here is ~75
+
+    # Paging without an explicit sort is not stable: the server reorders
+    # between requests, so later pages repeat rows already returned and the
+    # tail is never served at all. Contra Costa reports 75 postings and an
+    # unsorted sweep of all 8 pages yielded 46 of them, silently. Sorting by
+    # title pins the order and returns all 75. Do not remove this.
+    SORT = "&sort=PositionTitle&isDescendingSort=false"
+
+    # slug -> (employer name, city to file postings under).
+    # The listing reports the location as "Contra Costa County, CA", which
+    # is a jurisdiction and not a place geo can rank, so each agency names
+    # the city its facilities actually sit in. Verify before adding one:
+    # a county seat is not always where the health department is.
+    AGENCIES = {
+        "contracosta":  ("Contra Costa County", "Martinez"),
+        "solanocounty": ("Solano County", "Fairfield"),
+        "marincounty":  ("Marin County", "San Rafael"),
+        "napacounty":   ("Napa County", "Napa"),
+        "berkeley":     ("City of Berkeley", "Berkeley"),
+        "oaklandca":    ("City of Oakland", "Oakland"),
+    }
+
+    def __init__(self, employer="CA counties & cities (NEOGOV)", agencies=None):
+        # `employer` labels the scan log only; each Posting carries the
+        # agency that actually posted it.
+        self.employer = employer
+        self.agencies = agencies or self.AGENCIES
+
+    @staticmethod
+    def _text(fragment: str) -> str:
+        return html.unescape(re.sub(r"\s+", " ",
+                                    re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+    def fetch_listings(self) -> list[Posting]:
+        out: list[Posting] = []
+        for slug, (name, city) in self.agencies.items():
+            seen: set[str] = set()
+            for page in range(1, self.MAX_PAGES + 1):
+                url = f"{self.BASE}/{slug}?page={page}{self.SORT}"
+                try:
+                    body = _request(url, headers=self.XHR)
+                except Exception as e:                      # noqa: BLE001
+                    print(f"     {name} page {page}: {e}")
+                    break
+                rows = body.split('<li class="list-item"')[1:]
+                # The end of the listing is an empty page, and that is the
+                # only thing that ends the loop. An earlier version also
+                # stopped when a page contributed no new ids, which turned
+                # the reordering above into a silent 40-of-75 truncation.
+                if not rows:
+                    break
+                for chunk in rows:
+                    m = re.search(r'data-job-id="(\d+)"', chunk)
+                    a = re.search(
+                        r'class="item-details-link"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
+                        chunk, re.S)
+                    if not (m and a):
+                        continue
+                    jid = m.group(1)
+                    if jid in seen:
+                        continue
+                    seen.add(jid)
+                    dept = re.search(r'data-department-name="([^"]*)"', chunk)
+                    out.append(Posting(
+                        employer=name,
+                        req_id=jid,
+                        title=self._text(a.group(2)),
+                        # The agency's own city, not the county name the
+                        # listing prints, which geo cannot rank.
+                        location=city,
+                        url=self.HOST + html.unescape(a.group(1)),
+                        department=self._text(dept.group(1)) if dept else None,
+                        source_adapter=f"neogov:{slug}",
+                    ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        m = re.search(r'<script type="application/ld\+json">(.*?)</script>',
+                      body, re.S)
+        if not m:
+            return p
+        try:
+            d = json.loads(m.group(1))
+        except json.JSONDecodeError:
+            return p
+        # Unescape first: the field arrives with its markup escaped, so
+        # stripping tags before unescaping strips nothing at all.
+        raw = html.unescape(d.get("description", ""))
+        p.description = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", raw)).strip()
+        p.posted_date = d.get("datePosted") or p.posted_date
+        p.schedule = d.get("employmentType") or p.schedule
+        return p
+
+
+# ── adapter 8: JIBE (Vibra / Kentfield, iCIMS behind a JIBE front-end) ─
+
+class Jibe:
+    """
+    JIBE career sites sit in front of an iCIMS ATS and expose a plain JSON
+    API that needs no key, no session and no browser:
+
+        GET https://{host}/api/jobs?page=1&limit=100&state=California
+
+    This is the source the README wrote off as needing a headless browser.
+    The mistake was reading the marketing site (vibrahealthcare.com/careers)
+    rather than the careers subdomain; the subdomain identifies itself as
+    JIBE in its own markup and the API is one path down from there.
+
+    Two things make this the cheapest adapter here. The listing response
+    already carries the full description and qualifications, so there is no
+    detail request to make — fetch_detail just returns what it was given.
+    And `state` filters server-side, so one request covers every California
+    posting instead of paging the whole national board.
+
+    Kentfield Rehabilitation (Marin) is a Vibra LTAC and appears here when
+    it has openings; it had none when this was written, which is why the
+    README recorded the source as blocked rather than empty.
+    """
+
+    PER_PAGE = 100
+    MAX_PAGES = 20
+
+    def __init__(self, employer="Vibra Healthcare",
+                 host="careers.vibrahealthcare.com", state="California"):
+        self.employer, self.host, self.state = employer, host, state
+        self.base = f"https://{host}/api/jobs"
+
+    @staticmethod
+    def _clean(fragment: str) -> str:
+        return html.unescape(re.sub(r"\s+", " ",
+                                    re.sub(r"<[^>]+>", " ", fragment or ""))).strip()
+
+    @staticmethod
+    def _f(v):
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    def fetch_listings(self) -> list[Posting]:
+        out: list[Posting] = []
+        seen: set[str] = set()
+        for page in range(1, self.MAX_PAGES + 1):
+            url = (f"{self.base}?page={page}&limit={self.PER_PAGE}"
+                   f"&state={urllib.parse.quote(self.state)}")
+            d = json.loads(_request(url))
+            batch = d.get("jobs") or []
+            if not batch:
+                break
+            for row in batch:
+                j = row.get("data") or {}
+                rid = str(j.get("req_id") or j.get("slug") or "")
+                if not rid or rid in seen:
+                    continue
+                seen.add(rid)
+                # Requirements often sit in `qualifications` rather than
+                # `description`; the classifier needs both or it reads an
+                # overview with no requirements section and says so.
+                body = " ".join(filter(None, [
+                    self._clean(j.get("description")),
+                    self._clean(j.get("qualifications")),
+                    self._clean(j.get("responsibilities")),
+                ]))
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=rid,
+                    title=j.get("title", ""),
+                    location=j.get("full_location") or j.get("city") or "",
+                    url=j.get("apply_url") or f"https://{self.host}/jobs/{rid}",
+                    posted_date=(j.get("posted_date") or "")[:10] or None,
+                    description=body,
+                    department=j.get("department") or None,
+                    schedule=j.get("employment_type") or None,
+                    latitude=self._f(j.get("latitude")),
+                    longitude=self._f(j.get("longitude")),
+                    source_adapter=f"jibe:{self.host}",
+                ))
+            if len(batch) < self.PER_PAGE:
+                break
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        # The listing already carried the full text. Nothing to fetch.
+        return p
+
+
 # ── registry ─────────────────────────────────────────────────────────
 # Kaiser Permanente and Stanford Health Care are excluded by request.
 
@@ -699,6 +922,8 @@ ADAPTERS = [
     HealthcareSource(),                                   # verified — Alameda Health
     PACS(),                                               # verified — post-acute, 112 CA RN roles
     ScionHealth(),                                        # verified — Kindred LTAC, San Leandro
+    NeoGov(),                                             # verified — 6 CA county/city agencies, 220 postings
+    Jibe(),                                               # verified — Vibra/Kentfield LTAC, 87 CA postings
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
     # Add once host/site confirmed via DevTools:
     #   WorkdayCXS("MarinHealth", ...)
