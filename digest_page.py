@@ -185,8 +185,10 @@ TEMPLATE = r"""<!doctype html>
   --read:"Charter","Iowan Old Style","Palatino Linotype",Georgia,serif;
   --scale:1;
 }
+/* Dark comes from the OS unless a host has stamped an explicit choice on
+   the root element, in which case the stamp wins in both directions. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg:#10171c; --card:#18222a; --ink:#e8eef1; --dim:#9fb0ba; --faint:#7f929e;
     --line:#26333d; --line-soft:#1e2932;
     --signal:#5ac8de; --signal-bg:#10333c;
@@ -195,6 +197,15 @@ TEMPLATE = r"""<!doctype html>
     --accent:#5ac8de;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.8);
   }
+}
+:root[data-theme="dark"] {
+    --bg:#10171c; --card:#18222a; --ink:#e8eef1; --dim:#9fb0ba; --faint:#7f929e;
+    --line:#26333d; --line-soft:#1e2932;
+    --signal:#5ac8de; --signal-bg:#10333c;
+    --watch:#e0bd6a; --watch-bg:#342c14;
+    --near:#6fd3a4; --near-bg:#123328;
+    --accent:#5ac8de;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.8);
 }
 * { box-sizing:border-box; }
 html {
