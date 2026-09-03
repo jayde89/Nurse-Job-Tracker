@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write           # needed to commit state/seen.json back
+  issues: write             # needed to open the alert issue (see below)
 
 jobs:
   scan:
@@ -54,6 +55,30 @@ jobs:
           git add state/seen.json applications.csv digest.html DIGEST.md
           git diff --staged --quiet || git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
           git push
+
+      # Email without SMTP credentials. GitHub sends you a notification
+      # email whenever it assigns you an issue, so assigning one to the repo
+      # owner is a mail path that needs no app password, no secret, and no
+      # third-party action — and it reaches the GitHub mobile app too.
+      #
+      # It only fires when the scan found a posting that is BOTH new and in
+      # a bucket you could apply to today. Three scans a day of "here is the
+      # same list again" is how a job alert stops being read.
+      #
+      # continue-on-error because notification is not the point of the job:
+      # if this breaks, the scan results are still committed above.
+      - name: Email new applicable postings
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 notify.py
+          if [ -f state/alert.md ]; then
+            gh issue create \
+              --title "$(cat state/alert_title.txt)" \
+              --body-file state/alert.md \
+              --assignee "${{ github.repository_owner }}"
+          fi
 
 # Runtime is roughly 8-10 minutes, dominated by the 1-second politeness
 # delay between requests. That is ~30 minutes a DAY across three runs, so

@@ -4,3 +4,7 @@ __pycache__/
 # Debug output from `python3 adapters.py` / `python3 classifier.py`
 postings.jsonl
 needs_review.jsonl
+
+# Written by notify.py each run, consumed by the workflow, never committed.
+state/alert.md
+state/alert_title.txt

@@ -89,6 +89,29 @@ it properly on a phone, inside a private repo, free. Bookmark it.
 `digest.html` is the same content, nicer looking, for desktop. Download and
 open it locally; GitHub won't render HTML from a repo.
 
+### 6. Check that the email reaches you
+
+The scan emails you when it finds a posting that is both new and one you
+could apply to today. It does this by opening an issue and assigning it to
+you; GitHub emails you on assignment, so there is no password to set up and
+nothing to configure. It also shows up in the GitHub mobile app.
+
+Confirm two things once:
+
+* **github.com/settings/notifications** → Email is ticked under
+  "Subscriptions", and "Notifications for assigned issues" is on.
+* The address GitHub has for you is one you actually read —
+  **github.com/settings/emails**.
+
+You will not get an email on every scan, by design. Three a day of the same
+list is how an alert stops being read. Quiet means nothing new you can
+apply to; the standing list is always in `DIGEST.md`.
+
+If you would rather have the digest in your own inbox from your own
+address, that needs SMTP credentials in repo secrets — a Gmail App Password
+and a mail action in the workflow. The issue route was chosen because it
+needs neither.
+
 ---
 
 ## Using it
