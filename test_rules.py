@@ -288,6 +288,18 @@ check("a field named Shift needs no 'shift' in its value",
                         "Days of the Week: Variable Weekend Requirements: "
                         "Every other Weekend"), ""),
       "Days")
+# Inside a field named Shift there is no "Day Surgery" to trip over, so the
+# singular forms are safe there. Sutter writes both of these, and the
+# plural-only title rule left both rows blank.
+check("singular shift words are read inside a Shift field",
+      H.shift("RN", {"SHIFT": "Day/Evening/Night"}, ""), "Day / Evening / Night")
+check("a varied shift is reported, not treated as unstated",
+      H.shift("RN", {"SHIFT": "Varied"}, ""), "Varied")
+# ...but the title stays conservative, or "RN - Day Surgery" gains a shift
+# the posting never stated.
+check("the singular concession does not reach titles",
+      H.shift("RN - Day Surgery", {}, ""), None)
+
 # The field's value has to stop where the next field starts, or "Shift
 # Hours: 10 Days of the Week: Variable" reads back as a shift of "Days".
 check("a labeled value stops at the next label",

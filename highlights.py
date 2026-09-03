@@ -179,7 +179,7 @@ def _employment_in(text: str) -> list[str]:
 
 _SHIFT_TOKEN = re.compile(
     r"(?i)\b(NOC|AM|PM|day|days|evening|evenings|night|nights|swing"
-    r"|overnight|weekend|weekends|rotating|variable|graveyard)\b")
+    r"|overnight|weekend|weekends|rotating|varied|variable|graveyard)\b")
 
 # A shift statement, not a stray "AM". "8:00 AM" is a time, "AM Shift" is a
 # shift, and "PM" inside "5 PM - 1:30 AM" is neither on its own. Require the
@@ -219,6 +219,17 @@ _TITLE_SHIFT = re.compile(
     r"(?i:\b(days|nights|evenings|overnight|graveyard|swing|weekends)\b)"
     r"|\b(NOC|AM|PM)\b")
 
+# Inside a field named Shift there is no "Day Surgery" to trip over, so the
+# singular forms are safe there and the plural-only rule above just loses
+# shifts: Sutter writes "Shift: Day/Evening/Night" and "Shift: Varied", and
+# both came back empty. "Varied" is worth printing — a rotating shift is a
+# thing a new grad needs to know before applying, not an absence of
+# information.
+_FIELD_SHIFT = re.compile(
+    r"(?i:\b(days?|nights?|evenings?|overnight|graveyard|swing|weekends?"
+    r"|varied|variable|rotating)\b)"
+    r"|\b(NOC|AM|PM)\b")
+
 
 def _tidy_shift(value: str) -> str:
     parts = [m.group(0) for m in _SHIFT_TOKEN.finditer(value)]
@@ -247,17 +258,17 @@ def shift(title: str, fields: dict[str, str], desc: str,
     appears in PACS's benefits boilerplate on postings that are for one
     shift only.
     """
-    for src, bare in ((title, True), (stated or "", False),
+    for src, bare in ((title, _TITLE_SHIFT), (stated or "", None),
                       (_first(fields, "Shift", "Shifts", "Schedule",
-                              "Shift Hours") or "", True),
-                      (desc[:400], False)):
+                              "Shift Hours") or "", _FIELD_SHIFT),
+                      (desc[:400], None)):
         # Every shift phrase in the source, not just the first. Santa Rosa
         # writes "Full-Time, 2 PM shifts and 2 NOC shifts", and stopping at
         # the first match reported a PM job that is half nights.
         spans = [m.group(1) or m.group(2) or ""
                  for m in _SHIFT_PHRASE.finditer(src)]
-        if not spans and bare:
-            spans = [m.group(0) for m in _TITLE_SHIFT.finditer(src)]
+        if not spans and bare is not None:
+            spans = [m.group(0) for m in bare.finditer(src)]
         got = _tidy_shift(" ".join(spans))
         if not got:
             continue
