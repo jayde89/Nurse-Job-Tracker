@@ -227,6 +227,18 @@ check("multiple employment types keep the posting's order",
 
 # "PT" is Physical Therapy far more often than it is part time. A posting
 # that mentions the PT department must not come back as a part-time job.
+# The same Santa Rosa posting is titled "RN- part time" and states
+# "Schedule: Full-Time" in its body. Printing "Full-time" beside that title
+# puts a contradiction inside one digest row and costs the whole line its
+# credibility, so the title — the half the reader can see — wins.
+check("the body may not contradict the title's employment type",
+      H.employment("RN- part time",
+                   {"SCHEDULE": "Full-Time, 2 PM shifts and 2 NOC shifts"}, ""),
+      "Part-time")
+# But a body that merely says *more* than the title still wins.
+check("a body that only adds to the title is still used",
+      H.employment("RN - On Call", {"EMPLOYMENT TYPE": "On-Call / Per Diem"}, ""),
+      "On-call / Per diem")
 check("PT is not read as part time",
       H.employment("RN - Subacute", {},
                    "Coordinates with PT and OT on the rehabilitation plan."),
@@ -256,6 +268,22 @@ check("a clock time is not a shift",
       None)
 check("NOC shift in the title is read from the title",
       H.shift("Part-Time NOC Shift Registered Nurse (RN)", {}, ""), "NOC")
+# A title states its shift without ever writing the word "shift". Requiring
+# it dropped the shift from "NOC RN" and from Vibra's "... Full Time Days RN".
+check("a bare shift word in a title is still a shift",
+      [H.shift("NOC RN", {}, ""),
+       H.shift("RN Registered Nurse Full Time Days RN", {}, "")],
+      ["NOC", "Days"])
+# ...but only in a title, and only in the plural. "Day" is half of "Day
+# Surgery" and "Night" is half of "Night Clinic"; neither states a shift.
+check("a unit name in a title is not a shift",
+      [H.shift("RN - Day Surgery", {}, ""), H.shift("RN - Night Clinic", {}, "")],
+      [None, None])
+# Santa Rosa writes "Full-Time, 2 PM shifts and 2 NOC shifts". Stopping at
+# the first phrase reported a PM job that is half nights.
+check("every shift phrase in the source is read, not just the first",
+      H.shift("RN", {"SCHEDULE": "Full-Time, 2 PM shifts and 2 NOC shifts"}, ""),
+      "PM / NOC")
 check("a multi-shift posting reports every shift it names",
       H.shift("RN - On Call", {}, "Shifts: AM, PM & NOC Pay Rate: $51.00"),
       "AM / PM / NOC")

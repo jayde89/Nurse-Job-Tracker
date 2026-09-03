@@ -126,6 +126,7 @@ def employment(title: str, fields: dict[str, str], desc: str,
     and states "Employment Type: On-Call / Per Diem". Both are true; the
     field is the more complete of the two.
     """
+    from_title = _employment_in(title)
     for src in (stated or "",
                 _first(fields, "Employment Type", "Employment Status",
                        "Job Type", "Position Type", "Work Type",
@@ -136,21 +137,36 @@ def employment(title: str, fields: dict[str, str], desc: str,
                 # blurb ("full-time employees receive...") and reading the
                 # whole body turns every per-diem job into "Full-time".
                 desc[:400]):
-        # Order by where the posting says it, not by the order of this
-        # table — Napa lists "Full-Time, Part-Time & Per Diem" and reading
-        # it back as "Per diem / Full-time / Part-time" is a needless lie
-        # about emphasis.
-        found = sorted(((m.start(), label)
-                        for rx, label in _EMPLOYMENT
-                        for m in [rx.search(src)] if m))
-        seen, ordered = set(), []
-        for _pos, label in found:
-            if label not in seen:
-                seen.add(label)
-                ordered.append(label)
-        if ordered:
-            return " / ".join(ordered[:3])
+        found = _employment_in(src)
+        if not found:
+            continue
+        # A posting may contradict itself. Santa Rosa Post Acute titles a
+        # requisition "RN- part time" and then states "Schedule: Full-Time,
+        # 2 PM shifts and 2 NOC shifts" in the body. Printing "Full-time"
+        # next to that title puts a contradiction inside a single digest
+        # row, which costs the whole line its credibility. When the title
+        # names a type the body does not, the title wins — it is the half
+        # the reader can see. When the body merely says more (Medical Hill:
+        # title "RN - On Call", body "On-Call / Per Diem"), the body wins.
+        if from_title and not set(from_title) <= set(found):
+            return " / ".join(from_title[:3])
+        return " / ".join(found[:3])
     return None
+
+
+def _employment_in(text: str) -> list[str]:
+    # Ordered by where the posting says it, not by the order of the table
+    # above — Napa lists "Full-Time, Part-Time & Per Diem" and reading it
+    # back as "Per diem / Full-time / Part-time" is a needless lie about
+    # emphasis.
+    found = sorted(((m.start(), label) for rx, label in _EMPLOYMENT
+                    for m in [rx.search(text or "")] if m))
+    out, seen = [], set()
+    for _pos, label in found:
+        if label not in seen:
+            seen.add(label)
+            out.append(label)
+    return out
 
 
 # ── shift ────────────────────────────────────────────────────────────
@@ -184,6 +200,20 @@ _SHIFT_HOURS = re.compile(
     r"(?i)\(?\b(\d{1,2}:?\d{2}\s*(?:am|pm)?\s*[-–—]\s*\d{1,2}:?\d{2}\s*(?:am|pm)?)\)?")
 
 
+# In a title, a bare shift word needs no "shift" after it: "NOC RN" and
+# "RN Registered Nurse Full Time Days RN" are unambiguous, and requiring
+# the word dropped the shift from both. Titles only — this would be far too
+# loose against body prose.
+#
+# The word forms are plural on purpose. "Days" is a shift; "Day" is half of
+# "Day Surgery", and "Night" is half of "Night Clinic". The acronyms are
+# case-sensitive for the same reason the employment ones are: lowercase
+# "am" is a verb.
+_TITLE_SHIFT = re.compile(
+    r"(?i:\b(days|nights|evenings|overnight|graveyard|swing|weekends)\b)"
+    r"|\b(NOC|AM|PM)\b")
+
+
 def _tidy_shift(value: str) -> str:
     parts = [m.group(0) for m in _SHIFT_TOKEN.finditer(value)]
     if not parts:
@@ -210,14 +240,18 @@ def shift(title: str, fields: dict[str, str], desc: str,
     Never the whole body — "AM, PM & NOC shift opportunities" appears in
     PACS's benefits boilerplate on postings that are for one shift only.
     """
-    for src in (title,
-                stated or "",
-                _first(fields, "Shift", "Shifts", "Shift Hours", "Schedule") or "",
-                desc[:400]):
-        m = _SHIFT_PHRASE.search(src)
-        if not m:
-            continue
-        got = _tidy_shift(m.group(1) or m.group(2) or "")
+    for src, bare in ((title, True), (stated or "", False),
+                      (_first(fields, "Shift", "Shifts", "Shift Hours",
+                              "Schedule") or "", False),
+                      (desc[:400], False)):
+        # Every shift phrase in the source, not just the first. Santa Rosa
+        # writes "Full-Time, 2 PM shifts and 2 NOC shifts", and stopping at
+        # the first match reported a PM job that is half nights.
+        spans = [m.group(1) or m.group(2) or ""
+                 for m in _SHIFT_PHRASE.finditer(src)]
+        if not spans and bare:
+            spans = [m.group(0) for m in _TITLE_SHIFT.finditer(src)]
+        got = _tidy_shift(" ".join(spans))
         if not got:
             continue
         hours = _SHIFT_HOURS.search(src)
