@@ -51,7 +51,9 @@ When you're done the repo should look like this:
 .github/workflows/rn-scan.yml
 adapters.py
 classifier.py
+digest_page.py
 geo.py
+notify.py
 run_scan.py
 test_rules.py
 pacs_facilities.json
@@ -83,11 +85,21 @@ so the scan stays polite. Green check means it worked.
 
 ### 5. Bookmark the digest
 
-Open `DIGEST.md` in the repo. That page is your dashboard — GitHub renders
-it properly on a phone, inside a private repo, free. Bookmark it.
+`digest.html` is the dashboard. It is a real page, not a table: a headline
+count of what you can actually apply to today, tabs for *Apply now / New /
+Everything / Applied*, a search box, drive-time filters, and a reading mode
+sized for a phone. Every posting still carries the requirement sentence its
+verdict rests on, one tap away.
 
-`digest.html` is the same content, nicer looking, for desktop. Download and
-open it locally; GitHub won't render HTML from a repo.
+The whole thing is one file with nothing loaded from the internet — no
+fonts, no scripts, no images — so it opens anywhere, including with the
+plane's wifi off.
+
+`DIGEST.md` is still written every run. It is the fallback: GitHub renders
+Markdown inside a private repo on a phone for free, with no download step.
+It is a wall of table, which is exactly why `digest.html` exists.
+
+See **Reading it on a phone** below for how to get the HTML onto one.
 
 ### 6. Check that the email reaches you
 
@@ -118,13 +130,28 @@ needs neither.
 
 Three scans a day, at 7am, 1pm and 7pm Pacific.
 
-**Read `DIGEST.md`.** The first section, *Worth applying to now*, is the one
-that matters: Level I roles and postings with no experience requirement.
-That is usually a couple of dozen out of a few hundred tracked.
+**Open `digest.html`.** It lands on *Apply now*: Level I roles and postings
+with no experience requirement, nearest drive time first. That is usually a
+couple of dozen out of a few hundred tracked, and it is the only tab you
+need on a normal day.
 
-The rest are in *Not applied yet* on purpose. They require experience you
-don't have yet. They're there so you can watch them, not so you apply to
-them. Postings that require acute-care experience are hidden entirely.
+The other tabs are there on purpose. *Everything* holds the roles that
+require experience you don't have yet — to watch, not to apply to. Postings
+that require acute-care experience are hidden entirely, and the page says
+how many.
+
+Three things worth knowing about the page:
+
+* **Why it is labelled that** under each posting opens the requirement
+  sentence the verdict rests on. Read it before you trust the label.
+* **Reading mode** (top right) drops the filters, sets the type in serif,
+  opens every quote, and gives you A− / A+ for size. It is the mode for
+  going through the list on a phone rather than hunting a specific job.
+* Your tab, filters, reading mode and text size are remembered in the
+  browser, so it opens where you left it.
+
+*Apply now* on `DIGEST.md` is the same list, if you would rather read it on
+GitHub.
 
 **When you apply**, open `applications.csv`, find the row, change **Status**
 from `unapplied` to `applied`. Commit. On the next scan it moves to
@@ -138,6 +165,39 @@ The scanner **never** touches Status, Applied On, or Notes. It only adds new
 rows and refreshes employer-controlled fields. A posting that disappears from
 the employer's site gets marked `closed` rather than deleted, so anything you
 already applied to keeps its record.
+
+---
+
+## Reading it on a phone
+
+The repo is private, and GitHub does not render HTML from a repo or serve
+free Pages from a private one. So the page has to get to the phone some
+other way. In rough order of how little work they are:
+
+**Save it once, re-save it when you want fresh numbers.** Open the repo in
+Safari, tap `digest.html`, tap **Raw**, then Share → *Add to Home Screen*.
+It behaves like an app, opens without Safari's chrome, and works offline.
+It is a snapshot: repeat when you want the latest scan. Fine if you check
+in once a day.
+
+**Mail it to yourself each run.** The workflow already opens an issue when
+there is something new worth applying to. Attaching `digest.html` to that
+mail is a few lines in `.github/workflows/rn-scan.yml`, and then the current
+page is always the newest thing in your inbox.
+
+**Give it a real URL.** Two ways:
+
+* **GitHub Pages on this repo.** Settings → Pages → deploy from `main`,
+  root. Needs GitHub Pro (about $4/month) while the repo is private. Then
+  the page is live at a fixed address within a minute of each scan, and
+  *Add to Home Screen* on that URL is always current.
+* **A second, public repo holding only the page.** Job postings are public
+  information; your `applications.csv` — the Status, Applied On and Notes
+  you write — is not, and stays here. The workflow pushes `digest.html`
+  there, Pages serves it free. More moving parts, no monthly cost.
+
+Pages is the one to pick if the $4 is not the deciding factor: one setting,
+nothing to maintain, and nothing of yours leaves the private repo.
 
 ---
 

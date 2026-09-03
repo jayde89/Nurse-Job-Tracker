@@ -1,957 +1,682 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RN scan &mdash; 2026-09-03</title>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RN openings near Oakland</title>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fbfcfc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10171c" media="(prefers-color-scheme: dark)">
+<!-- Added to the iOS home screen this opens without Safari's chrome, which
+     is the difference between a bookmark and something you actually check. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RN jobs">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b7285'/><path d='M13 8h6v5h5v6h-5v5h-6v-5H8v-6h5z' fill='white'/></svg>">
 <style>
-  :root {
-    --ink:#12232e; --dim:#5a6b76; --line:#dfe5e8; --bg:#fbfcfc;
-    --signal:#0b7285;          /* reserved: entry-level only */
-    --watch:#8a6d1f;           /* unclear */
+:root {
+  --bg:#fbfcfc; --card:#ffffff; --ink:#12232e; --dim:#5a6b76; --faint:#8695a0;
+  --line:#dfe5e8; --line-soft:#eef2f4;
+  --signal:#0b7285; --signal-bg:#e6f4f7;
+  --watch:#8a6d1f; --watch-bg:#fbf3df;
+  --near:#1c6b4a; --near-bg:#e4f2eb;
+  --accent:#0b7285;
+  --shadow:0 1px 2px rgba(18,35,46,.05), 0 6px 18px -12px rgba(18,35,46,.35);
+  --radius:14px;
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --read:"Charter","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --scale:1;
+}
+/* Dark comes from the OS unless a host has stamped an explicit choice on
+   the root element, in which case the stamp wins in both directions. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#10171c; --card:#18222a; --ink:#e8eef1; --dim:#9fb0ba; --faint:#7f929e;
+    --line:#26333d; --line-soft:#1e2932;
+    --signal:#5ac8de; --signal-bg:#10333c;
+    --watch:#e0bd6a; --watch-bg:#342c14;
+    --near:#6fd3a4; --near-bg:#123328;
+    --accent:#5ac8de;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.8);
   }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:16px/1.5 "Charter","Iowan Old Style",Georgia,serif;
-       -webkit-font-smoothing:antialiased}
-  .wrap{max-width:44rem;margin:0 auto;padding:2rem 1.25rem 5rem}
-  header{border-bottom:2px solid var(--ink);padding-bottom:1rem;margin-bottom:1.5rem}
-  h1{font-size:1.6rem;margin:0 0 .35rem;letter-spacing:-.01em}
-  .sub{color:var(--dim);font-size:.9rem;margin:0}
-  .tallies{margin:.9rem 0 0;font-size:.8rem;line-height:2}
-  .tally{padding:.15rem .5rem;border:1px solid var(--line);border-radius:2px;
-         background:#fff;color:var(--dim);white-space:nowrap}
-  .tally.staff_nurse_i,.tally.no_experience{color:var(--signal);
-         border-color:var(--signal)}
-  h2{font-size:1rem;font-weight:600;margin:2.25rem 0 .75rem;
-     padding-bottom:.35rem;border-bottom:1px solid var(--line)}
-  ul{list-style:none;margin:0;padding:0}
-  .job{padding:1rem 0 1.1rem;border-bottom:1px solid var(--line)}
-  .job h3{font-size:1.05rem;margin:.15rem 0 .2rem;font-weight:600}
-  .job a{color:inherit;text-decoration:none;
-         border-bottom:1px solid rgba(18,35,46,.25)}
-  .job a:hover,.job a:focus{border-bottom-color:var(--ink)}
-  .meta{display:flex;gap:.6rem;align-items:baseline;font-size:.78rem;
-        color:var(--dim);font-family:system-ui,sans-serif}
-  .drive{font-variant-numeric:tabular-nums}
-  .new{color:var(--signal);font-weight:600}
-  .where{margin:0;color:var(--dim);font-size:.88rem}
-  .verdict{margin:.45rem 0 .3rem;font-size:.82rem;
-           font-family:system-ui,sans-serif;color:var(--dim)}
-  .staff_nurse_i .verdict,.no_experience .verdict{color:var(--signal);font-weight:600}
-  .unclear .verdict{color:var(--watch)}
-  blockquote{margin:.3rem 0 0;padding-left:.85rem;
-             border-left:2px solid var(--line);color:var(--dim);
-             font-size:.85rem}
-  .empty{color:var(--dim);font-size:.9rem;padding:.5rem 0}
-  footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);
-         color:var(--dim);font-size:.8rem}
-  a:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
-</style></head><body><div class="wrap">
-<header>
-  <h1>Staff RN openings within two hours of Oakland</h1>
-  <p class="sub">Scanned 2026-09-03 18:29 UTC &middot;
-     126 shown &middot; 67 hidden as acute-care-required
-     </p>
-  <p class="tallies"><span class="tally staff_nurse_i">1 level i / new grad</span> <span class="tally no_experience">18 no experience required</span> <span class="tally unclear">33 requirements unclear</span> <span class="tally general_experience">74 experience required, not acute</span></p>
+}
+:root[data-theme="dark"] {
+    --bg:#10171c; --card:#18222a; --ink:#e8eef1; --dim:#9fb0ba; --faint:#7f929e;
+    --line:#26333d; --line-soft:#1e2932;
+    --signal:#5ac8de; --signal-bg:#10333c;
+    --watch:#e0bd6a; --watch-bg:#342c14;
+    --near:#6fd3a4; --near-bg:#123328;
+    --accent:#5ac8de;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 22px -14px rgba(0,0,0,.8);
+}
+* { box-sizing:border-box; }
+html {
+  -webkit-text-size-adjust:100%;
+  font-size:calc(16px * var(--scale));
+  scroll-behavior:smooth;
+}
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--ui); font-size:1rem; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overflow-wrap:anywhere;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button, input, select { font:inherit; color:inherit; }
+/* 16px minimum on form controls, or iOS zooms the whole page on focus. */
+input, select { font-size:max(1rem,16px); }
+a { color:inherit; }
+
+/* ── header ─────────────────────────────────────────────────────── */
+.topbar {
+  position:sticky; top:0; z-index:20;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter:saturate(1.8) blur(14px);
+  backdrop-filter:saturate(1.8) blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + .7rem) 0 0;
+}
+.inner { max-width:52rem; margin:0 auto;
+         padding-left:max(1rem,env(safe-area-inset-left));
+         padding-right:max(1rem,env(safe-area-inset-right)); }
+.headrow { display:flex; align-items:flex-start; gap:1rem; }
+h1 { font-size:1.02rem; margin:0; font-weight:650; letter-spacing:-.01em; }
+h1 span { display:block; font-weight:400; font-size:.8rem; color:var(--dim);
+          letter-spacing:0; margin-top:.1rem; }
+.stamp { margin:.35rem 0 0; font-size:.72rem; color:var(--faint);
+         font-variant-numeric:tabular-nums; }
+.readbtn {
+  margin-left:auto; flex:none; display:flex; align-items:center; gap:.4rem;
+  background:var(--card); border:1px solid var(--line); color:var(--dim);
+  border-radius:999px; padding:.45rem .8rem; font-size:.78rem; font-weight:550;
+  min-height:36px; cursor:pointer; touch-action:manipulation;
+}
+.readbtn:hover { border-color:var(--accent); color:var(--accent); }
+body.reading .readbtn { background:var(--signal-bg); border-color:var(--accent);
+                        color:var(--accent); }
+
+/* ── headline count ─────────────────────────────────────────────── */
+.lede { max-width:52rem; margin:0 auto; padding:.9rem 1rem 0; }
+.lede-t { font-size:.95rem; margin:0; line-height:1.4; }
+.lede-n { font-size:1.9rem; font-weight:680; letter-spacing:-.03em;
+          color:var(--signal); line-height:1; vertical-align:-.08em;
+          margin-right:.3rem; }
+.lede-s { font-size:.8rem; color:var(--dim); margin:.35rem 0 0; max-width:36rem; }
+
+/* ── tabs ───────────────────────────────────────────────────────── */
+.tabs { display:flex; gap:.3rem; overflow-x:auto; scrollbar-width:none;
+        margin-top:.7rem; padding-bottom:.1rem; }
+.tabs::-webkit-scrollbar { display:none; }
+.tab {
+  flex:none; background:none; border:0; border-bottom:2px solid transparent;
+  padding:.55rem .55rem .5rem; font-size:.85rem; font-weight:550;
+  color:var(--dim); cursor:pointer; white-space:nowrap; min-height:40px;
+  touch-action:manipulation;
+}
+.tab[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); }
+.tab b { font-weight:650; }
+.tab .n { font-variant-numeric:tabular-nums; color:var(--faint);
+          font-weight:500; margin-left:.25rem; }
+.tab[aria-selected="true"] .n { color:var(--accent); }
+
+/* ── controls ───────────────────────────────────────────────────── */
+main { max-width:52rem; margin:0 auto;
+       padding:0 max(1rem,env(safe-area-inset-left)) 4rem
+                 max(1rem,env(safe-area-inset-right)); }
+.controls { padding:.9rem 0 .2rem; }
+.filters { margin-top:.55rem; }
+.filters > summary { list-style:none; display:inline-flex; align-items:center;
+  gap:.35rem; cursor:pointer; font-size:.78rem; font-weight:550;
+  color:var(--dim); background:var(--card); border:1px solid var(--line);
+  border-radius:999px; padding:.4rem .8rem; min-height:34px;
+  touch-action:manipulation; }
+.filters > summary::-webkit-details-marker { display:none; }
+.filters > summary::after { content:"\25be"; font-size:.7rem; }
+.filters[open] > summary::after { content:"\25b4"; }
+.filters > summary:hover { border-color:var(--accent); color:var(--accent); }
+.filters.active > summary { background:var(--signal-bg); color:var(--accent);
+                            border-color:var(--accent); }
+.search { position:relative; }
+.search input {
+  width:100%; background:var(--card); border:1px solid var(--line);
+  border-radius:12px; padding:.7rem .8rem .7rem 2.15rem; min-height:44px;
+  -webkit-appearance:none; appearance:none;
+}
+.search input:focus { outline:2px solid var(--accent); outline-offset:1px;
+                      border-color:transparent; }
+.search svg { position:absolute; left:.7rem; top:50%; transform:translateY(-50%);
+              width:1rem; height:1rem; color:var(--faint); pointer-events:none; }
+.chiprow { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center;
+           margin-top:.65rem; }
+.chip {
+  background:var(--card); border:1px solid var(--line); color:var(--dim);
+  border-radius:999px; padding:.4rem .75rem; font-size:.78rem; font-weight:550;
+  cursor:pointer; min-height:34px; touch-action:manipulation; white-space:nowrap;
+}
+.chip[aria-pressed="true"] { background:var(--signal-bg); color:var(--accent);
+                             border-color:var(--accent); }
+.chiprow label { font-size:.72rem; color:var(--faint); text-transform:uppercase;
+                 letter-spacing:.06em; margin-right:.15rem; }
+select.chip { -webkit-appearance:none; appearance:none;
+              padding-right:1.6rem; max-width:14rem; text-overflow:ellipsis;
+              background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),
+                               linear-gradient(135deg,currentColor 50%,transparent 50%);
+              background-position:calc(100% - .85rem) 55%, calc(100% - .6rem) 55%;
+              background-size:5px 5px, 5px 5px; background-repeat:no-repeat; }
+.reset { margin-left:auto; background:none; border:0; color:var(--accent);
+         font-size:.78rem; cursor:pointer; padding:.4rem .2rem; min-height:34px; }
+.showing { font-size:.75rem; color:var(--faint); margin:.75rem 0 .2rem;
+           font-variant-numeric:tabular-nums; }
+
+/* ── job cards ──────────────────────────────────────────────────── */
+.list { list-style:none; margin:0; padding:0;
+        display:flex; flex-direction:column; gap:.6rem; }
+.job { background:var(--card); border:1px solid var(--line);
+       border-radius:var(--radius); padding:.8rem 1rem .85rem;
+       box-shadow:var(--shadow); scroll-margin-top:9rem; }
+.job.apply { border-left:3px solid var(--signal); }
+.jhead { display:flex; align-items:center; gap:.45rem; margin-bottom:.4rem;
+         flex-wrap:wrap; }
+.pill { font-size:.7rem; font-weight:650; letter-spacing:.01em;
+        padding:.2rem .5rem; border-radius:999px; white-space:nowrap;
+        font-variant-numeric:tabular-nums; }
+.pill.drive { background:var(--line-soft); color:var(--dim); }
+.pill.drive.d0 { background:var(--near-bg); color:var(--near); }
+.pill.new { background:var(--signal-bg); color:var(--signal); }
+.pill.status { background:var(--watch-bg); color:var(--watch);
+               text-transform:capitalize; }
+.job h2 { font-size:1.02rem; line-height:1.32; margin:0 0 .2rem;
+          font-weight:600; letter-spacing:-.005em; }
+.job h2 a { text-decoration:none; }
+.job h2 a:hover, .job h2 a:focus-visible { text-decoration:underline;
+                                           text-underline-offset:2px; }
+.where { margin:0; font-size:.85rem; color:var(--dim); }
+.where b { font-weight:600; color:var(--ink); }
+.vrow { display:flex; align-items:center; gap:.75rem; margin-top:.5rem; }
+.verdict { display:inline-block; font-size:.76rem;
+           font-weight:600; padding:.22rem .55rem; border-radius:6px;
+           background:var(--line-soft); color:var(--dim); }
+.verdict.good { background:var(--signal-bg); color:var(--signal); }
+.verdict.watch { background:var(--watch-bg); color:var(--watch); }
+.ev { margin:.35rem 0 0; }
+.ev summary { list-style:none; cursor:pointer; font-size:.76rem;
+              color:var(--accent); font-weight:550; padding:.3rem 0;
+              min-height:30px; display:flex; align-items:center; gap:.3rem;
+              touch-action:manipulation; }
+.ev summary::-webkit-details-marker { display:none; }
+.ev summary::after { content:"›"; transition:transform .15s;
+                     display:inline-block; font-size:1rem; line-height:1; }
+.ev[open] summary::after { transform:rotate(90deg); }
+.ev blockquote { margin:.15rem 0 0; padding:.1rem 0 .1rem .8rem;
+                 border-left:2px solid var(--line); color:var(--dim);
+                 font-family:var(--read); font-size:.88rem; line-height:1.55; }
+.ev .nonequote { font-style:italic; color:var(--faint); }
+.open { margin-left:auto; flex:none; display:inline-flex; align-items:center;
+        gap:.25rem; font-size:.79rem; font-weight:600; color:var(--accent);
+        text-decoration:none; min-height:34px; white-space:nowrap; }
+.open:hover { text-decoration:underline; text-underline-offset:2px; }
+
+.empty { text-align:center; color:var(--dim); font-size:.9rem;
+         padding:3rem 1rem; border:1px dashed var(--line);
+         border-radius:var(--radius); }
+.empty b { display:block; color:var(--ink); font-size:1rem; margin-bottom:.3rem; }
+
+footer { max-width:52rem; margin:2.5rem auto 0;
+         padding:1.25rem max(1rem,env(safe-area-inset-left))
+                 calc(2rem + env(safe-area-inset-bottom));
+         border-top:1px solid var(--line); color:var(--dim); font-size:.8rem; }
+footer p { margin:0 0 .7rem; }
+footer strong { color:var(--ink); }
+
+/* ── reading mode ───────────────────────────────────────────────────
+   One column of prose, serif, evidence already open, filters folded
+   away. This is the mode for lying on the couch with a phone deciding
+   what to apply to, not the one for hunting a specific employer. */
+body.reading { --radius:0; }
+body.reading .controls, body.reading .lede-s { display:none; }
+body.reading main { max-width:36rem; }
+body.reading .list { gap:0; }
+body.reading .job { background:none; border:0; border-radius:0; box-shadow:none;
+                    border-bottom:1px solid var(--line-soft);
+                    padding:1.5rem 0 1.4rem; }
+body.reading .job.apply { border-left:0; }
+body.reading .job h2 { font-family:var(--read); font-size:1.28rem;
+                       line-height:1.3; font-weight:600; }
+body.reading .where { font-family:var(--read); font-size:1rem;
+                      margin-top:.25rem; }
+body.reading .ev summary { display:none; }
+body.reading .ev blockquote { font-size:1rem; margin-top:.7rem; }
+body.reading .open { font-size:.95rem; }
+body.reading .showing { display:none; }
+body.reading .textsize { display:flex; }
+.textsize { display:none; gap:.35rem; align-items:center; margin:1rem 0 .4rem;
+            font-size:.72rem; color:var(--faint); text-transform:uppercase;
+            letter-spacing:.06em; }
+.textsize button { width:36px; height:36px; border-radius:8px;
+                   border:1px solid var(--line); background:var(--card);
+                   color:var(--dim); cursor:pointer; font-weight:600;
+                   touch-action:manipulation; }
+.textsize button:hover { border-color:var(--accent); color:var(--accent); }
+
+.rev { list-style:none; margin:0; padding:0; }
+.rev li { padding:.85rem 0; border-bottom:1px solid var(--line-soft);
+          font-size:.9rem; }
+.rev span { display:block; color:var(--dim); font-size:.82rem; margin-top:.15rem; }
+
+:focus-visible { outline:2px solid var(--accent); outline-offset:2px;
+                 border-radius:4px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior:auto; }
+  * { transition:none !important; }
+}
+@media print {
+  .topbar, .controls, .textsize, .readbtn { display:none; }
+  .job { break-inside:avoid; box-shadow:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="inner">
+    <div class="headrow">
+      <div>
+        <h1>RN openings <span>Staff nurse roles within two hours of Oakland</span></h1>
+        <p class="stamp">Scanned 2026-09-03 18:40 UTC</p>
+      </div>
+      <button class="readbtn" id="readbtn" type="button" aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 3.5S6.5 2 4 2H1.5v11H4c2.5 0 4 1.5 4 1.5m0-11S9.5 2 12 2h2.5v11H12c-2.5 0-4 1.5-4 1.5m0-11v11"/></svg>
+        <span id="readlabel">Reading mode</span>
+      </button>
+    </div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Job lists"></nav>
+  </div>
 </header>
 
-<h2>New since last scan &mdash; 16</h2>
-<ul>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">60-90 min</span><span class="new">new</span></div>
-        <h3><a href="https://careers-vibratravels.icims.com/jobs/24124/login">Registered Nurse RN Full Time Relocate to Fargo ND 20K</a></h3>
-        <p class="where">Vibra Healthcare &middot; Sacramento, California</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span><span class="new">new</span></div>
-        <h3><a href="https://careers-vibrahealthcare.icims.com/jobs/29042/login">RN Registered Nurse ICU Full Time</a></h3>
-        <p class="where">Vibra Healthcare &middot; Folsom, California</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span><span class="new">new</span></div>
-        <h3><a href="https://careers-vibrahealthcare.icims.com/jobs/28880/login">RN Registered Nurse Full Time Nights RN</a></h3>
-        <p class="where">Vibra Healthcare &middot; Folsom, California</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span><span class="new">new</span></div>
-        <h3><a href="https://careers-vibrahealthcare.icims.com/jobs/28879/login">RN Registered Nurse Full Time Days RN</a></h3>
-        <p class="where">Vibra Healthcare &middot; Folsom, California</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span><span class="new">new</span></div>
-        <h3><a href="https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878446-registered-nurse-experienced-nurses-2320-citywide-h00083">Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083</a></h3>
-        <p class="where">City &amp; County of San Francisco &middot; San Francisco</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>one (1) year of experience working as a Registered Nurse</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span><span class="new">new</span></div>
-        <h3><a href="https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/1914-Tice-Valley-Blvd/RN---Coordinator---Care-Coordination-and-Resource-Services---Full-Time---8-Hour---Days_JR0017799">RN - Coordinator - Care Coordination and Resource Services - Full Time - 8 Hour - Days</a></h3>
-        <p class="where">John Muir Health &middot; 1914 Tice Valley Blvd</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>1 year Care Coordination or Care Management - Required Two (2) years Nursing - Ambulat</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span><span class="new">new</span></div>
-        <h3><a href="https://www.governmentjobs.com/careers/marincounty/jobs/5449130/detention-registered-nurse-contingent">Detention Registered Nurse (Contingent)</a></h3>
-        <p class="where">Marin County &middot; San Rafael</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Typically, equivalent to one year of professional nursing experience, and the education necessary to practice nursing.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span><span class="new">new</span></div>
-        <h3><a href="https://www.governmentjobs.com/careers/solanocounty/jobs/5327355/clinic-registered-nurse-senior">Clinic Registered Nurse (Senior)</a></h3>
-        <p class="where">Solano County &middot; Fairfield</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>A minimum score of 70% is required to continue in the selection process, unless otherwise announced.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Registered-Nurse-II--Cardiology_R-139088-1">Registered Nurse II, Cardiology</a></h3>
-        <p class="where">Sutter Health &middot; Burlingame (+1 more)</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Two years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sunnyvale/Registered-Nurse-II--Hematology-Oncology-Per-Diem_R-135746-1">Registered Nurse II, Hematology Oncology Per Diem</a></h3>
-        <p class="where">Sutter Health &middot; Sunnyvale (+1 more)</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Two years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/RN--Certified-Would-Care-Lead--WOCN_R-130195">RN, Certified Would Care Lead, WOCN</a></h3>
-        <p class="where">Sutter Health &middot; Novato</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>8 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-138974-1">Staff Nurse II, Surgery</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Neonatal-Intensive-Care-Unit_R-130494-1">Staff Nurse II, Neonatal Intensive Care Unit</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span><span class="new">new</span></div>
-        <h3><a href="https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878516-per-diem-registered-nurse-all-specialties-dph-p103-">Per Diem Registered Nurse - (All Specialties) - DPH - (P103)</a></h3>
-        <p class="where">City &amp; County of San Francisco &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Applicants may be required to submit verification of qualifying education and experience at any point during the recruitment and selection process.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Registered-Nurse-II--Primary-Care_R-136525-1">Registered Nurse II, Primary Care</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley (+2 more)</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Two years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span><span class="new">new</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Clinical-Effectiveness-Consultant-III--Registered-Nurse_R-135742">Clinical Effectiveness Consultant III, Registered Nurse</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>5 years recent relevant experience</blockquote>
-      </li></ul>
+<div class="lede inner" id="lede"></div>
 
-<h2>Not applied yet &mdash; 110</h2>
-<ul>
-      <li class="job staff_nurse_i">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://alameda-health-system-careers.hctsportals.com/jobs/2201399-ahd-registered-nurse-park-bridge">AHD Registered Nurse - Park Bridge</a></h3>
-        <p class="where">Alameda Health System &middot; 2401 Blanding Avenue, Alameda, CA</p>
-        <p class="verdict">Level I / new grad</p>
-        <blockquote>...lor's degree preferred. Minimum Experience: One year of directly related experience. New graduates will be considered. Required Licenses/Certifications: Valid license to practice as a...</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Sonoma-Post-Acute/RN_JR147473">RN</a></h3>
-        <p class="where">PACS Group &middot; Sonoma</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Supportive Culture: Experience a supportive work environment where every team member is valued and respected. Prior experience in a skilled nursing or long-term care facility preferred, but not requir</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445">RN</a></h3>
-        <p class="where">PACS Group &middot; San Jose</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Responsibilities Provide direct nursing care to residents in accordance with established care plans Administer medications and treatments accurately and on schedule Monitor and document resident condi</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR176905">RN</a></h3>
-        <p class="where">PACS Group &middot; Los Gatos</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Skilled nursing or long-term care experience preferred</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Cypress-Ridge-Care-Center/RN_JR179817">RN</a></h3>
-        <p class="where">PACS Group &middot; Monterey</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Experience in skilled nursing, rehabilitation, or long-term care preferred.</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Rock-Creek-Care-Center/Registered-Nurse_JR174365">NOC RN</a></h3>
-        <p class="where">PACS Group &middot; Auburn</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>What We’re Looking For: ✅ Current and in good standing RN license in the State of California ✅ Strong leadership and communication skills ✅ Compassionate, dependable, and committed to resident-centere</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN--part-time_JR155963">RN- part time</a></h3>
-        <p class="where">PACS Group &middot; Santa Rosa</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred.</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN_JR155539">RN</a></h3>
-        <p class="where">PACS Group &middot; Santa Rosa</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred.</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Moraga-Post-Acute/Registered-Nurse--RN-_JR180846">Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; Moraga Post Acute</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Position Details Position: Registered Nurse (RN) Employment Type: Full-Time Shift: AM Shift Schedule: Full-Time AM Pay Rate: $45.00–$52.00 per hour, DOE Location: Moraga Post Acute Responsibilities Pr</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Shadelands-Post-Acute/Registered-Nurse--RN--Part-Time_JR179863">Registered Nurse (RN) Part-Time</a></h3>
-        <p class="where">PACS Group &middot; Walnut Creek</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>What You'll Do: Provide exceptional nursing care to residents Assess, monitor, and document resident conditions Administer medications and treatments according to physician orders Collaborate with phy</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/East-Bay-Post-Acute/RN---Full-Time_JR179833">RN - Full Time</a></h3>
-        <p class="where">PACS Group &middot; Castro Valley</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Skilled nursing, rehabilitation, or post-acute care experience preferred.</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/All-Saints-Maubert/RN---SOUTH_JR179759">RN - SOUTH</a></h3>
-        <p class="where">PACS Group &middot; San Leandro</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Skilled nursing or long-term care experience preferred.</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Medical-Hill-Healthcare-Center/RN---On-Call_JR179654">RN - On Call</a></h3>
-        <p class="where">PACS Group &middot; Oakland</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>What We Offer Competitive pay of $51.00–$52.50 per hour Flexible on-call/per diem scheduling AM, PM &amp; NOC shift opportunities Supportive nursing leadership Collaborative and professional work environm</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/City-View-Post-Acute/Registered-Nurse--RN-_JR176538">Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; San Francisco</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>LICENSURE: Valid RN license in the state. We are an equal opportunity employer. All qualified applica</blockquote>
-      </li>
-      <li class="job no_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/St-Francis-Healthcare-Center/Registered-Nurse--RN----PRN_JR174762">Registered Nurse (RN) - PRN</a></h3>
-        <p class="where">PACS Group &middot; Hayward</p>
-        <p class="verdict">No experience required</p>
-        <blockquote>Experience in skilled nursing, post-acute care, or long-term care is preferred but not required.</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Palo-Alto/Registered-Nurse-II--Urgent-Care_R-131435-1">Registered Nurse II, Urgent Care</a></h3>
-        <p class="where">Sutter Health &middot; Palo Alto</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>One year of clinical experience Recent experience is strongly preferred SKILLS AND KNOWL</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Antioch/Staff-Nurse-II--Emergency-Services_R-137852-1">Staff Nurse II, Emergency Services</a></h3>
-        <p class="where">Sutter Health &middot; Antioch</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Arden-Park-Post-Acute/Registered-Nurse--RN--NOC-Shift_JR180581">Registered Nurse (RN) NOC Shift</a></h3>
-        <p class="where">PACS Group &middot; Sacramento</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Registered Nurse (RN) - NOC Shift Arden Park Post Acute 📍 Sacramento, CA 🌙 NOC / Overnight Shift 💲 $48.00 - $55.00 per hour 🏥 Skilled Nursing &amp; Rehabilitation Join Our NO</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Napa-Valley-Care-Center/Registered-Nurse--RN-_JR179616">Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; Napa</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum of 2 years of nursing experience , preferably in a Skilled Nursing Facility (SNF), Post-Ac</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Ridgeway-Post-Acute/RN-NOC-Shift_JR174570">RN NOC Shift</a></h3>
-        <p class="where">PACS Group &middot; Petaluma</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>1 year of prior experience preferred Prior experience in a Skilled Nursing Facility pr</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/On-Call-Registered-Nurse--RN-_JR179701-1">On-Call Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; Placerville</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2+ years of nursing experience , preferably in skilled nursing or long-term care</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/Part-Time-PM-Shift-Registered-Nurse--RN-_JR179699">Part-Time PM Shift Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; Placerville</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2+ years of nursing experience , preferably in skilled nursing or long-term care</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/Part-Time-NOC-Shift-Registered-Nurse--RN-_JR179694">Part-Time NOC Shift Registered Nurse (RN)</a></h3>
-        <p class="where">PACS Group &middot; Placerville</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2+ years of nursing experience , preferably in skilled nursing or long-term care</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Roseville-Care-Center/RN_JR175934">RN</a></h3>
-        <p class="where">PACS Group &middot; Roseville</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum of two (2) years of nursing experience preferred Long-term care or skilled nursing experience pr</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Westview-Healthcare-Center/RN_JR174851">Full-Time RN | PM Shift</a></h3>
-        <p class="where">PACS Group &middot; Auburn</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Provide RN nursing services in a skilled nursing unit or facility; may include supervision of nurse assistants, medication passes and treatments We are an equal opportuni</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Western-Slope-Health-Center/RN-On-Call_JR155609">RN On Call</a></h3>
-        <p class="where">PACS Group &middot; Placerville</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum 2 years of nursing experience</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Labor---Delivery_R-137055-1">Staff Nurse II, Labor &amp; Delivery</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2 years of recent relevant experience Labor and Delivery experience preferred SKILLS AN</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--Acute-Rehab-PCU4_R-133397-1">Staff Nurse II, Acute Rehab PCU4</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Berkeley/Staff-Nurse-II--Emergency-Services_R-138783-1">Staff Nurse II, Emergency Services</a></h3>
-        <p class="where">Sutter Health &middot; Berkeley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-138676-1">Staff Nurse II, Neuro ICU</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Nursery_R-135664-1">Staff Nurse II, Nursery</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2 years previous clinical experience in neonatal ICU and obstetrical nursing</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Perioperative_R-136008-1">Staff Nurse II, Perioperative</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Medical-Telemetry_R-137549-1">Staff Nurse II, Medical Telemetry</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year current experience in Med/Tele Required LICENSURES AND CERTIFICATIONS Registere</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135777-1">Staff Nurse II, ICU/CPU</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty is Required</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Perioperative_R-137230-1">Staff Nurse II, Perioperative</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Operating-Room_R-136266-1">Staff Nurse II, Operating Room</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-133919-1">Staff Nurse II, ICU/CPU</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty is Required</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-136311-1">Staff Nurse II, Neuro ICU</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-136310-1">Staff Nurse II, Neuro ICU</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--Emergency-Services-FLEX-Position_R-136551-1">Staff Nurse II, Emergency Services FLEX Position</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Nursery_R-135662-1">Staff Nurse II, Nursery</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2 years previous clinical experience in neonatal ICU and obstetrical nursing</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135846-1">Staff Nurse II, ICU/CPU</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty is Required</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135845-1">Staff Nurse II, ICU/CPU</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum one year of current experience in area of specialty is Required</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Registered-Nurse-II--Medical-Surgical-Telemetry-Float_R-127668-1">Registered Nurse II, Medical Surgical/Telemetry Float</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum 2 year current experience in Med/Tele Required LICENSURES AND CERTIFICATIONS Registere</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neurosciences-Stepdown_R-135110-1">Staff Nurse II, Neurosciences/Stepdown</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>Minimum two year current experience in Step Down</blockquote>
-      </li>
-      <li class="job unclear">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Labor---Delivery_R-135667-1">Staff Nurse II, Labor &amp; Delivery</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Requirements unclear</p>
-        <blockquote>2 years previous clinical experience in L&amp;D and OB nursing and previous experience in n</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139411-1">Registered Nurse, ICU</a></h3>
-        <p class="where">Sutter Health &middot; Tracy</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139412-1">Registered Nurse, ICU</a></h3>
-        <p class="where">Sutter Health &middot; Tracy</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--Birthing-Center_R-139275">Registered Nurse, Birthing Center</a></h3>
-        <p class="where">Sutter Health &middot; Tracy</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse-II--Endoscopy_R-138620">Registered Nurse II, Endoscopy</a></h3>
-        <p class="where">Sutter Health &middot; Tracy</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Fremont/Registered-Nurse-IV--Oncology-Hematology_R-138642-1">Registered Nurse IV, Oncology Hematology</a></h3>
-        <p class="where">Sutter Health &middot; Fremont</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Job Description : EDUCATION Graduate of an accredited school of nursing CERTIFICATION &amp; LICENSURE: RN-Registered Nurse of California BLS-Basic Life Support Healthcare Provider ONS-Oncology Nursing Soc</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-138435-1">Staff Nurse II, Med Surg</a></h3>
-        <p class="where">Sutter Health &middot; Novato</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">30-60 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-127457-1">Staff Nurse II, Med Surg</a></h3>
-        <p class="where">Sutter Health &middot; Novato</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Shift-Full-Time_JR179199">RN All Shifts Full-Time</a></h3>
-        <p class="where">PACS Group &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Essential Duties and Responsibilities Administrative &amp; Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing services during the NOC shift Ensure nursing staf</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Per-Diem_JR179198">RN NOC Per Diem</a></h3>
-        <p class="where">PACS Group &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Essential Duties and Responsibilities Administrative &amp; Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing services during the NOC shift Ensure nursing staf</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/McKinley-Park-Care-Center/RN-Weekend-Desk_JR177157-1">RN Weekend Desk</a></h3>
-        <p class="where">PACS Group &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years or more experience preferably in a long-term care facility.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/North-Pointe-Care-Center/Registered-Nursing_JR164288">Registered Nurse</a></h3>
-        <p class="where">PACS Group &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years or more experience preferably in a long-term care facility.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-139524-1">Registered Nurse II, Neonatal ICU</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139747">Registered Nurse Cardiac Telemetry</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139760">Registered Nurse Cardiac Telemetry</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139761">Registered Nurse Cardiac Telemetry</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139746-1">Registered Nurse Cardiac Telemetry</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Inpatient-Surgical-Unit_R-139785">Registered Nurse II, Inpatient Surgical Unit</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139136">Registered Nurse II, Operating Room</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139139">Registered Nurse II, Operating Room</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years nursing experience or successful completion of a Sutter Health Nursing Residency Program</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Los-Gatos/Registered-Nurse-II--Urgent-Care-Per-Diem_R-138156-1">Registered Nurse II, Urgent Care Per Diem</a></h3>
-        <p class="where">Sutter Health &middot; Los Gatos</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>Two years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Labor-and-Delivery_R-139446">Registered Nurse II, Labor and Delivery</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Labor---Delivery_R-139025">Registered Nurse II, Labor &amp; Delivery</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Pediatrics_R-139077">Registered Nurse II, Pediatrics</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-135933">Registered Nurse II, Neonatal ICU</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Pediatrics-ICU---Peds-CVICU_R-138994">Registered Nurse II, Pediatrics ICU / Peds CVICU</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Staff-Nurse-II--Birthing-Center_R-138402">Staff Nurse II, Birthing Center</a></h3>
-        <p class="where">Sutter Health &middot; Davis</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Labor---Delivery_R-135952">Registered Nurse II, Labor &amp; Delivery</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse-II--Operating-Room_R-138497">Registered Nurse II, Operating Room</a></h3>
-        <p class="where">Sutter Health &middot; Davis</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Infusion_R-132450">Registered Nurse II, Infusion</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency---Limited-Term_R-138278">Registered Nurse, Emergency - Limited Term</a></h3>
-        <p class="where">Sutter Health &middot; Davis</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency_R-138284-1">Registered Nurse, Emergency</a></h3>
-        <p class="where">Sutter Health &middot; Davis</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-138661">Registered Nurse II, Neonatal ICU</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Registered-Nurse-II--Infusion_R-138071-1">Registered Nurse II, Infusion</a></h3>
-        <p class="where">Sutter Health &middot; Santa Cruz</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>One year of Chemotherapy/Infusion Experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Cath-Lab_R-138420-1">Registered Nurse II, Cath Lab</a></h3>
-        <p class="where">Sutter Health &middot; Modesto</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse-II--Wound-Care_R-138098">Registered Nurse II, Wound Care</a></h3>
-        <p class="where">Sutter Health &middot; Davis</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/RN--CWOCN--Certified-Wound-Care-Nurse-Lead--Home-Health_R-136908">RN, CWOCN, Certified Wound Care Nurse Lead, Home Health</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>8 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Interventional-Radiology_R-133554">Registered Nurse II, Interventional Radiology</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">60-90 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Interventional-Radiology_R-133551">Registered Nurse II, Interventional Radiology</a></h3>
-        <p class="where">Sutter Health &middot; Sacramento</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595">Part time RN</a></h3>
-        <p class="where">PACS Group &middot; Carmichael</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years or more experience preferably in a long-term care facility.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Pre-and-Post-OCU_R-138998-1">Staff Nurse II, Pre and Post OCU</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse--Home-Health_R-139208">Registered Nurse, Home Health</a></h3>
-        <p class="where">Sutter Health &middot; Auburn</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>5 years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Lead-Wound-Care-RN--CWON---Home-Health_R-134548">Lead Wound Care RN (CWON), Home Health</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>8 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-130687-1">Staff Nurse II, Surgery</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">90-120 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-132872-1">Staff Nurse II, Surgery</a></h3>
-        <p class="where">Sutter Health &middot; Santa Rosa</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://alameda-health-system-careers.hctsportals.com/jobs/2221316-clinical-nurse-ii">Clinical Nurse II</a></h3>
-        <p class="where">Alameda Health System &middot; 2060 Fairmont Drive, San Leandro, CA</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>The CN II level is the journey level class where incumbents have had the required professional nursing experience and are capable of independently performing the full range of clinical nursing service</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--ASU-PACU_R-137766-1">Staff Nurse II, ASU/PACU</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Mom-and-Baby_R-138763-1">Staff Nurse II, Mom and Baby</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience in L&amp;D or Mom/Baby experience in the last 5 years</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/SMSHCC---Complex-Care-RN-Coordinator_R-135369">Oncology - Complex Care RN Coordinator</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/SMSHCC---Complex-Care-RN-Coordinator_R-135088">Oncology- Complex Care RN Coordinator</a></h3>
-        <p class="where">Sutter Health &middot; Oakland</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Neonatal-ICU_R-138327-1">Staff Nurse II, Neonatal ICU</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent NICU experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Registered-Nurse-Specialist-II--Heart-Care_R-137333">Registered Nurse Specialist II, Heart Care</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Alameda/Wound-Care-RN--Home-Health_R-138459">Wound Care RN, Home Health</a></h3>
-        <p class="where">Sutter Health &middot; Alameda</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>EXPERIENCE 2 Minimum of two years of recent home care experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Clinical-Effectiveness-Consultant-III--RN_R-138816">Clinical Effectiveness Consultant III, RN</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>5 years recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Emergency-Department_R-136889">Staff Nurse II, Emergency Department</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Emergency-Department_R-137988-1">Staff Nurse II, Emergency Department</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Medical-Surgical-Telemetry-ACE_R-137796-1">Staff Nurse II, Medical Surgical Telemetry ACE</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Labor-and-Delivery_R-137924-1">Staff Nurse II, Labor and Delivery</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Advanced-Organ-Therapy-Unit_R-137771-1">Staff Nurse II, Advanced Organ Therapy Unit</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Intensive-Care-Unit_R-137057-1">Staff Nurse II, Intensive Care Unit</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135641-1">Staff Nurse II, Operating Room Float Pool</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Breast-RN-Navigator---Breast-Health-Center_R-136552">Breast RN Navigator - Breast Health Center</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>5 years of RN navigator experience</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135939-1">Staff Nurse II, Operating Room Float Pool</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135639-1">Staff Nurse II, Operating Room Float Pool</a></h3>
-        <p class="where">Sutter Health &middot; San Francisco</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience.</blockquote>
-      </li>
-      <li class="job general_experience">
-        <div class="meta"><span class="drive">&lt;30 min</span></div>
-        <h3><a href="https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--House-Float_R-136586-1">Staff Nurse II, House Float</a></h3>
-        <p class="where">Sutter Health &middot; Castro Valley</p>
-        <p class="verdict">Experience required, not acute</p>
-        <blockquote>2 years of recent relevant experience</blockquote>
-      </li></ul>
+<main>
+  <section class="controls" id="controls">
+    <div class="search">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+      <input id="q" type="search" inputmode="search" autocomplete="off"
+             placeholder="Search role, employer or city"
+             aria-label="Search role, employer or city">
+    </div>
+    <details class="filters" id="filters">
+      <summary id="filtersummary">Filter &amp; sort</summary>
+      <div class="chiprow" id="drivechips" role="group" aria-label="Drive time">
+        <label>Drive</label>
+      </div>
+      <div class="chiprow">
+        <label for="employer">Employer</label>
+        <select class="chip" id="employer" aria-label="Filter by employer"></select>
+        <select class="chip" id="sort" aria-label="Sort order">
+          <option value="near">Nearest first</option>
+          <option value="new">Newest first</option>
+          <option value="employer">Employer</option>
+          <option value="title">Role A&ndash;Z</option>
+        </select>
+        <button class="reset" id="reset" type="button">Clear</button>
+      </div>
+    </details>
+  </section>
 
-<h2>Applications pending &mdash; 0</h2>
-<ul><li class="empty">Nothing sent yet. Set Status in applications.csv once you apply.</li></ul>
+  <div class="textsize">
+    Text size
+    <button id="smaller" type="button" aria-label="Smaller text">A&minus;</button>
+    <button id="bigger" type="button" aria-label="Larger text">A+</button>
+  </div>
 
-<h2>Location needs checking &mdash; 1</h2>
-<ul><li class="job"><h3>Advice RN, MIST - Work From Home</h3><p class="where">Sutter Health &middot; West Valley (+8 more)</p></li></ul>
+  <p class="showing" id="showing"></p>
+  <ol class="list" id="list"></ol>
+</main>
 
-<footer>Set <strong>Status</strong> in applications.csv to move a job from
-Not applied to Applications pending &mdash; the scanner never overwrites that
-column. A posting that disappears is marked closed, not deleted.<br><br>
-Each posting shows the requirement sentence the verdict rests on.
-If a quote does not support its label, the rule is wrong &mdash; the classifier
-has been wrong before. Only acute-care-required roles are hidden.</footer>
-</div></body></html>
+<footer class="inner">
+  <p>Every card carries the requirement sentence its verdict rests on.
+  <strong>If the quote does not support the label, the rule is wrong</strong>
+  &mdash; that has happened six times in this project. Read the quote before
+  you trust the label.</p>
+  <p>Only acute-care-required roles are hidden. Everything else reaches you,
+  including the ones marked unclear.</p>
+  <p>To move a job into <strong>Applied</strong>, change its <strong>Status</strong>
+  column in <code>applications.csv</code> from <code>unapplied</code> to
+  <code>applied</code>. The scanner never overwrites that column, and a posting
+  that disappears is marked closed rather than deleted.</p>
+</footer>
+
+<script id="jobs-data" type="application/json">[{"key": "Vibra Healthcare::24124", "title": "Registered Nurse RN Full Time Relocate to Fargo ND 20K", "employer": "Vibra Healthcare", "location": "Sacramento, California", "url": "https://careers-vibratravels.icims.com/jobs/24124/login", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an", "drive": "60-90", "posted": "2026-01-10", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Vibra Healthcare::29042", "title": "RN Registered Nurse ICU Full Time", "employer": "Vibra Healthcare", "location": "Folsom, California", "url": "https://careers-vibrahealthcare.icims.com/jobs/29042/login", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an", "drive": "90-120", "posted": "2026-09-01", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Vibra Healthcare::28880", "title": "RN Registered Nurse Full Time Nights RN", "employer": "Vibra Healthcare", "location": "Folsom, California", "url": "https://careers-vibrahealthcare.icims.com/jobs/28880/login", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an", "drive": "90-120", "posted": "2026-08-19", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Vibra Healthcare::28879", "title": "RN Registered Nurse Full Time Days RN", "employer": "Vibra Healthcare", "location": "Folsom, California", "url": "https://careers-vibrahealthcare.icims.com/jobs/28879/login", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requirements. Strong organizational, prioritizing and an", "drive": "90-120", "posted": "2026-08-19", "status": "unapplied", "isNew": true, "applied": false}, {"key": "City & County of San Francisco::3743990014878446", "title": "Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083", "employer": "City & County of San Francisco", "location": "San Francisco", "url": "https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878446-registered-nurse-experienced-nurses-2320-citywide-h00083", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "one (1) year of experience working as a Registered Nurse", "drive": "<30", "posted": "2026-08-26", "status": "unapplied", "isNew": true, "applied": false}, {"key": "John Muir Health::JR0017799", "title": "RN - Coordinator - Care Coordination and Resource Services - Full Time - 8 Hour - Days", "employer": "John Muir Health", "location": "1914 Tice Valley Blvd", "url": "https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/1914-Tice-Valley-Blvd/RN---Coordinator---Care-Coordination-and-Resource-Services---Full-Time---8-Hour---Days_JR0017799", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "1 year Care Coordination or Care Management - Required Two (2) years Nursing - Ambulat", "drive": "<30", "posted": "2026-08-27", "status": "unapplied", "isNew": true, "applied": false}, {"key": "City & County of San Francisco::3743990014878516", "title": "Per Diem Registered Nurse - (All Specialties) - DPH - (P103)", "employer": "City & County of San Francisco", "location": "San Francisco", "url": "https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878516-per-diem-registered-nurse-all-specialties-dph-p103-", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Applicants may be required to submit verification of qualifying education and experience at any point during the recruitment and selection process.", "drive": "<30", "posted": "2026-08-26", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-136525", "title": "Registered Nurse II, Primary Care", "employer": "Sutter Health", "location": "Castro Valley (+2 more)", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Registered-Nurse-II--Primary-Care_R-136525-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Two years recent relevant experience", "drive": "<30", "posted": "2026-09-02", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-135742", "title": "Clinical Effectiveness Consultant III, Registered Nurse", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Clinical-Effectiveness-Consultant-III--Registered-Nurse_R-135742", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "5 years recent relevant experience", "drive": "<30", "posted": "2026-07-20", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Marin County::5449130", "title": "Detention Registered Nurse (Contingent)", "employer": "Marin County", "location": "San Rafael", "url": "https://www.governmentjobs.com/careers/marincounty/jobs/5449130/detention-registered-nurse-contingent", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Typically, equivalent to one year of professional nursing experience, and the education necessary to practice nursing.", "drive": "30-60", "posted": "2026-08-20", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Solano County::5327355", "title": "Clinic Registered Nurse (Senior)", "employer": "Solano County", "location": "Fairfield", "url": "https://www.governmentjobs.com/careers/solanocounty/jobs/5327355/clinic-registered-nurse-senior", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "A minimum score of 70% is required to continue in the selection process, unless otherwise announced.", "drive": "30-60", "posted": "2026-05-11", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-139088", "title": "Registered Nurse II, Cardiology", "employer": "Sutter Health", "location": "Burlingame (+1 more)", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Registered-Nurse-II--Cardiology_R-139088-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Two years recent relevant experience", "drive": "30-60", "posted": "2026-08-31", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-135746", "title": "Registered Nurse II, Hematology Oncology Per Diem", "employer": "Sutter Health", "location": "Sunnyvale (+1 more)", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sunnyvale/Registered-Nurse-II--Hematology-Oncology-Per-Diem_R-135746-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Two years recent relevant experience", "drive": "30-60", "posted": "2026-08-27", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-130195", "title": "RN, Certified Would Care Lead, WOCN", "employer": "Sutter Health", "location": "Novato", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/RN--Certified-Would-Care-Lead--WOCN_R-130195", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "8 years of recent relevant experience", "drive": "30-60", "posted": "2026-07-20", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-138974", "title": "Staff Nurse II, Surgery", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-138974-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "90-120", "posted": "2026-09-03", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Sutter Health::R-130494", "title": "Staff Nurse II, Neonatal Intensive Care Unit", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Neonatal-Intensive-Care-Unit_R-130494-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "90-120", "posted": "2026-06-10", "status": "unapplied", "isNew": true, "applied": false}, {"key": "Alameda Health System::2201399", "title": "AHD Registered Nurse - Park Bridge", "employer": "Alameda Health System", "location": "2401 Blanding Avenue, Alameda, CA", "url": "https://alameda-health-system-careers.hctsportals.com/jobs/2201399-ahd-registered-nurse-park-bridge", "bucket": "STAFF_NURSE_I", "label": "Level I / new grad", "evidence": "...lor's degree preferred. Minimum Experience: One year of directly related experience. New graduates will be considered. Required Licenses/Certifications: Valid license to practice as a...", "drive": "<30", "posted": "", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179863", "title": "Registered Nurse (RN) Part-Time", "employer": "PACS Group", "location": "Walnut Creek", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Shadelands-Post-Acute/Registered-Nurse--RN--Part-Time_JR179863", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "What You'll Do: Provide exceptional nursing care to residents Assess, monitor, and document resident conditions Administer medications and treatments according to physician orders Collaborate with phy", "drive": "<30", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179833", "title": "RN - Full Time", "employer": "PACS Group", "location": "Castro Valley", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/East-Bay-Post-Acute/RN---Full-Time_JR179833", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Skilled nursing, rehabilitation, or post-acute care experience preferred.", "drive": "<30", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179759", "title": "RN - SOUTH", "employer": "PACS Group", "location": "San Leandro", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/All-Saints-Maubert/RN---SOUTH_JR179759", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Skilled nursing or long-term care experience preferred.", "drive": "<30", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179654", "title": "RN - On Call", "employer": "PACS Group", "location": "Oakland", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Medical-Hill-Healthcare-Center/RN---On-Call_JR179654", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "What We Offer Competitive pay of $51.00–$52.50 per hour Flexible on-call/per diem scheduling AM, PM & NOC shift opportunities Supportive nursing leadership Collaborative and professional work environm", "drive": "<30", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR176538", "title": "Registered Nurse (RN)", "employer": "PACS Group", "location": "San Francisco", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/City-View-Post-Acute/Registered-Nurse--RN-_JR176538", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "LICENSURE: Valid RN license in the state. We are an equal opportunity employer. All qualified applica", "drive": "<30", "posted": "2026-07-27", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR174762", "title": "Registered Nurse (RN) - PRN", "employer": "PACS Group", "location": "Hayward", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/St-Francis-Healthcare-Center/Registered-Nurse--RN----PRN_JR174762", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Experience in skilled nursing, post-acute care, or long-term care is preferred but not required.", "drive": "<30", "posted": "2026-07-09", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR180846", "title": "Registered Nurse (RN)", "employer": "PACS Group", "location": "Moraga Post Acute", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Moraga-Post-Acute/Registered-Nurse--RN-_JR180846", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Position Details Position: Registered Nurse (RN) Employment Type: Full-Time Shift: AM Shift Schedule: Full-Time AM Pay Rate: $45.00–$52.00 per hour, DOE Location: Moraga Post Acute Responsibilities Pr", "drive": "<30", "posted": "2026-09-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR147473", "title": "RN", "employer": "PACS Group", "location": "Sonoma", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Sonoma-Post-Acute/RN_JR147473", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Supportive Culture: Experience a supportive work environment where every team member is valued and respected. Prior experience in a skilled nursing or long-term care facility preferred, but not requir", "drive": "60-90", "posted": "2025-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179445", "title": "RN", "employer": "PACS Group", "location": "San Jose", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Responsibilities Provide direct nursing care to residents in accordance with established care plans Administer medications and treatments accurately and on schedule Monitor and document resident condi", "drive": "60-90", "posted": "2026-08-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR176905", "title": "RN", "employer": "PACS Group", "location": "Los Gatos", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR176905", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Skilled nursing or long-term care experience preferred", "drive": "60-90", "posted": "2026-07-30", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179817", "title": "RN", "employer": "PACS Group", "location": "Monterey", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Cypress-Ridge-Care-Center/RN_JR179817", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Experience in skilled nursing, rehabilitation, or long-term care preferred.", "drive": "90-120", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR174365", "title": "NOC RN", "employer": "PACS Group", "location": "Auburn", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Rock-Creek-Care-Center/Registered-Nurse_JR174365", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "What We’re Looking For: ✅ Current and in good standing RN license in the State of California ✅ Strong leadership and communication skills ✅ Compassionate, dependable, and committed to resident-centere", "drive": "90-120", "posted": "2026-07-07", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR155963", "title": "RN- part time", "employer": "PACS Group", "location": "Santa Rosa", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN--part-time_JR155963", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred.", "drive": "90-120", "posted": "2025-12-10", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR155539", "title": "RN", "employer": "PACS Group", "location": "Santa Rosa", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN_JR155539", "bucket": "NO_EXPERIENCE", "label": "No experience required", "evidence": "Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred.", "drive": "90-120", "posted": "2025-12-04", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138783", "title": "Staff Nurse II, Emergency Services", "employer": "Sutter Health", "location": "Berkeley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Berkeley/Staff-Nurse-II--Emergency-Services_R-138783-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO", "drive": "<30", "posted": "2026-08-28", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138676", "title": "Staff Nurse II, Neuro ICU", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-138676-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-28", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136008", "title": "Staff Nurse II, Perioperative", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Perioperative_R-136008-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137549", "title": "Staff Nurse II, Medical Telemetry", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Medical-Telemetry_R-137549-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year current experience in Med/Tele Required LICENSURES AND CERTIFICATIONS Registere", "drive": "<30", "posted": "2026-08-14", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135777", "title": "Staff Nurse II, ICU/CPU", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135777-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty is Required", "drive": "<30", "posted": "2026-08-13", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137230", "title": "Staff Nurse II, Perioperative", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Perioperative_R-137230-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-12", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136266", "title": "Staff Nurse II, Operating Room", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Operating-Room_R-136266-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-10", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-133919", "title": "Staff Nurse II, ICU/CPU", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-133919-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty is Required", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136311", "title": "Staff Nurse II, Neuro ICU", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-136311-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136310", "title": "Staff Nurse II, Neuro ICU", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neuro-ICU_R-136310-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in area of specialty Required LICENSURES AND CERTIFICATIONS", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136551", "title": "Staff Nurse II, Emergency Services FLEX Position", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--Emergency-Services-FLEX-Position_R-136551-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO", "drive": "<30", "posted": "2026-08-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135846", "title": "Staff Nurse II, ICU/CPU", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135846-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty is Required", "drive": "<30", "posted": "2026-07-27", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135845", "title": "Staff Nurse II, ICU/CPU", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135845-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty is Required", "drive": "<30", "posted": "2026-07-27", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-127668", "title": "Registered Nurse II, Medical Surgical/Telemetry Float", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Registered-Nurse-II--Medical-Surgical-Telemetry-Float_R-127668-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum 2 year current experience in Med/Tele Required LICENSURES AND CERTIFICATIONS Registere", "drive": "<30", "posted": "2026-07-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135110", "title": "Staff Nurse II, Neurosciences/Stepdown", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neurosciences-Stepdown_R-135110-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum two year current experience in Step Down", "drive": "<30", "posted": "2026-07-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135664", "title": "Staff Nurse II, Nursery", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Nursery_R-135664-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2 years previous clinical experience in neonatal ICU and obstetrical nursing", "drive": "<30", "posted": "2026-08-20", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135662", "title": "Staff Nurse II, Nursery", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Nursery_R-135662-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2 years previous clinical experience in neonatal ICU and obstetrical nursing", "drive": "<30", "posted": "2026-07-29", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135667", "title": "Staff Nurse II, Labor & Delivery", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Labor---Delivery_R-135667-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2 years previous clinical experience in L&D and OB nursing and previous experience in n", "drive": "<30", "posted": "2026-07-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-133397", "title": "Staff Nurse II, Acute Rehab PCU4", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--Acute-Rehab-PCU4_R-133397-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO", "drive": "<30", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137852", "title": "Staff Nurse II, Emergency Services", "employer": "Sutter Health", "location": "Antioch", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Antioch/Staff-Nurse-II--Emergency-Services_R-137852-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-08-19", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-131435", "title": "Registered Nurse II, Urgent Care", "employer": "Sutter Health", "location": "Palo Alto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Palo-Alto/Registered-Nurse-II--Urgent-Care_R-131435-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "One year of clinical experience Recent experience is strongly preferred SKILLS AND KNOWL", "drive": "30-60", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR180581", "title": "Registered Nurse (RN) NOC Shift", "employer": "PACS Group", "location": "Sacramento", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Arden-Park-Post-Acute/Registered-Nurse--RN--NOC-Shift_JR180581", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Registered Nurse (RN) - NOC Shift Arden Park Post Acute 📍 Sacramento, CA 🌙 NOC / Overnight Shift 💲 $48.00 - $55.00 per hour 🏥 Skilled Nursing & Rehabilitation Join Our NO", "drive": "60-90", "posted": "2026-09-01", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179616", "title": "Registered Nurse (RN)", "employer": "PACS Group", "location": "Napa", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Napa-Valley-Care-Center/Registered-Nurse--RN-_JR179616", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum of 2 years of nursing experience , preferably in a Skilled Nursing Facility (SNF), Post-Ac", "drive": "60-90", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR174570", "title": "RN NOC Shift", "employer": "PACS Group", "location": "Petaluma", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Ridgeway-Post-Acute/RN-NOC-Shift_JR174570", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "1 year of prior experience preferred Prior experience in a Skilled Nursing Facility pr", "drive": "60-90", "posted": "2026-07-08", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR175934", "title": "RN", "employer": "PACS Group", "location": "Roseville", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Roseville-Care-Center/RN_JR175934", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum of two (2) years of nursing experience preferred Long-term care or skilled nursing experience pr", "drive": "90-120", "posted": "2026-07-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179699", "title": "Part-Time PM Shift Registered Nurse (RN)", "employer": "PACS Group", "location": "Placerville", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/Part-Time-PM-Shift-Registered-Nurse--RN-_JR179699", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2+ years of nursing experience , preferably in skilled nursing or long-term care", "drive": "90-120", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179694", "title": "Part-Time NOC Shift Registered Nurse (RN)", "employer": "PACS Group", "location": "Placerville", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/Part-Time-NOC-Shift-Registered-Nurse--RN-_JR179694", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2+ years of nursing experience , preferably in skilled nursing or long-term care", "drive": "90-120", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR174851", "title": "Full-Time RN | PM Shift", "employer": "PACS Group", "location": "Auburn", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Westview-Healthcare-Center/RN_JR174851", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Provide RN nursing services in a skilled nursing unit or facility; may include supervision of nurse assistants, medication passes and treatments We are an equal opportuni", "drive": "90-120", "posted": "2026-07-09", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR155609", "title": "RN On Call", "employer": "PACS Group", "location": "Placerville", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Western-Slope-Health-Center/RN-On-Call_JR155609", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "Minimum 2 years of nursing experience", "drive": "90-120", "posted": "2025-12-04", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179701", "title": "On-Call Registered Nurse (RN)", "employer": "PACS Group", "location": "Placerville", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/On-Call-Registered-Nurse--RN-_JR179701-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2+ years of nursing experience , preferably in skilled nursing or long-term care", "drive": "90-120", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137055", "title": "Staff Nurse II, Labor & Delivery", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Labor---Delivery_R-137055-1", "bucket": "UNCLEAR", "label": "Requirements unclear", "evidence": "2 years of recent relevant experience Labor and Delivery experience preferred SKILLS AN", "drive": "90-120", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Alameda Health System::2221316", "title": "Clinical Nurse II", "employer": "Alameda Health System", "location": "2060 Fairmont Drive, San Leandro, CA", "url": "https://alameda-health-system-careers.hctsportals.com/jobs/2221316-clinical-nurse-ii", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "The CN II level is the journey level class where incumbents have had the required professional nursing experience and are capable of independently performing the full range of clinical nursing service", "drive": "<30", "posted": "", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138763", "title": "Staff Nurse II, Mom and Baby", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Mom-and-Baby_R-138763-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience in L&D or Mom/Baby experience in the last 5 years", "drive": "<30", "posted": "2026-09-01", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135369", "title": "Oncology - Complex Care RN Coordinator", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/SMSHCC---Complex-Care-RN-Coordinator_R-135369", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-31", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135088", "title": "Oncology- Complex Care RN Coordinator", "employer": "Sutter Health", "location": "Oakland", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/SMSHCC---Complex-Care-RN-Coordinator_R-135088", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-31", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138327", "title": "Staff Nurse II, Neonatal ICU", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Neonatal-ICU_R-138327-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent NICU experience", "drive": "<30", "posted": "2026-08-31", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137333", "title": "Registered Nurse Specialist II, Heart Care", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Registered-Nurse-Specialist-II--Heart-Care_R-137333", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138459", "title": "Wound Care RN, Home Health", "employer": "Sutter Health", "location": "Alameda", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Alameda/Wound-Care-RN--Home-Health_R-138459", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "EXPERIENCE 2 Minimum of two years of recent home care experience.", "drive": "<30", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138816", "title": "Clinical Effectiveness Consultant III, RN", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Clinical-Effectiveness-Consultant-III--RN_R-138816", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "5 years recent relevant experience", "drive": "<30", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136889", "title": "Staff Nurse II, Emergency Department", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Emergency-Department_R-136889", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137988", "title": "Staff Nurse II, Emergency Department", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Emergency-Department_R-137988-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-19", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137796", "title": "Staff Nurse II, Medical Surgical Telemetry ACE", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Medical-Surgical-Telemetry-ACE_R-137796-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-19", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137924", "title": "Staff Nurse II, Labor and Delivery", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Labor-and-Delivery_R-137924-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137771", "title": "Staff Nurse II, Advanced Organ Therapy Unit", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Advanced-Organ-Therapy-Unit_R-137771-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137057", "title": "Staff Nurse II, Intensive Care Unit", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Intensive-Care-Unit_R-137057-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135641", "title": "Staff Nurse II, Operating Room Float Pool", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135641-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-08-07", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136552", "title": "Breast RN Navigator - Breast Health Center", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Breast-RN-Navigator---Breast-Health-Center_R-136552", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "5 years of RN navigator experience", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135939", "title": "Staff Nurse II, Operating Room Float Pool", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135939-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135639", "title": "Staff Nurse II, Operating Room Float Pool", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135639-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-08-06", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136586", "title": "Staff Nurse II, House Float", "employer": "Sutter Health", "location": "Castro Valley", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--House-Float_R-136586-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "<30", "posted": "2026-08-05", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-137766", "title": "Staff Nurse II, ASU/PACU", "employer": "Sutter Health", "location": "San Francisco", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--ASU-PACU_R-137766-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "<30", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139275", "title": "Registered Nurse, Birthing Center", "employer": "Sutter Health", "location": "Tracy", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--Birthing-Center_R-139275", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138620", "title": "Registered Nurse II, Endoscopy", "employer": "Sutter Health", "location": "Tracy", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse-II--Endoscopy_R-138620", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-08-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138642", "title": "Registered Nurse IV, Oncology Hematology", "employer": "Sutter Health", "location": "Fremont", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Fremont/Registered-Nurse-IV--Oncology-Hematology_R-138642-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Job Description : EDUCATION Graduate of an accredited school of nursing CERTIFICATION & LICENSURE: RN-Registered Nurse of California BLS-Basic Life Support Healthcare Provider ONS-Oncology Nursing Soc", "drive": "30-60", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138435", "title": "Staff Nurse II, Med Surg", "employer": "Sutter Health", "location": "Novato", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-138435-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-127457", "title": "Staff Nurse II, Med Surg", "employer": "Sutter Health", "location": "Novato", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-127457-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139411", "title": "Registered Nurse, ICU", "employer": "Sutter Health", "location": "Tracy", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139411-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-09-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139412", "title": "Registered Nurse, ICU", "employer": "Sutter Health", "location": "Tracy", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139412-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "30-60", "posted": "2026-09-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179199", "title": "RN All Shifts Full-Time", "employer": "PACS Group", "location": "Modesto", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Shift-Full-Time_JR179199", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Essential Duties and Responsibilities Administrative & Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing services during the NOC shift Ensure nursing staf", "drive": "60-90", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR179198", "title": "RN NOC Per Diem", "employer": "PACS Group", "location": "Modesto", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Per-Diem_JR179198", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Essential Duties and Responsibilities Administrative & Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing services during the NOC shift Ensure nursing staf", "drive": "60-90", "posted": "2026-08-19", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR177157", "title": "RN Weekend Desk", "employer": "PACS Group", "location": "Sacramento", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/McKinley-Park-Care-Center/RN-Weekend-Desk_JR177157-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years or more experience preferably in a long-term care facility.", "drive": "60-90", "posted": "2026-08-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR164288", "title": "Registered Nurse", "employer": "PACS Group", "location": "Sacramento", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/North-Pointe-Care-Center/Registered-Nursing_JR164288", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years or more experience preferably in a long-term care facility.", "drive": "60-90", "posted": "2026-03-13", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138156", "title": "Registered Nurse II, Urgent Care Per Diem", "employer": "Sutter Health", "location": "Los Gatos", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Los-Gatos/Registered-Nurse-II--Urgent-Care-Per-Diem_R-138156-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "Two years recent relevant experience", "drive": "60-90", "posted": "2026-08-31", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139446", "title": "Registered Nurse II, Labor and Delivery", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Labor-and-Delivery_R-139446", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-31", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139025", "title": "Registered Nurse II, Labor & Delivery", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Labor---Delivery_R-139025", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-27", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139077", "title": "Registered Nurse II, Pediatrics", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Pediatrics_R-139077", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135933", "title": "Registered Nurse II, Neonatal ICU", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-135933", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138994", "title": "Registered Nurse II, Pediatrics ICU / Peds CVICU", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Pediatrics-ICU---Peds-CVICU_R-138994", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138402", "title": "Staff Nurse II, Birthing Center", "employer": "Sutter Health", "location": "Davis", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Staff-Nurse-II--Birthing-Center_R-138402", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-135952", "title": "Registered Nurse II, Labor & Delivery", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Labor---Delivery_R-135952", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138497", "title": "Registered Nurse II, Operating Room", "employer": "Sutter Health", "location": "Davis", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse-II--Operating-Room_R-138497", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-24", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-132450", "title": "Registered Nurse II, Infusion", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Infusion_R-132450", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138278", "title": "Registered Nurse, Emergency - Limited Term", "employer": "Sutter Health", "location": "Davis", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency---Limited-Term_R-138278", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138284", "title": "Registered Nurse, Emergency", "employer": "Sutter Health", "location": "Davis", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency_R-138284-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138661", "title": "Registered Nurse II, Neonatal ICU", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-138661", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-08-21", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138071", "title": "Registered Nurse II, Infusion", "employer": "Sutter Health", "location": "Santa Cruz", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Registered-Nurse-II--Infusion_R-138071-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "One year of Chemotherapy/Infusion Experience", "drive": "60-90", "posted": "2026-08-19", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138420", "title": "Registered Nurse II, Cath Lab", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Cath-Lab_R-138420-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138098", "title": "Registered Nurse II, Wound Care", "employer": "Sutter Health", "location": "Davis", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse-II--Wound-Care_R-138098", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-12", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-136908", "title": "RN, CWOCN, Certified Wound Care Nurse Lead, Home Health", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/RN--CWOCN--Certified-Wound-Care-Nurse-Lead--Home-Health_R-136908", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "8 years of recent relevant experience", "drive": "60-90", "posted": "2026-08-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-133554", "title": "Registered Nurse II, Interventional Radiology", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Interventional-Radiology_R-133554", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-07-30", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-133551", "title": "Registered Nurse II, Interventional Radiology", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Interventional-Radiology_R-133551", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-07-22", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139524", "title": "Registered Nurse II, Neonatal ICU", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-139524-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "60-90", "posted": "2026-09-03", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139747", "title": "Registered Nurse Cardiac Telemetry", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139747", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139760", "title": "Registered Nurse Cardiac Telemetry", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139760", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139761", "title": "Registered Nurse Cardiac Telemetry", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139761", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139746", "title": "Registered Nurse Cardiac Telemetry", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139746-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139785", "title": "Registered Nurse II, Inpatient Surgical Unit", "employer": "Sutter Health", "location": "Modesto", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Inpatient-Surgical-Unit_R-139785", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139136", "title": "Registered Nurse II, Operating Room", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139136", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139139", "title": "Registered Nurse II, Operating Room", "employer": "Sutter Health", "location": "Sacramento", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139139", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years nursing experience or successful completion of a Sutter Health Nursing Residency Program", "drive": "60-90", "posted": "2026-09-02", "status": "unapplied", "isNew": false, "applied": false}, {"key": "PACS Group::JR173595", "title": "Part time RN", "employer": "PACS Group", "location": "Carmichael", "url": "https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years or more experience preferably in a long-term care facility.", "drive": "90-120", "posted": "2026-06-25", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-139208", "title": "Registered Nurse, Home Health", "employer": "Sutter Health", "location": "Auburn", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse--Home-Health_R-139208", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "5 years recent relevant experience", "drive": "90-120", "posted": "2026-08-26", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-134548", "title": "Lead Wound Care RN (CWON), Home Health", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Lead-Wound-Care-RN--CWON---Home-Health_R-134548", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "8 years of recent relevant experience", "drive": "90-120", "posted": "2026-08-18", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-130687", "title": "Staff Nurse II, Surgery", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-130687-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "90-120", "posted": "2026-08-16", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-132872", "title": "Staff Nurse II, Surgery", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-132872-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience", "drive": "90-120", "posted": "2026-08-12", "status": "unapplied", "isNew": false, "applied": false}, {"key": "Sutter Health::R-138998", "title": "Staff Nurse II, Pre and Post OCU", "employer": "Sutter Health", "location": "Santa Rosa", "url": "https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Pre-and-Post-OCU_R-138998-1", "bucket": "GENERAL_EXPERIENCE", "label": "Experience required, not acute", "evidence": "2 years of recent relevant experience.", "drive": "90-120", "posted": "2026-09-03", "status": "unapplied", "isNew": false, "applied": false}]</script>
+<script id="review-data" type="application/json">[]</script>
+<script id="meta-data" type="application/json">{"scanned": "2026-09-03T18:40:19+00:00", "hidden": 0, "quick": false, "generated": "2026-09-03T18:51:36+00:00"}</script>
+<script>
+(function () {
+  "use strict";
+  var read = function (id) {
+    try { return JSON.parse(document.getElementById(id).textContent); }
+    catch (e) { return null; }
+  };
+  var JOBS = read("jobs-data") || [];
+  var REVIEW = read("review-data") || [];
+  var META = read("meta-data") || {};
+
+  var APPLY_NOW = { STAFF_NURSE_I: 1, NO_EXPERIENCE: 1 };
+  var DRIVE = ["<30", "30-60", "60-90", "90-120"];
+  var DRIVE_LABEL = { "<30": "Under 30 min", "30-60": "30&ndash;60 min",
+                      "60-90": "60&ndash;90 min", "90-120": "90&ndash;120 min" };
+
+  // localStorage throws outright in some privacy modes rather than
+  // returning null, so every touch of it is wrapped.
+  var store = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem("rn." + k); return v === null ? d : v; }
+      catch (e) { return d; }
+    },
+    set: function (k, v) { try { localStorage.setItem("rn." + k, v); } catch (e) {} }
+  };
+
+  var TABS = [
+    { id: "apply",  label: "Apply now",
+      test: function (j) { return APPLY_NOW[j.bucket] && !j.applied; } },
+    { id: "new",    label: "New",
+      test: function (j) { return j.isNew && !j.applied; } },
+    { id: "all",    label: "Everything",
+      test: function (j) { return !j.applied; } },
+    { id: "applied", label: "Applied",
+      test: function (j) { return j.applied; } },
+    { id: "review", label: "Check location", test: null }
+  ];
+
+  var state = {
+    tab: store.get("tab", "apply"),
+    q: "",
+    drive: store.get("drive", ""),
+    employer: store.get("employer", ""),
+    sort: store.get("sort", "near")
+  };
+  if (!TABS.some(function (t) { return t.id === state.tab; })) state.tab = "apply";
+
+  var esc = function (s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  };
+  var plural = function (n, one, many) { return n === 1 ? one : (many || one + "s"); };
+
+  function tabJobs(id) {
+    var t = TABS.filter(function (x) { return x.id === id; })[0];
+    return t && t.test ? JOBS.filter(t.test) : [];
+  }
+
+  function filtered() {
+    var out = tabJobs(state.tab);
+    if (state.drive) {
+      out = out.filter(function (j) { return j.drive === state.drive; });
+    }
+    if (state.employer) {
+      out = out.filter(function (j) { return j.employer === state.employer; });
+    }
+    var q = state.q.trim().toLowerCase();
+    if (q) {
+      var terms = q.split(/\s+/);
+      out = out.filter(function (j) {
+        var hay = (j.title + " " + j.employer + " " + j.location + " " +
+                   j.label + " " + j.evidence).toLowerCase();
+        return terms.every(function (t) { return hay.indexOf(t) !== -1; });
+      });
+    }
+    var di = function (j) { var i = DRIVE.indexOf(j.drive); return i < 0 ? 9 : i; };
+    var by = {
+      near: function (a, b) {
+        return di(a) - di(b) || a.employer.localeCompare(b.employer) ||
+               a.title.localeCompare(b.title);
+      },
+      new: function (a, b) {
+        return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0) || di(a) - di(b) ||
+               a.title.localeCompare(b.title);
+      },
+      employer: function (a, b) {
+        return a.employer.localeCompare(b.employer) || di(a) - di(b) ||
+               a.title.localeCompare(b.title);
+      },
+      title: function (a, b) { return a.title.localeCompare(b.title); }
+    };
+    return out.slice().sort(by[state.sort] || by.near);
+  }
+
+  function reading() { return document.body.classList.contains("reading"); }
+
+  function card(j) {
+    var good = !!APPLY_NOW[j.bucket];
+    var vcls = good ? " good" : (j.bucket === "UNCLEAR" ? " watch" : "");
+    var d = j.drive
+      ? '<span class="pill drive' + (j.drive === "<30" ? " d0" : "") + '">' +
+        esc(j.drive) + ' min</span>'
+      : '<span class="pill drive">drive time unknown</span>';
+    var flags = d +
+      (j.isNew ? '<span class="pill new">new</span>' : "") +
+      (j.applied && j.status !== "unapplied"
+        ? '<span class="pill status">' + esc(j.status) + "</span>" : "");
+
+    // No requirement sentence is itself information: it means the posting
+    // states no requirement, which is why the verdict is what it is. Say so
+    // rather than showing an empty quote.
+    var quote = j.evidence
+      ? "<blockquote>&ldquo;" + esc(j.evidence) + "&rdquo;</blockquote>"
+      : '<blockquote class="nonequote">This posting states no requirement at ' +
+        'all. The verdict rests on that absence, not on a sentence.</blockquote>';
+
+    var title = j.url
+      ? '<a href="' + esc(j.url) + '" target="_blank" rel="noopener noreferrer">' +
+        esc(j.title) + "</a>"
+      : esc(j.title);
+
+    return '<li class="job' + (good ? " apply" : "") + '">' +
+      '<div class="jhead">' + flags + "</div>" +
+      "<h2>" + title + "</h2>" +
+      '<p class="where"><b>' + esc(j.employer) + "</b>" +
+        (j.location ? " &middot; " + esc(j.location) : "") + "</p>" +
+      '<div class="vrow"><span class="verdict' + vcls + '">' + esc(j.label) +
+        "</span>" +
+        (j.url ? '<a class="open" href="' + esc(j.url) + '" target="_blank" ' +
+          'rel="noopener noreferrer">Open &#8599;</a>' : "") + "</div>" +
+      '<details class="ev"' + (reading() ? " open" : "") +
+        "><summary>Why it is labelled that</summary>" + quote + "</details>" +
+      "</li>";
+  }
+
+  function reviewList() {
+    if (!REVIEW.length) {
+      return '<p class="empty"><b>Every location resolved.</b>' +
+             "Nothing needs a manual check this run.</p>";
+    }
+    return '<ul class="rev">' + REVIEW.map(function (r) {
+      var t = r.url
+        ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' +
+          esc(r.title) + "</a>"
+        : esc(r.title);
+      return "<li>" + t + "<span>" + esc(r.employer) +
+             (r.location ? " &middot; " + esc(r.location) : "") + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
+  var EMPTY = {
+    apply: ["Nothing entry-level open right now.",
+            "The scan runs three times a day. Check the other tabs to see what is out there."],
+    new: ["Nothing new this run.", "Same list as last time."],
+    all: ["No openings match.", "Try clearing the filters."],
+    applied: ["Nothing sent yet.",
+              "Set Status to applied in applications.csv and it will appear here."]
+  };
+
+  function render() {
+    var listEl = document.getElementById("list");
+    var showEl = document.getElementById("showing");
+
+    if (state.tab === "review") {
+      listEl.innerHTML = reviewList();
+      showEl.textContent = REVIEW.length
+        ? REVIEW.length + " " + plural(REVIEW.length, "posting") +
+          " whose location the geocoder could not place"
+        : "";
+      document.getElementById("controls").style.display = "none";
+    } else {
+      document.getElementById("controls").style.display = "";
+      var rows = filtered();
+      var total = tabJobs(state.tab).length;
+      if (rows.length) {
+        listEl.innerHTML = rows.map(card).join("");
+        showEl.textContent = rows.length === total
+          ? rows.length + " " + plural(rows.length, "opening")
+          : "Showing " + rows.length + " of " + total;
+      } else {
+        var e = EMPTY[state.tab] || EMPTY.all;
+        listEl.innerHTML = '<p class="empty"><b>' + esc(e[0]) + "</b>" +
+                           esc(e[1]) + "</p>";
+        showEl.textContent = "";
+      }
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (b) {
+      b.setAttribute("aria-selected", b.dataset.tab === state.tab ? "true" : "false");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#drivechips .chip"),
+      function (b) {
+        b.setAttribute("aria-pressed", b.dataset.drive === state.drive ? "true" : "false");
+      });
+
+    // A collapsed filter that is still filtering is how a list silently
+    // lies about being empty. Say so on the closed summary.
+    var on = [];
+    if (state.drive) on.push(DRIVE_LABEL[state.drive].replace("&ndash;", "\u2013"));
+    if (state.employer) on.push(state.employer);
+    if (state.sort !== "near") {
+      on.push(document.getElementById("sort").selectedOptions[0].text);
+    }
+    var fil = document.getElementById("filters");
+    fil.classList.toggle("active", on.length > 0);
+    document.getElementById("filtersummary").textContent =
+      on.length ? on.join(" \u00b7 ") : "Filter & sort";
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function buildChrome() {
+    document.getElementById("tabs").innerHTML = TABS.map(function (t) {
+      var n = t.id === "review" ? REVIEW.length : tabJobs(t.id).length;
+      return '<button class="tab" role="tab" type="button" data-tab="' + t.id +
+        '" aria-selected="false"><b>' + t.label +
+        '</b><span class="n">' + n + "</span></button>";
+    }).join("");
+
+    var chips = document.getElementById("drivechips");
+    chips.insertAdjacentHTML("beforeend",
+      '<button class="chip" type="button" data-drive="" aria-pressed="true">Any</button>' +
+      DRIVE.map(function (d) {
+        return '<button class="chip" type="button" data-drive="' + d +
+               '" aria-pressed="false">' + DRIVE_LABEL[d] + "</button>";
+      }).join(""));
+
+    var names = {};
+    JOBS.forEach(function (j) { if (j.employer) names[j.employer] = 1; });
+    var sel = document.getElementById("employer");
+    sel.innerHTML = '<option value="">All employers</option>' +
+      Object.keys(names).sort().map(function (n) {
+        return '<option value="' + esc(n) + '">' + esc(n) + "</option>";
+      }).join("");
+
+    var apply = JOBS.filter(function (j) { return APPLY_NOW[j.bucket]; }).length;
+    var watch = JOBS.length - apply;
+    var newN = JOBS.filter(function (j) { return j.isNew; }).length;
+    var hid = META.hidden || 0;
+    document.getElementById("lede").innerHTML =
+      '<p class="lede-t"><span class="lede-n">' + apply + "</span>" +
+        plural(apply, "opening") + " you are eligible for today &mdash; " +
+        "Level&nbsp;I or no experience required." +
+        (newN ? " <b>" + newN + " new since the last scan.</b>" : "") + "</p>" +
+      '<p class="lede-s">' +
+        (watch ? watch + " other " + plural(watch, "posting") +
+          " need experience you do not have yet; they are here to watch, not " +
+          "to apply to. " : "") +
+        (hid ? hid + " acute-care-required " + plural(hid, "posting") +
+          " hidden." : "") +
+        (META.quick ? " Quick mode: requirements were not analysed." : "") +
+        "</p>";
+  }
+
+  function wire() {
+    document.getElementById("tabs").addEventListener("click", function (e) {
+      var b = e.target.closest(".tab");
+      if (!b) return;
+      state.tab = b.dataset.tab; store.set("tab", state.tab); render();
+    });
+    document.getElementById("drivechips").addEventListener("click", function (e) {
+      var b = e.target.closest(".chip");
+      if (!b) return;
+      state.drive = b.dataset.drive; store.set("drive", state.drive); render();
+    });
+    var q = document.getElementById("q");
+    q.addEventListener("input", function () { state.q = q.value; render(); });
+    var emp = document.getElementById("employer");
+    emp.value = state.employer;
+    emp.addEventListener("change", function () {
+      state.employer = emp.value; store.set("employer", state.employer); render();
+    });
+    var sort = document.getElementById("sort");
+    sort.value = state.sort;
+    sort.addEventListener("change", function () {
+      state.sort = sort.value; store.set("sort", state.sort); render();
+    });
+    document.getElementById("reset").addEventListener("click", function () {
+      state.q = ""; state.drive = ""; state.employer = ""; state.sort = "near";
+      q.value = ""; emp.value = ""; sort.value = "near";
+      store.set("drive", ""); store.set("employer", ""); store.set("sort", "near");
+      render();
+    });
+
+    var btn = document.getElementById("readbtn");
+    function setReading(on) {
+      document.body.classList.toggle("reading", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      document.getElementById("readlabel").textContent = on ? "Reading on" : "Reading mode";
+      store.set("reading", on ? "1" : "0");
+    }
+    btn.addEventListener("click", function () {
+      var on = !document.body.classList.contains("reading");
+      setReading(on);
+      // Cards already in the DOM keep whatever they were rendered with,
+      // so the quotes have to be opened (or left alone) by hand here.
+      Array.prototype.forEach.call(document.querySelectorAll(".ev"),
+        function (d) { if (on) d.open = true; });
+    });
+    setReading(store.get("reading", "0") === "1");
+
+    var scale = parseFloat(store.get("scale", "1")) || 1;
+    function setScale(v) {
+      scale = Math.min(1.5, Math.max(0.85, Math.round(v * 100) / 100));
+      document.documentElement.style.setProperty("--scale", scale);
+      store.set("scale", scale);
+    }
+    setScale(scale);
+    document.getElementById("bigger").addEventListener("click", function () {
+      setScale(scale + 0.1);
+    });
+    document.getElementById("smaller").addEventListener("click", function () {
+      setScale(scale - 0.1);
+    });
+
+    // "/" focuses search on a desktop keyboard; harmless on a phone.
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+      if (e.key === "Escape" && document.activeElement === q) { q.blur(); }
+    });
+  }
+
+  buildChrome();
+  wire();
+  render();
+})();
+</script>
+</body>
+</html>
