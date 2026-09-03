@@ -1,17 +1,17 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-02 08:46 UTC. 157 shown, 9 hidden
+_Scanned 2026-09-03 16:42 UTC. 163 shown, 7 hidden
 as acute-care-required._
 
-**18 worth your attention** — Level I or no experience required.
-The other 139 need experience you do not have yet; they are
+**17 worth your attention** — Level I or no experience required.
+The other 146 need experience you do not have yet; they are
 here to watch, not to apply to.
 
-## Worth applying to now — 18
+## Worth applying to now — 17
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sunnyvale-Gardens-Post-Acute/RN_JR179656) | PACS Group | Sunnyvale | Level I / new grad | ...d nursing, post-acute, or long-term care setting is highly preferred, but passionate new grads are welcome to apply. Skills: Excellent clinical jud |
+| <30 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/Moraga-Post-Acute/Registered-Nurse--RN-_JR180846) | PACS Group | Moraga Post Acute | No experience required | in skilled nursing or post-acute care preferred Strong clinical assessment and critical-thinking |
 | <30 | [AHD Registered Nurse - Park Bridge](https://alameda-health-system-careers.hctsportals.com/jobs/2201399-ahd-registered-nurse-park-bridge) | Alameda Health System | 2401 Blanding Avenue, Alameda, CA | Level I / new grad | ...lor's degree preferred. Minimum Experience: One year of directly related experience. New graduates will be considered. Required Licenses/Certificat |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sonoma-Post-Acute/RN_JR147473) | PACS Group | Sonoma | No experience required | a supportive work environment where every team member is valued and respected. Opportunities for Growth: We provide opportunities for career advanceme |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445) | PACS Group | San Jose | No experience required | in a skilled nursing or long‑term care setting preferred Strong clinical assessment and communication |
@@ -25,20 +25,34 @@ here to watch, not to apply to.
 | <30 | [RN - Full Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/East-Bay-Post-Acute/RN---Full-Time_JR179833) | PACS Group | Castro Valley | No experience required | preferred. Strong clinical assessment and critical-thinking skills. Excellent communication, leadership, and organizational abilities. Ability to work |
 | <30 | [RN - SOUTH](https://pacs.wd108.myworkdayjobs.com/pacs/job/All-Saints-Maubert/RN---SOUTH_JR179759) | PACS Group | San Leandro | No experience required | preferred. Strong clinical assessment and critical-thinking skills. Excellent leadership, communication, and organizational abilities. Ability to work |
 | <30 | [RN - On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Medical-Hill-Healthcare-Center/RN---On-Call_JR179654) | PACS Group | Oakland | No experience required | Position Responsibilities Provide comprehensive nursing care to residents in accordance with individualized care plans Assess residents and monitor ch |
-| <30 | [RN - Full Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Rossmoor-Post-Acute/RN---Full-Time_JR179489) | PACS Group | Walnut Creek | No experience required | Position Summary The RN will provide professional nursing care to residents while ensuring their safety, comfort, and overall well-being. The ideal ca |
 | <30 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/City-View-Post-Acute/Registered-Nurse--RN-_JR176538) | PACS Group | San Francisco | No experience required | SCHEDULE: while providing essential care to our residents. Responsibilities: Assess patients' condit; EDUCATION: and support to patients and their fam |
 | <30 | [Registered Nurse (RN) - PRN](https://pacs.wd108.myworkdayjobs.com/pacs/job/St-Francis-Healthcare-Center/Registered-Nurse--RN----PRN_JR174762) | PACS Group | Hayward | No experience required | in skilled nursing, post-acute care, or long-term care is preferred but not required. Why Join St. Francis Healthcare Center? Competitive PRN pay of $ |
 | <30 | [Staff Nurse II, Pre-Registration & Learning Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Pre-Registration---Learning-Center_R-137822-1) | Sutter Health | San Francisco | No experience required | Acute Care Previous |
 
-## New since last scan — 0
-
-_Nothing new this run._
-
-## Not applied yet — 157
+## New since last scan — 15
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sunnyvale-Gardens-Post-Acute/RN_JR179656) | PACS Group | Sunnyvale | Level I / new grad | ...d nursing, post-acute, or long-term care setting is highly preferred, but passionate new grads are welcome to apply. Skills: Excellent clinical jud |
+| <30 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/Moraga-Post-Acute/Registered-Nurse--RN-_JR180846) | PACS Group | Moraga Post Acute | No experience required | in skilled nursing or post-acute care preferred Strong clinical assessment and critical-thinking |
+| <30 | [Staff Nurse II, Acute Rehab PCU4](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--Acute-Rehab-PCU4_R-133397-1) | Sutter Health | Oakland | Requirements unclear | Minimum one year of current experience in area of specialty Required LICENSURES AND CERTIFICATIO |
+| 30-60 | [Registered Nurse, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139411-1) | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
+| 30-60 | [Registered Nurse, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139412-1) | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
+| 30-60 | [Staff Nurse II, Stepdown ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Staff-Nurse-II--Stepdown-ICU_R-136839-1) | Sutter Health | Burlingame | Experience required, not acute | 2+ years of RN |
+| 60-90 | [Registered Nurse II, Neonatal ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Neonatal-ICU_R-139524-1) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience. |
+| 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139747) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139760) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139761) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139746-1) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse II, Inpatient Surgical Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Inpatient-Surgical-Unit_R-139785) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse II, Operating Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139136) | Sutter Health | Sacramento | Experience required, not acute | 2 years of recent relevant experience |
+| 60-90 | [Registered Nurse II, Operating Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Operating-Room_R-139139) | Sutter Health | Sacramento | Experience required, not acute | 2 years nursing |
+| 90-120 | [Staff Nurse II, Pre and Post OCU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Pre-and-Post-OCU_R-138998-1) | Sutter Health | Santa Rosa | Experience required, not acute | 2 years of recent relevant experience. |
+| <30 | [Staff Nurse II, ASU/PACU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--ASU-PACU_R-137766-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience. |
+
+## Not applied yet — 148
+
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
 | <30 | [AHD Registered Nurse - Park Bridge](https://alameda-health-system-careers.hctsportals.com/jobs/2201399-ahd-registered-nurse-park-bridge) | Alameda Health System | 2401 Blanding Avenue, Alameda, CA | Level I / new grad | ...lor's degree preferred. Minimum Experience: One year of directly related experience. New graduates will be considered. Required Licenses/Certificat |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sonoma-Post-Acute/RN_JR147473) | PACS Group | Sonoma | No experience required | a supportive work environment where every team member is valued and respected. Opportunities for Growth: We provide opportunities for career advanceme |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445) | PACS Group | San Jose | No experience required | in a skilled nursing or long‑term care setting preferred Strong clinical assessment and communication |
@@ -52,7 +66,6 @@ _Nothing new this run._
 | <30 | [RN - Full Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/East-Bay-Post-Acute/RN---Full-Time_JR179833) | PACS Group | Castro Valley | No experience required | preferred. Strong clinical assessment and critical-thinking skills. Excellent communication, leadership, and organizational abilities. Ability to work |
 | <30 | [RN - SOUTH](https://pacs.wd108.myworkdayjobs.com/pacs/job/All-Saints-Maubert/RN---SOUTH_JR179759) | PACS Group | San Leandro | No experience required | preferred. Strong clinical assessment and critical-thinking skills. Excellent leadership, communication, and organizational abilities. Ability to work |
 | <30 | [RN - On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Medical-Hill-Healthcare-Center/RN---On-Call_JR179654) | PACS Group | Oakland | No experience required | Position Responsibilities Provide comprehensive nursing care to residents in accordance with individualized care plans Assess residents and monitor ch |
-| <30 | [RN - Full Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Rossmoor-Post-Acute/RN---Full-Time_JR179489) | PACS Group | Walnut Creek | No experience required | Position Summary The RN will provide professional nursing care to residents while ensuring their safety, comfort, and overall well-being. The ideal ca |
 | <30 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/City-View-Post-Acute/Registered-Nurse--RN-_JR176538) | PACS Group | San Francisco | No experience required | SCHEDULE: while providing essential care to our residents. Responsibilities: Assess patients' condit; EDUCATION: and support to patients and their fam |
 | <30 | [Registered Nurse (RN) - PRN](https://pacs.wd108.myworkdayjobs.com/pacs/job/St-Francis-Healthcare-Center/Registered-Nurse--RN----PRN_JR174762) | PACS Group | Hayward | No experience required | in skilled nursing, post-acute care, or long-term care is preferred but not required. Why Join St. Francis Healthcare Center? Competitive PRN pay of $ |
 | <30 | [Staff Nurse II, Pre-Registration & Learning Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Pre-Registration---Learning-Center_R-137822-1) | Sutter Health | San Francisco | No experience required | Acute Care Previous |
@@ -86,19 +99,16 @@ _Nothing new this run._
 | <30 | [Staff Nurse II, ICU/CPU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Staff-Nurse-II--ICU-CPU_R-135845-1) | Sutter Health | Oakland | Requirements unclear | Minimum one year of current experience in area of specialty is Required |
 | <30 | [Registered Nurse II, Medical Surgical/Telemetry Float](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Registered-Nurse-II--Medical-Surgical-Telemetry-Float_R-127668-1) | Sutter Health | Castro Valley | Requirements unclear | Minimum 2 year current experience in Med/Tele Required LICENSURES AND CERTIFICATIONS Registere |
 | <30 | [Staff Nurse II, Neurosciences/Stepdown](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Neurosciences-Stepdown_R-135110-1) | Sutter Health | Castro Valley | Requirements unclear | Minimum two year current experience in Step Down |
-| 30-60 | [Registered Nurse Specialist II, Cardiac Cath](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Registered-Nurse-Specialist-II--Cardiac-Cath_R-139828-1) | Sutter Health | Burlingame | Experience required, not acute | 2 years of recent relevant Cardiac Cath Lab experience |
 | 30-60 | [Registered Nurse, Birthing Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--Birthing-Center_R-139275) | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Registered Nurse II, Urgent Care](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Palo-Alto/Registered-Nurse-II--Urgent-Care_R-131435-1) | Sutter Health | Palo Alto | Experience required, not acute | One year of clinical |
 | 30-60 | [Registered Nurse II, Endoscopy](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse-II--Endoscopy_R-138620) | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Registered Nurse IV, Oncology Hematology](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Fremont/Registered-Nurse-IV--Oncology-Hematology_R-138642-1) | Sutter Health | Fremont | Experience required, not acute | More than 24 months |
 | 30-60 | [Staff Nurse II, Med Surg](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-138435-1) | Sutter Health | Novato | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Staff Nurse II, Med Surg](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Med-Surg_R-127457-1) | Sutter Health | Novato | Experience required, not acute | 2 years of recent relevant experience |
-| 30-60 | [Staff Nurse II, Critical Care Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Vallejo/Staff-Nurse-II--Critical-Care-Unit_R-135111-1) | Sutter Health | Vallejo | Experience required, not acute | 2 years of recent relevant experience |
 | 60-90 | [RN All Shifts Full-Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Shift-Full-Time_JR179199) | PACS Group | Modesto | Experience required, not acute | Graduate of an accredited nursing program Minimum 2 years of nursing |
 | 60-90 | [RN NOC Per Diem](https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Per-Diem_JR179198) | PACS Group | Modesto | Experience required, not acute | Graduate of an accredited nursing program Minimum 2 years of nursing |
 | 60-90 | [RN Weekend Desk](https://pacs.wd108.myworkdayjobs.com/pacs/job/McKinley-Park-Care-Center/RN-Weekend-Desk_JR177157-1) | PACS Group | Sacramento | Experience required, not acute | Must have training in rehabilitative and restorative nursing practices. |
 | 60-90 | [Registered Nurse](https://pacs.wd108.myworkdayjobs.com/pacs/job/North-Pointe-Care-Center/Registered-Nursing_JR164288) | PACS Group | Sacramento | Experience required, not acute | Must have training in rehabilitative and restorative nursing practices. |
-| 60-90 | [Registered Nurse, Sutter Center for Psychiatry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse--Sutter-Center-for-Psychiatry_R-138923) | Sutter Health | Sacramento | Experience required, not acute | 2 years of recent relevant experience |
 | 60-90 | [Registered Nurse II, Urgent Care Per Diem](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Los-Gatos/Registered-Nurse-II--Urgent-Care-Per-Diem_R-138156-1) | Sutter Health | Los Gatos | Experience required, not acute | Two years recent relevant |
 | 60-90 | [Registered Nurse II, Labor and Delivery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-II--Labor-and-Delivery_R-139446) | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
 | 60-90 | [Registered Nurse II, Neonatal ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Neonatal-ICU_R-138871) | Sutter Health | Sacramento | Experience required, not acute | 2 years nursing |
@@ -126,7 +136,6 @@ _Nothing new this run._
 | 90-120 | [On-Call Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/On-Call-Registered-Nurse--RN-_JR179701-1) | PACS Group | Placerville | Experience required, not acute | Complete required reports and documentation, including accident/incident reports. |
 | 90-120 | [Part time RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595) | PACS Group | Carmichael | Experience required, not acute | Must have training in rehabilitative and restorative nursing practices. |
 | 90-120 | [Registered Nurse, Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse--Home-Health_R-139208) | Sutter Health | Auburn | Experience required, not acute | 5 years recent relevant |
-| 90-120 | [RN, Hospital Liaison, Hospice .8](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/RN--Hospital-Liaison--Hospice-8_R-139096) | Sutter Health | Santa Rosa | Experience required, not acute | 5 years recent relevant |
 | 90-120 | [Staff Nurse II, Labor & Delivery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Labor---Delivery_R-137055-1) | Sutter Health | Santa Rosa | Experience required, not acute | 2 years of recent relevant |
 | 90-120 | [Lead Wound Care RN (CWON), Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Lead-Wound-Care-RN--CWON---Home-Health_R-134548) | Sutter Health | Santa Rosa | Experience required, not acute | 8 years of recent relevant experience |
 | 90-120 | [Staff Nurse II, Surgery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Surgery_R-130687-1) | Sutter Health | Santa Rosa | Experience required, not acute | 2 years of recent relevant experience |
@@ -162,7 +171,6 @@ _Nothing new this run._
 | <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2202003-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
 | <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2201545-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
 | <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2201456-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
-| <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2194518-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
 | <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2194502-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
 | <30 | [Clinical Nurse II](https://alameda-health-system-careers.hctsportals.com/jobs/2189855-clinical-nurse-ii) | Alameda Health System | 1411 East 31st Street, Oakland, CA | Experience required, not acute | Six months |
 | <30 | [SLH RN II](https://alameda-health-system-careers.hctsportals.com/jobs/2177094-slh-rn-ii) | Alameda Health System | 13855 East 14th Street, San Leandro, CA | Experience required, not acute | Six months |
@@ -179,7 +187,6 @@ _Nothing new this run._
 | <30 | [Staff Nurse II, Emergency Department](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Emergency-Department_R-137988-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Medical Surgical Telemetry ACE](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Medical-Surgical-Telemetry-ACE_R-137796-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Labor and Delivery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Labor-and-Delivery_R-137924-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
-| <30 | [Staff Nurse II, Transplant](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Transplant_R-137772-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Advanced Organ Therapy Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Advanced-Organ-Therapy-Unit_R-137771-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Intensive Care Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Intensive-Care-Unit_R-137057-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, MSICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--MSICU_R-136559-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant |
@@ -187,7 +194,6 @@ _Nothing new this run._
 | <30 | [Breast RN Navigator - Breast Health Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Breast-RN-Navigator---Breast-Health-Center_R-136552) | Sutter Health | San Francisco | Experience required, not acute | 5 years of RN navigator |
 | <30 | [Staff Nurse II, Operating Room Float Pool](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135939-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Operating Room Float Pool](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135639-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
-| <30 | [Staff Nurse II, Operating Room Float Pool](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Operating-Room-Float-Pool_R-135642-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, House Float](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--House-Float_R-136586-1) | Sutter Health | Castro Valley | Experience required, not acute | 2 years of recent relevant experience |
 | <30 | [Staff Nurse II, Pediatric Transport](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--Pediatric-Transport_R-136482-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant |
 | <30 | [Staff Nurse II, MSICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--MSICU_R-136564-1) | Sutter Health | San Francisco | Experience required, not acute | 2 years of recent relevant |
@@ -203,9 +209,9 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 ## Location needs checking — 5
 
 - RN - Coordinator - Care Coordination and Resource Services - Full Time - 8 Hour - Days — John Muir Health, 1914 Tice Valley Blvd
+- Registered Nurse II, Primary Care — Sutter Health, 3 Locations
 - Advice RN, MIST - Work From Home — Sutter Health, 9 Locations
 - Registered Nurse II, Cardiology — Sutter Health, 2 Locations
-- Registered Nurse II, Hematology/Oncology — Sutter Health, 2 Locations
 - Registered Nurse II, Hematology Oncology Per Diem — Sutter Health, 2 Locations
 
 ---
