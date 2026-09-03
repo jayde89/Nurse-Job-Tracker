@@ -31,6 +31,12 @@ jobs:
       - name: Rule regression tests
         run: python3 test_rules.py
 
+      # The digest page is built at the very end of a ten-minute run. A
+      # template that cannot render should stop the job in a second, not
+      # after every source has been fetched.
+      - name: Digest page renders
+        run: python3 digest_page.py --check
+
       - name: Run scan
         env:
           USAJOBS_KEY: ${{ secrets.USAJOBS_KEY }}
@@ -95,6 +101,11 @@ jobs:
 # Scheduled runs are also queued rather than punctual — a few minutes late
 # is normal, and under load GitHub can skip one entirely.
 #
-# To serve digest.html as a web page, enable GitHub Pages on this repo and
-# point it at the branch root. Otherwise download it from the artifact,
-# or open it locally.
+# digest.html is the browser interface and is committed on every run. It is
+# self-contained — no CDN, no fonts, no network — so it works from a
+# download, an AirDrop, the iOS Files app or a home-screen bookmark.
+#
+# To serve it at a URL, enable GitHub Pages and point it at the branch root.
+# That needs a paid plan while this repo is private, since free Pages will
+# not serve a private repo. See "Reading it on a phone" in README.md for the
+# routes that do not.

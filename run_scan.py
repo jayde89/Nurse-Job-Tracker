@@ -29,6 +29,7 @@ from datetime import datetime, timezone
 
 import adapters
 import classifier as C
+import digest_page
 import geo
 
 STATE_DIR = "state"
@@ -165,13 +166,19 @@ def build(rows, review, quick=False):
         p.status = ledger[p.key]["Status"]
 
     with open("digest.html", "w") as f:
-        f.write(render(shown, new, review, hidden, now, quick))
+        f.write(digest_page.render(digest_page.from_postings(shown),
+                                   review, hidden, now, quick))
 
-    # DIGEST.md matters more than the HTML for most people: GitHub renders
-    # Markdown inside private repos, on mobile, for free. GitHub Pages does
-    # not serve private repos on a free account, so the HTML version would
-    # otherwise force a paid plan or a public repo full of your application
-    # history. Read DIGEST.md on your phone; keep the HTML for desktop.
+    # Both formats are written every run and both are committed.
+    #
+    # digest.html is the one to read: filterable, searchable, one job at a
+    # time, with a reading mode for a phone. It is self-contained, so it
+    # opens from a download or the Files app with no server involved.
+    #
+    # DIGEST.md stays because GitHub renders Markdown inside a private repo
+    # for free, on mobile, with no download step — which is the one thing
+    # the HTML cannot do while this repo is private. It is the fallback,
+    # not the main event.
     with open("DIGEST.md", "w") as f:
         f.write(render_md(shown, new, review, hidden, now))
 
@@ -243,111 +250,6 @@ To move a job to Applications pending, change its **Status** column in
 `applications.csv` from `unapplied` to `applied`. The scanner never overwrites
 that column.
 """
-
-
-def render(shown, new, review, hidden, now, quick):
-    def esc(s):
-        return (str(s or "").replace("&", "&amp;").replace("<", "&lt;")
-                .replace(">", "&gt;").replace('"', "&quot;"))
-
-    def card(p):
-        cls = p.bucket.lower()
-        flag = '<span class="new">new</span>' if getattr(p, "is_new", False) else ""
-        drive = f'{esc(p.drive_time_bucket)} min' if p.drive_time_bucket else "&mdash;"
-        return f"""
-      <li class="job {cls}">
-        <div class="meta"><span class="drive">{drive}</span>{flag}</div>
-        <h3><a href="{esc(p.url)}">{esc(p.title)}</a></h3>
-        <p class="where">{esc(p.employer)} &middot; {esc(p.location)}</p>
-        <p class="verdict">{esc(BUCKET_LABEL.get(p.bucket, p.bucket))}</p>
-        <blockquote>{esc((p.evidence or '')[:260])}</blockquote>
-      </li>"""
-
-    applied = [p for p in shown if getattr(p, "status", "") in STATUS_APPLIED]
-    rest = [p for p in shown
-            if not getattr(p, "is_new", False) and p not in applied]
-    counts = {}
-    for p in shown:
-        counts[p.bucket] = counts.get(p.bucket, 0) + 1
-    tally = " ".join(
-        f'<span class="tally {b.lower()}">{n} {esc(BUCKET_LABEL[b].lower())}</span>'
-        for b, n in sorted(counts.items(), key=lambda kv: C.RANK.get(kv[0], 9)))
-
-    return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RN scan &mdash; {esc(now[:10])}</title>
-<style>
-  :root {{
-    --ink:#12232e; --dim:#5a6b76; --line:#dfe5e8; --bg:#fbfcfc;
-    --signal:#0b7285;          /* reserved: entry-level only */
-    --watch:#8a6d1f;           /* unclear */
-  }}
-  *{{box-sizing:border-box}}
-  body{{margin:0;background:var(--bg);color:var(--ink);
-       font:16px/1.5 "Charter","Iowan Old Style",Georgia,serif;
-       -webkit-font-smoothing:antialiased}}
-  .wrap{{max-width:44rem;margin:0 auto;padding:2rem 1.25rem 5rem}}
-  header{{border-bottom:2px solid var(--ink);padding-bottom:1rem;margin-bottom:1.5rem}}
-  h1{{font-size:1.6rem;margin:0 0 .35rem;letter-spacing:-.01em}}
-  .sub{{color:var(--dim);font-size:.9rem;margin:0}}
-  .tallies{{margin:.9rem 0 0;font-size:.8rem;line-height:2}}
-  .tally{{padding:.15rem .5rem;border:1px solid var(--line);border-radius:2px;
-         background:#fff;color:var(--dim);white-space:nowrap}}
-  .tally.staff_nurse_i,.tally.no_experience{{color:var(--signal);
-         border-color:var(--signal)}}
-  h2{{font-size:1rem;font-weight:600;margin:2.25rem 0 .75rem;
-     padding-bottom:.35rem;border-bottom:1px solid var(--line)}}
-  ul{{list-style:none;margin:0;padding:0}}
-  .job{{padding:1rem 0 1.1rem;border-bottom:1px solid var(--line)}}
-  .job h3{{font-size:1.05rem;margin:.15rem 0 .2rem;font-weight:600}}
-  .job a{{color:inherit;text-decoration:none;
-         border-bottom:1px solid rgba(18,35,46,.25)}}
-  .job a:hover,.job a:focus{{border-bottom-color:var(--ink)}}
-  .meta{{display:flex;gap:.6rem;align-items:baseline;font-size:.78rem;
-        color:var(--dim);font-family:system-ui,sans-serif}}
-  .drive{{font-variant-numeric:tabular-nums}}
-  .new{{color:var(--signal);font-weight:600}}
-  .where{{margin:0;color:var(--dim);font-size:.88rem}}
-  .verdict{{margin:.45rem 0 .3rem;font-size:.82rem;
-           font-family:system-ui,sans-serif;color:var(--dim)}}
-  .staff_nurse_i .verdict,.no_experience .verdict{{color:var(--signal);font-weight:600}}
-  .unclear .verdict{{color:var(--watch)}}
-  blockquote{{margin:.3rem 0 0;padding-left:.85rem;
-             border-left:2px solid var(--line);color:var(--dim);
-             font-size:.85rem}}
-  .empty{{color:var(--dim);font-size:.9rem;padding:.5rem 0}}
-  footer{{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);
-         color:var(--dim);font-size:.8rem}}
-  a:focus-visible{{outline:2px solid var(--signal);outline-offset:3px}}
-</style></head><body><div class="wrap">
-<header>
-  <h1>Staff RN openings within two hours of Oakland</h1>
-  <p class="sub">Scanned {esc(now.replace('T',' ')[:16])} UTC &middot;
-     {len(shown)} shown &middot; {hidden} hidden as acute-care-required
-     {' &middot; quick mode, requirements not analysed' if quick else ''}</p>
-  <p class="tallies">{tally}</p>
-</header>
-
-<h2>New since last scan &mdash; {len(new)}</h2>
-<ul>{''.join(card(p) for p in new) or '<li class="empty">Nothing new this run.</li>'}</ul>
-
-<h2>Not applied yet &mdash; {len(rest)}</h2>
-<ul>{''.join(card(p) for p in rest) or '<li class="empty">Nothing waiting.</li>'}</ul>
-
-<h2>Applications pending &mdash; {len(applied)}</h2>
-<ul>{''.join(card(p) for p in applied) or '<li class="empty">Nothing sent yet. Set Status in applications.csv once you apply.</li>'}</ul>
-
-<h2>Location needs checking &mdash; {len(review)}</h2>
-<ul>{''.join(f'<li class="job"><h3>{esc(p.title)}</h3><p class="where">{esc(p.employer)} &middot; {esc(p.location)}</p></li>' for p in review[:20]) or '<li class="empty">Every location resolved.</li>'}</ul>
-
-<footer>Set <strong>Status</strong> in applications.csv to move a job from
-Not applied to Applications pending &mdash; the scanner never overwrites that
-column. A posting that disappears is marked closed, not deleted.<br><br>
-Each posting shows the requirement sentence the verdict rests on.
-If a quote does not support its label, the rule is wrong &mdash; the classifier
-has been wrong before. Only acute-care-required roles are hidden.</footer>
-</div></body></html>"""
 
 
 if __name__ == "__main__":
