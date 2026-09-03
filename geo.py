@@ -100,11 +100,22 @@ OUT_CITIES: set[str] = set(_csv("""
     pomona, ontario, fontana, rialto, corona, temecula, murrieta
 """))
 
+# Some employers record a street address and no city at all — John Muir
+# posts its Tice Valley outpatient roles as bare "1914 Tice Valley Blvd",
+# and the detail endpoint has no city either, so there is nothing to parse
+# and the posting fell into review every scan. Curated landmarks close that
+# gap. Digits are stripped before matching, so key on the street name only.
+# Add an entry here when a real address keeps showing up under review.
+LANDMARKS: dict[str, str] = {
+    "tice valley blvd": "<30",      # John Muir outpatient, Walnut Creek
+}
+
 # Longest first so "sutter creek" is tested before "creek"-containing names
 # and "south san francisco" before "san francisco".
 _ORDERED: list[tuple[str, Geo, str | None]] = sorted(
     [(n, Geo.OUT, None) for n in OUT_CITIES]
-    + [(n, Geo.IN, b) for n, b in IN_CITIES.items()],
+    + [(n, Geo.IN, b) for n, b in IN_CITIES.items()]
+    + [(n, Geo.IN, b) for n, b in LANDMARKS.items()],
     key=lambda t: -len(t[0]))
 
 

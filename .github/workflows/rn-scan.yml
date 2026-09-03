@@ -36,7 +36,7 @@ jobs:
           name: digest
           path: |
             digest.html
-            postings.csv
+            applications.csv
           retention-days: 30
 
       # seen.json is what makes "new since last scan" mean anything.

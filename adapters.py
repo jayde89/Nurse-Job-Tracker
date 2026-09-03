@@ -88,15 +88,31 @@ INCLUDE_TITLE = re.compile(
     r"|new grad(uate)?|graduate nurse)\b", re.I)
 
 EXCLUDE_TITLE = re.compile(
-    r"\b(LVN|LPN|CNA|nursing assistant|medical assistant|nurse practitioner|NP"
-    r"|CRNA|nurse anesthetist|CNS|clinical nurse specialist"
+    r"\b(LVN|LPN|nursing assistant|medical assistant|nurse practitioner"
+    r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|analyst"
     r"|travel|per[- ]diem agency|locum"
     r"|student|intern|volunteer|extern)\b", re.I)
 
+# Credential acronyms that collide with things that aren't the job's role.
+# John Muir suffixes postings with the bargaining unit, so
+#   "RN - CMC Emergency Services - Part Time - 12 Hour - Nights - CNA"
+# is a staff RN opening and the CNA is the California Nurses Association.
+# Excluding on the bare acronym threw that posting away. Let these veto a
+# posting only when nothing else in the title says RN. Case-sensitive: these
+# are always written as acronyms, and lowercasing invites new collisions.
+AMBIGUOUS_ACRONYM = re.compile(r"\b(CNA|NP|CNS)\b")
+RN_MARKER = re.compile(r"\b(RN|R\.N\.|registered nurse|staff nurse)\b", re.I)
+
 
 def title_passes(title: str) -> bool:
-    return bool(INCLUDE_TITLE.search(title)) and not EXCLUDE_TITLE.search(title)
+    if not INCLUDE_TITLE.search(title):
+        return False
+    if EXCLUDE_TITLE.search(title):
+        return False
+    if AMBIGUOUS_ACRONYM.search(title) and not RN_MARKER.search(title):
+        return False
+    return True
 
 
 # ── http ─────────────────────────────────────────────────────────────
@@ -153,7 +169,12 @@ class WorkdayCXS:
         # shared myworkdaysite.com host at /recruiting/sutterhealth/SH.
         self.url_prefix = url_prefix if url_prefix is not None else f"/{site}"
 
-    def fetch_listings(self, max_pages: int = 50) -> list[Posting]:
+    # 50 pages x 20 = exactly 1000, which is not a coincidence: Sutter has
+    # 1203 postings and the scan was stopping dead on the cap, hiding 202 of
+    # them and 4 in-range RN roles with them. The loop already exits on
+    # `offset >= total`, so this only needs to be high enough never to be
+    # the thing that stops it. 200 pages = 4000 postings of headroom.
+    def fetch_listings(self, max_pages: int = 200) -> list[Posting]:
         out, offset, total = [], 0, None
         seen: set[str] = set()
         for _ in range(max_pages):
@@ -193,7 +214,48 @@ class WorkdayCXS:
                 break
             if total and offset >= total:
                 break
+        self._resolve_multi_locations(out)
         return out
+
+    # Workday collapses a posting open at several sites down to "3 Locations"
+    # on the listing page. geo can't parse that, so those postings landed in
+    # the review bucket and never reached the ledger — including a
+    # "Registered Nurse II, Primary Care" that is open in Castro Valley and
+    # Antioch, both well inside the two-hour ring. The detail endpoint names
+    # the real cities, so ask it. Restricted to postings that already look
+    # like nurse roles: a handful of extra fetches, not hundreds.
+    _MULTI_LOC = re.compile(r"^\s*\d+\s+locations?\s*$", re.I)
+    _BUCKET_RANK = {"<30": 0, "30-60": 1, "60-90": 2, "90-120": 3}
+
+    @classmethod
+    def _closeness(cls, city: str) -> int:
+        verdict, bucket, _ = geo.classify(city)
+        if verdict is geo.Geo.IN:
+            return cls._BUCKET_RANK.get(bucket, 4)
+        return 5 if verdict is geo.Geo.UNKNOWN else 6
+
+    def _resolve_multi_locations(self, postings: list[Posting]) -> None:
+        for p in postings:
+            if not self._MULTI_LOC.match(p.location or ""):
+                continue
+            if not title_passes(p.title):
+                continue
+            try:
+                path = "/job/" + p.url.split("/job/", 1)[1]
+                d = json.loads(_request(f"{self.base}{path}")).get(
+                    "jobPostingInfo", {})
+            except Exception as e:                      # noqa: BLE001
+                print(f"     multi-location resolve failed {p.req_id}: {e}")
+                continue
+            cities = [c for c in [d.get("location") or ""]
+                      + list(d.get("additionalLocations") or []) if c]
+            if not cities:
+                continue
+            # Report it under its nearest site. A job you'd take in Castro
+            # Valley shouldn't be filed under the Antioch listing.
+            best = min(cities, key=self._closeness)
+            others = len(cities) - 1
+            p.location = f"{best} (+{others} more)" if others else best
 
     def fetch_detail(self, p: Posting) -> Posting:
         # Split on "/job/", never on the site slug. El Camino's host is
