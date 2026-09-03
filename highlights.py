@@ -53,6 +53,8 @@ _LABELS = (
     "Shift Hours", "Shifts", "Shift", "Schedule", "Hours", "Hours Per Week",
     "Pay Range", "Pay Rate", "Salary Range", "Salary", "Rate of Pay",
     "Wage", "Pay", "Compensation",
+    "Days of the Week", "Weekend Requirements", "Weekly Hours",
+    "Scheduled Weekly Hours", "Employee Status",
     "Location", "Facility", "Department", "Unit", "Reports To",
     "FLSA Status", "Job Family", "Occupations", "Degree Required",
     "Experience", "Requisition", "Job Summary", "Responsibilities",
@@ -200,10 +202,14 @@ _SHIFT_HOURS = re.compile(
     r"(?i)\(?\b(\d{1,2}:?\d{2}\s*(?:am|pm)?\s*[-–—]\s*\d{1,2}:?\d{2}\s*(?:am|pm)?)\)?")
 
 
-# In a title, a bare shift word needs no "shift" after it: "NOC RN" and
-# "RN Registered Nurse Full Time Days RN" are unambiguous, and requiring
-# the word dropped the shift from both. Titles only — this would be far too
-# loose against body prose.
+# Two places a bare shift word needs no "shift" after it. In a title:
+# "NOC RN" and "RN Registered Nurse Full Time Days RN" are unambiguous, and
+# requiring the word dropped the shift from both. And in the value of a
+# field literally named Shift — Sutter writes "Job Shift: Days", where the
+# field name IS the missing word, and every one of its hundred-odd postings
+# was coming back with no shift at all.
+#
+# Those two only. Against body prose this would be far too loose.
 #
 # The word forms are plural on purpose. "Days" is a shift; "Day" is half of
 # "Day Surgery", and "Night" is half of "Night Clinic". The acronyms are
@@ -236,13 +242,14 @@ def shift(title: str, fields: dict[str, str], desc: str,
     and "RN NOC Per Diem" are the source's own summary and are never wrong.
     Then `stated`, the shift line an adapter lifted out of the posting
     (St. Rose opens every description with "Full-Time (0.9) NOC Shift
-    (1900-0700)"), then the labeled field, then the opening of the body.
-    Never the whole body — "AM, PM & NOC shift opportunities" appears in
-    PACS's benefits boilerplate on postings that are for one shift only.
+    (1900-0700)"), then the posting's own Shift field, then the opening of
+    the body. Never the whole body — "AM, PM & NOC shift opportunities"
+    appears in PACS's benefits boilerplate on postings that are for one
+    shift only.
     """
     for src, bare in ((title, True), (stated or "", False),
-                      (_first(fields, "Shift", "Shifts", "Shift Hours",
-                              "Schedule") or "", False),
+                      (_first(fields, "Shift", "Shifts", "Schedule",
+                              "Shift Hours") or "", True),
                       (desc[:400], False)):
         # Every shift phrase in the source, not just the first. Santa Rosa
         # writes "Full-Time, 2 PM shifts and 2 NOC shifts", and stopping at

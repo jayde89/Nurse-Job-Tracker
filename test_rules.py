@@ -279,6 +279,25 @@ check("a bare shift word in a title is still a shift",
 check("a unit name in a title is not a shift",
       [H.shift("RN - Day Surgery", {}, ""), H.shift("RN - Night Clinic", {}, "")],
       [None, None])
+# Sutter states "Job Shift: Days" — the field name is the missing word.
+# Requiring "shift" in the value left all hundred-odd Sutter postings, the
+# largest employer in the scan, with no shift on their detail line.
+check("a field named Shift needs no 'shift' in its value",
+      H.shift("Registered Nurse II, Cath Lab",
+              H.labeled("Job Shift: Days Schedule: Full Time Shift Hours: 10 "
+                        "Days of the Week: Variable Weekend Requirements: "
+                        "Every other Weekend"), ""),
+      "Days")
+# The field's value has to stop where the next field starts, or "Shift
+# Hours: 10 Days of the Week: Variable" reads back as a shift of "Days".
+check("a labeled value stops at the next label",
+      H.shift("RN", {"SHIFT HOURS": "10"}, ""), None)
+# PACS's on-call postings say the opposite of a shift. Saying so is not
+# saying one.
+check("'no set shifts' is not a shift",
+      H.shift("RN", H.labeled("Employment Type: On-Call Schedule: Flexible - "
+                              "No Set Shifts"), ""), None)
+
 # Santa Rosa writes "Full-Time, 2 PM shifts and 2 NOC shifts". Stopping at
 # the first phrase reported a PM job that is half nights.
 check("every shift phrase in the source is read, not just the first",
