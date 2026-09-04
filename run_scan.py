@@ -28,6 +28,8 @@ the rule to re-examine first.
 
 from __future__ import annotations
 
+__version__ = "0.1.0"
+
 import csv
 import json
 import os
@@ -674,6 +676,9 @@ has been wrong before.</footer>
 
 
 if __name__ == "__main__":
+    if "--version" in sys.argv:
+        print(f"nurse-job-tracker {__version__}")
+        sys.exit(0)
     quick = "--quick" in sys.argv
     print(f"Scanning{' (quick)' if quick else ''}...")
     rows, review = scan(fetch_details=not quick)

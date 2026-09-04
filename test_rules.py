@@ -11,6 +11,7 @@ inside the Actions container, with nothing to install.
 
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -531,6 +532,10 @@ check("the scanner's date fills in when you did not",
       "2026-08-20")
 check("no date at all is blank, not invented",
       S.applied_on(_row("x", "applied")), "")
+
+# ── version ───────────────────────────────────────────────────────────
+check("__version__ is a semantic version string",
+      bool(re.match(r"^\d+\.\d+\.\d+$", S.__version__)), True)
 
 
 # ── per-source scan health (state/sources.json) ─────────────────────
