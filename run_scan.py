@@ -309,14 +309,22 @@ def build(rows, review, quick=False):
                finished=finished_applications(ledger),
                review=review, hidden=hidden, now=now, quick=quick)
 
+    html = render(d)
     with open("digest.html", "w") as f:
-        f.write(render(d))
+        f.write(html)
 
-    # DIGEST.md matters more than the HTML for most people: GitHub renders
-    # Markdown inside private repos, on mobile, for free. GitHub Pages does
-    # not serve private repos on a free account, so the HTML version would
-    # otherwise force a paid plan or a public repo full of your application
-    # history. Read DIGEST.md on your phone; keep the HTML for desktop.
+    # The repo is public and served by GitHub Pages, so the same HTML goes
+    # to index.html: Pages serves index.html at the site root, and without
+    # it the bare URL 404s and you have to remember to type /digest.html.
+    # Written as a copy rather than a redirect so both paths keep working —
+    # digest.html is what earlier commits and any saved bookmark point at.
+    with open("index.html", "w") as f:
+        f.write(html)
+
+    # DIGEST.md still matters: GitHub renders Markdown on mobile without
+    # waiting for a Pages build, and it is what the commit history shows as
+    # a readable diff between scans. Pages is the nicer read; DIGEST.md is
+    # the one that always works.
     with open("DIGEST.md", "w") as f:
         f.write(render_md(d))
 
@@ -593,4 +601,5 @@ if __name__ == "__main__":
     shown, new = build(rows, review, quick)
     print(f"\n{len(shown)} shown, {len(new)} new, "
           f"{len(rows) - len(shown)} hidden as acute-required")
-    print("wrote DIGEST.md, digest.html, applications.csv, state/seen.json")
+    print("wrote DIGEST.md, digest.html, index.html, applications.csv, "
+          "state/seen.json")

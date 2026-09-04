@@ -43,6 +43,7 @@ jobs:
           name: digest
           path: |
             digest.html
+            index.html
             applications.csv
           retention-days: 30
 
@@ -52,7 +53,7 @@ jobs:
         run: |
           git config user.name  "rn-scan"
           git config user.email "rn-scan@users.noreply.github.com"
-          git add state/seen.json applications.csv digest.html DIGEST.md
+          git add state/seen.json applications.csv digest.html index.html DIGEST.md
           git diff --staged --quiet || git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
           git push
 
@@ -88,6 +89,11 @@ jobs:
 # but not free-and-unlimited: adding sources or dropping REQUEST_DELAY_SEC
 # moves this number, and a public repo would make it moot since Actions
 # minutes are only metered on private ones.
+#
+# The repo is public as of 2026-09-04, so the paragraph above is now
+# history: Actions minutes on public repos are not metered at all. Kept
+# because the arithmetic is the part worth re-reading if this ever goes
+# private again.
 #
 # GitHub disables scheduled workflows in a repo with no activity for 60
 # days and emails the owner. Don't assume this scan's own commits reset
