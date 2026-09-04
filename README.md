@@ -59,6 +59,7 @@ test_rules.py
 pacs_facilities.json
 applications.csv
 state/seen.json
+state/sources.json
 README.md
 ```
 
@@ -295,6 +296,13 @@ It will. These are mostly undocumented endpoints that change without notice.
 
 **A source reports 0 listings.** Its adapter broke. The scan continues and
 the log line names the source.
+
+`state/sources.json` is that same status, kept between runs: one entry per
+adapter — `status` (`ok`/`failed`), the error, listings returned, and
+`last_success` — so a source dead for days still shows when it last
+worked, not just that it's down now. The digest's `Sources: N/M ok` line
+reads off it, and it's committed alongside `state/seen.json` so anything
+reading the repo sees source health without parsing the Actions log.
 
 **Actions fails red.** Open the run, read the step that failed. Most often
 it's step 3 above — write permissions not enabled.
