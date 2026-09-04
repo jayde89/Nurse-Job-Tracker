@@ -44,6 +44,7 @@ import highlights
 
 STATE_DIR = "state"
 SEEN_PATH = os.path.join(STATE_DIR, "seen.json")
+SOURCES_PATH = os.path.join(STATE_DIR, "sources.json")
 LEDGER_PATH = "applications.csv"
 
 LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Title",
@@ -158,6 +159,7 @@ class Digest:
     review: list
     hidden: int
     now: str
+    sources: dict        # state/sources.json as of this scan
     quick: bool = False
 
 
@@ -201,14 +203,55 @@ def save_seen(seen: dict) -> None:
         json.dump(seen, f, indent=1)
 
 
+def load_sources() -> dict:
+    """Per-source health from the last scan. A missing or malformed file
+    (never scanned yet, or a hand-edit gone wrong) reads as empty rather
+    than crashing the scan."""
+    try:
+        with open(SOURCES_PATH) as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def save_sources(sources: dict) -> None:
+    """Same shape as save_seen, but atomic: a scan killed mid-write must
+    never leave state/sources.json truncated for the next run to read."""
+    os.makedirs(STATE_DIR, exist_ok=True)
+    tmp = SOURCES_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(sources, f, indent=1)
+    os.replace(tmp, SOURCES_PATH)
+
+
 def scan(fetch_details=True):
     rows, review = [], []
+    prev_sources = load_sources()
+    sources = {}
+    checked_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     for ad in adapters.ADAPTERS:
         name = getattr(ad, "employer", type(ad).__name__)
+        adapter_name = type(ad).__name__
+        # Class name alone isn't unique — WorkdayCXS is instantiated once
+        # per hospital system — so the source id pairs it with the
+        # employer, which is what jayde-os keys its "check manually" list
+        # on.
+        source_id = f"{adapter_name}:{name}"
         try:
             listings = ad.fetch_listings()
         except Exception as e:                              # noqa: BLE001
             print(f"  !! {name}: {e}")
+            sources[source_id] = {
+                "employer": name,
+                "adapter": adapter_name,
+                "status": "failed",
+                "error": str(e),
+                "listings": 0,
+                "in_range": 0,
+                "checked_at": checked_at,
+                "last_success": prev_sources.get(source_id, {}).get("last_success"),
+            }
             continue
 
         passed = [p for p in listings if adapters.title_passes(p.title)]
@@ -216,6 +259,16 @@ def scan(fetch_details=True):
         print(f"  {name}: {len(listings)} listings -> {len(passed)} nurse "
               f"-> {len(in_range)} in range ({len(too_far)} far, "
               f"{len(needs_review)} review)")
+        sources[source_id] = {
+            "employer": name,
+            "adapter": adapter_name,
+            "status": "ok",
+            "error": None,
+            "listings": len(listings),
+            "in_range": len(in_range),
+            "checked_at": checked_at,
+            "last_success": checked_at,
+        }
 
         for p in in_range:
             if fetch_details:
@@ -230,6 +283,7 @@ def scan(fetch_details=True):
             p.details = highlights.summarize(p)
             rows.append(p)
         review.extend(needs_review)
+    save_sources(sources)
     return rows, review
 
 
@@ -325,7 +379,8 @@ def build(rows, review, quick=False):
     d = Digest(shown=shown, top=top, new=new_open, watch=watch,
                active=active_applications(ledger),
                finished=finished_applications(ledger),
-               review=review, hidden=hidden, now=now, quick=quick)
+               review=review, hidden=hidden, now=now,
+               sources=load_sources(), quick=quick)
 
     html = render(d)
     with open("digest.html", "w") as f:
@@ -399,9 +454,18 @@ def render_md(d):
         + (f" ({applied_on(r)})" if applied_on(r) else "")
         for r in d.finished[:20]) or "_Nothing closed out yet._"
 
+    total_sources = len(d.sources)
+    ok_sources = sum(1 for s in d.sources.values() if s.get("status") == "ok")
+    failed_employers = sorted(s.get("employer", "?") for s in d.sources.values()
+                               if s.get("status") != "ok")
+    sources_line = f"_Sources: {ok_sources}/{total_sources} ok_"
+    if ok_sources < total_sources:
+        sources_line += f" — failed: {', '.join(failed_employers)}"
+
     return f"""# Staff RN openings within two hours of Oakland
 
 _Scanned {d.now.replace('T', ' ')[:16]} UTC. {len(d.shown)} shown._
+{sources_line}
 
 **{len(d.top)} worth your attention** — Level I or no experience required,
 and not already in your pile. {len(d.watch)} more need experience you do not

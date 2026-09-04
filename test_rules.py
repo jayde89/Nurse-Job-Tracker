@@ -9,8 +9,12 @@ No test framework on purpose — this runs anywhere Python does, including
 inside the Actions container, with nothing to install.
 """
 
+import json
+import os
 import re
+import shutil
 import sys
+import tempfile
 
 import adapters as A
 import classifier as C
@@ -532,6 +536,136 @@ check("no date at all is blank, not invented",
 # ── version ───────────────────────────────────────────────────────────
 check("__version__ is a semantic version string",
       bool(re.match(r"^\d+\.\d+\.\d+$", S.__version__)), True)
+
+
+# ── per-source scan health (state/sources.json) ─────────────────────
+# jayde-os builds its "check manually" list off this file instead of a
+# hardcoded employer map, and the digest says when a source has gone
+# quiet. scan() writes the file itself; every case here points it at a
+# scratch directory so a test run never touches the repo's own
+# state/sources.json.
+
+class _FakeOK:
+    employer = "Test Health"
+
+    def fetch_listings(self):
+        return []
+
+    def fetch_detail(self, p):
+        return p
+
+
+class _FakeFail:
+    employer = "Broken Health"
+
+    def fetch_listings(self):
+        raise RuntimeError("connection refused")
+
+    def fetch_detail(self, p):
+        return p
+
+
+def _scan_with_sources(prior_text=None):
+    """Run S.scan() against two fake adapters (one ok, one failing) in a
+    scratch state dir, and return (rows, review, sources.json)."""
+    tmp = tempfile.mkdtemp()
+    orig_state_dir, orig_sources_path, orig_adapters = (
+        S.STATE_DIR, S.SOURCES_PATH, A.ADAPTERS)
+    S.STATE_DIR = tmp
+    S.SOURCES_PATH = os.path.join(tmp, "sources.json")
+    A.ADAPTERS = [_FakeOK(), _FakeFail()]
+    try:
+        if prior_text is not None:
+            with open(S.SOURCES_PATH, "w") as f:
+                f.write(prior_text)
+        rows, review = S.scan(fetch_details=False)
+        return rows, review, S.load_sources()
+    finally:
+        S.STATE_DIR, S.SOURCES_PATH, A.ADAPTERS = (
+            orig_state_dir, orig_sources_path, orig_adapters)
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+_rows, _review, _sources = _scan_with_sources()
+
+# scan() must keep returning the (rows, review) shape it always has —
+# jayde-os and this scan's own caller both unpack it positionally.
+check("scan() still returns (rows, review)",
+      (isinstance(_rows, list), isinstance(_review, list)), (True, True))
+
+# One entry per adapter, keyed by class name + employer so two instances
+# of the same adapter class (WorkdayCXS, one per hospital system) never
+# collide.
+check("one sources.json entry per adapter",
+      sorted(_sources.keys()), ["_FakeFail:Broken Health", "_FakeOK:Test Health"])
+check("a working adapter is recorded ok",
+      (_sources["_FakeOK:Test Health"]["status"],
+       _sources["_FakeOK:Test Health"]["error"],
+       _sources["_FakeOK:Test Health"]["listings"]),
+      ("ok", None, 0))
+check("a failing adapter is recorded failed, with the exception text",
+      (_sources["_FakeFail:Broken Health"]["status"],
+       _sources["_FakeFail:Broken Health"]["error"],
+       _sources["_FakeFail:Broken Health"]["listings"]),
+      ("failed", "connection refused", 0))
+
+# A source that has never once succeeded carries last_success: null.
+check("a never-successful source has no last_success",
+      _sources["_FakeFail:Broken Health"]["last_success"], None)
+
+# Failure carries the PREVIOUS last_success forward rather than clearing
+# it — a source that has been down for three days should still say when
+# it last worked, not "never".
+_prior = json.dumps({
+    "_FakeFail:Broken Health": {
+        "employer": "Broken Health", "adapter": "_FakeFail",
+        "status": "ok", "error": None, "listings": 5, "in_range": 2,
+        "checked_at": "2026-08-30T07:00:00+00:00",
+        "last_success": "2026-08-30T07:00:00+00:00",
+    },
+})
+_, _, _carried = _scan_with_sources(_prior)
+check("last_success carries over an adapter failure",
+      _carried["_FakeFail:Broken Health"]["last_success"],
+      "2026-08-30T07:00:00+00:00")
+check("the failure still reports as failed, not stale-ok",
+      _carried["_FakeFail:Broken Health"]["status"], "failed")
+# The other adapter is untouched by its neighbour's failure.
+check("an unrelated adapter is unaffected by another's failure",
+      _carried["_FakeOK:Test Health"]["status"], "ok")
+
+# A missing or malformed previous file reads as empty, not a crash — a
+# hand-edited or half-written sources.json must not take the scan down.
+_, _, _malformed = _scan_with_sources("not valid json {{{")
+check("a malformed prior sources.json is treated as empty",
+      _malformed["_FakeFail:Broken Health"]["last_success"], None)
+
+
+def _digest(sources, **kw):
+    base = dict(shown=[], top=[], new=[], watch=[], active=[], finished=[],
+                review=[], hidden=0, now="2026-09-04T12:00:00+00:00",
+                sources=sources, quick=False)
+    base.update(kw)
+    return S.Digest(**base)
+
+
+_all_ok = {
+    "A:Emp1": {"employer": "Emp1", "status": "ok"},
+    "B:Emp2": {"employer": "Emp2", "status": "ok"},
+}
+_one_failed = {
+    "A:Emp1": {"employer": "Emp1", "status": "ok"},
+    "B:Emp2": {"employer": "Emp2", "status": "failed"},
+}
+
+check("digest reports N/M ok with nothing failed",
+      "_Sources: 2/2 ok_" in S.render_md(_digest(_all_ok)), True)
+check("an all-ok digest names no failures",
+      "failed:" in S.render_md(_digest(_all_ok)), False)
+check("digest reports N/M ok with one failure",
+      "_Sources: 1/2 ok_" in S.render_md(_digest(_one_failed)), True)
+check("a failed source is named in the digest",
+      "failed: Emp2" in S.render_md(_digest(_one_failed)), True)
 
 
 if __name__ == "__main__":
