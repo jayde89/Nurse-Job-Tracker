@@ -98,12 +98,29 @@ class Posting:
 # loose on the include side — the classifier makes the real call. The
 # exclusions are the ones that are unambiguous from the title alone.
 
+# Bare "nurse" is included on purpose. Naming only the common phrasings
+# ("staff nurse", "clinical nurse", ...) looks safe and isn't: it silently
+# dropped "Ambulatory Services Nurse I, PreOp & PACU" — the one Level I
+# role on Sutter's board, in range at Mountain View, with no experience
+# section at all. The classifier was written for that exact posting (it is
+# named in classifier.py's docstring and in TITLE_LEVEL_I) but never saw
+# it, because this gate ran first. Sutter also writes "Clinic Nurse II",
+# "Hospice Nurse II" and "Ambulatory Services Nurse II" — none of which
+# contain any of the listed phrasings either. Let the title in and make
+# EXCLUDE_TITLE do the rejecting, which is what the comment above already
+# says this filter is for.
 INCLUDE_TITLE = re.compile(
     r"\b(RN|R\.N\.|registered nurse|staff nurse|clinical nurse|nurse resident"
-    r"|new grad(uate)?|graduate nurse)\b", re.I)
+    r"|new grad(uate)?|graduate nurse|nurse)\b", re.I)
 
+# Spelled-out "Licensed Vocational Nurse" and "Nurse Assistant" (as
+# distinct from "Nursing Assistant") are here because loosening the include
+# side above admits them: Sutter posts "Licensed Vocational Nurse II,
+# Urology" and "Nurse Assistant - Oncology", neither of which contains the
+# LVN acronym or the word "nursing".
 EXCLUDE_TITLE = re.compile(
-    r"\b(LVN|LPN|nursing assistant|medical assistant|nurse practitioner"
+    r"\b(LVN|LPN|licensed vocational nurse|licensed practical nurse"
+    r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|analyst"
     r"|travel|per[- ]diem agency|locum"

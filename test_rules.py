@@ -47,6 +47,32 @@ check("plain staff RN passes",
 check("new grad residency passes",
       A.title_passes("RN - New Grad Residency"), True)
 
+# The title prefilter ran before the classifier and threw away the only
+# Level I role on Sutter's board: "Ambulatory Services Nurse I, PreOp &
+# PACU", open in Mountain View with no experience section at all. The
+# include list named specific phrasings ("staff nurse", "clinical nurse")
+# and a title carrying a bare "Nurse" matched none of them, so the posting
+# never reached classify() — which was written for it by name. This is why
+# the digest showed dozens of Staff Nurse II roles and no Level I anywhere.
+check("bare-Nurse Level I title reaches the classifier",
+      A.title_passes("Ambulatory Services Nurse I, PreOp & PACU"), True)
+check("bare-Nurse Level I is bucketed Level I",
+      C.classify("Ambulatory Services Nurse I, PreOp & PACU",
+                 "Job Description : EDUCATION: Graduate of an accredited "
+                 "school of nursing CERTIFICATION & LICENSURE: RN-Registered "
+                 "Nurse of California BLS ACLS").bucket,
+      "STAFF_NURSE_I")
+# Sutter's other bare-"Nurse" clinical titles were dropped by the same gate.
+check("clinic nurse title passes", A.title_passes("Clinic Nurse II, Oncology"), True)
+check("hospice nurse title passes",
+      A.title_passes("Hospice Nurse II, Per Diem"), True)
+# Loosening the include side lets these two through unless excluded by name:
+# neither carries the LVN acronym nor the word "nursing".
+check("spelled-out LVN still excluded",
+      A.title_passes("Licensed Vocational Nurse II, Urology"), False)
+check("nurse assistant still excluded",
+      A.title_passes("Nurse Assistant - Oncology"), False)
+
 # ── geo ──────────────────────────────────────────────────────────────
 # Never tokenize the gazetteer: "Sutter Creek" is out of range, "Walnut
 # Creek" is not, and splitting on whitespace once conflated them.
