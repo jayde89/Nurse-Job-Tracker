@@ -324,4 +324,6 @@ served at all. That failure is silent: no error, just fewer jobs.
 
 To test a change without waiting on the schedule, use **Run workflow** on the
 Actions tab. `python3 run_scan.py --quick` skips detail fetches and runs in
-about a minute, but doesn't analyse requirements.
+about a minute, but doesn't analyse requirements. `python3 run_scan.py
+--version` prints the running revision and exits immediately, without
+scanning anything.
