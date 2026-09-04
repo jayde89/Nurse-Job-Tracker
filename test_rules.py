@@ -9,6 +9,7 @@ No test framework on purpose — this runs anywhere Python does, including
 inside the Actions container, with nothing to install.
 """
 
+import re
 import sys
 
 import adapters as A
@@ -527,6 +528,10 @@ check("the scanner's date fills in when you did not",
       "2026-08-20")
 check("no date at all is blank, not invented",
       S.applied_on(_row("x", "applied")), "")
+
+# ── version ───────────────────────────────────────────────────────────
+check("__version__ is a semantic version string",
+      bool(re.match(r"^\d+\.\d+\.\d+$", S.__version__)), True)
 
 
 if __name__ == "__main__":
