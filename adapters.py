@@ -424,11 +424,27 @@ class PACS:
         return self._facets
 
     def _cache(self) -> dict:
+        """
+        The facility -> city table. Say so loudly when it isn't there.
+
+        Without it every PACS posting resolves to a bare facility name,
+        geo.py cannot place any of them, and eighty jobs land in "Location
+        needs checking" with nothing on screen explaining why. That looked
+        exactly like a geo regression for a while; it was a missing file.
+        Degrading quietly is the failure mode this project keeps paying
+        for, so it degrades loudly instead.
+        """
         try:
             with open(self.cache_path) as f:
-                return json.load(f)
-        except (OSError, json.JSONDecodeError):
+                cache = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:                # noqa: BLE001
+            print(f"  !! {self.employer}: cannot read {self.cache_path} ({e}) "
+                  f"— every posting will go to location review")
             return {"facilities": {}}
+        if not cache.get("facilities"):
+            print(f"  !! {self.employer}: {self.cache_path} lists no "
+                  f"facilities — every posting will go to location review")
+        return cache
 
     def fetch_listings(self, max_pages: int = 30) -> list[Posting]:
         facets = self._facet_ids()
