@@ -30,7 +30,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 57 cases, no dependencies, ~instant
+python3 test_rules.py     # 84 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -61,7 +61,21 @@ between requests. Keep that pause.
 - **`applications.csv` is the user's file.** The scanner may add rows and
   refresh employer-controlled columns. It must never write `Status`,
   `Applied On` or `Notes`. A posting that disappears is marked `closed`,
-  never deleted, so an application already sent keeps its record.
+  never deleted, and only when the row is still open, so an application
+  already sent keeps its record. `Marked active` is the one status-adjacent
+  column the scanner owns: it records when a row was first seen in an
+  active state, because `Applied On` is the user's and is usually left
+  blank when the edit is made on a phone.
+- **A job the user has marked never reappears as a job to apply to.**
+  `is_open()` in `run_scan.py` is the single gate; the digest, the HTML and
+  the email alert all read through it, so they cannot disagree about what
+  "already handled" means. An unrecognised status is treated as open on
+  purpose — a typo should show a job again, never swallow one.
+- **Applications in progress are rendered from the ledger, never from the
+  scan's results.** A posting you applied to is among the likeliest to be
+  taken down, and building that section from `shown` meant the application
+  disappeared from the dashboard the moment the employer pulled the
+  listing. The row was always in the CSV; nothing surfaced it.
 - **Never tokenize the city table in `geo.py`.** Match whole phrases,
   longest first. Splitting on whitespace once put "creek" (from Sutter
   Creek) in the out-of-range set and silently rejected every Walnut Creek

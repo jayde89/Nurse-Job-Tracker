@@ -24,7 +24,7 @@ import csv
 import json
 import os
 import sys
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
 import adapters
@@ -39,11 +39,117 @@ LEDGER_PATH = "applications.csv"
 LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Title",
                  "Details", "Employer", "Location", "Drive time",
                  "Requirement evidence", "Posted", "First seen", "Last seen",
-                 "URL"]
+                 "Marked active", "URL"]
 
-# Status values you set by hand. The scanner only ever writes "unapplied"
-# on a brand-new row, or "closed" when a posting disappears.
-STATUS_APPLIED = {"applied", "pending", "interviewing", "rejected", "offer"}
+# ── what a status means to the dashboard ─────────────────────────────
+# You set Status by hand. The scanner only ever writes "unapplied" on a
+# brand-new row, or "closed" when a posting disappears while you had not
+# applied to it.
+#
+#   ACTIVE    an application in flight. It is remembered for as long as it
+#             stays in flight, it gets its own section, and it comes OFF
+#             every list of jobs to apply to — you already did.
+#   ARCHIVED  done with. Off the main page, still in the ledger. "closed"
+#             is the scanner's own: the posting stopped appearing.
+#   OPEN      still a candidate. This is the only state that belongs in
+#             "Worth applying to now".
+#
+# Anything unrecognised is treated as OPEN, so a typo in the CSV shows the
+# job to you again rather than silently swallowing it.
+ACTIVE_STATUS = {"applied", "pending", "interviewing", "offer"}
+ARCHIVED_STATUS = {"rejected", "declined", "withdrawn", "closed"}
+
+# Most-advanced first, so an offer never sorts below a bare "applied".
+ACTIVE_ORDER = {"offer": 0, "interviewing": 1, "pending": 2, "applied": 3}
+
+# The ones you set yourself when an application ends. "closed" is excluded:
+# it means the posting vanished while you had not applied, which is not
+# something you did and does not belong in a list of your outcomes.
+FINISHED_STATUS = {"rejected", "declined", "withdrawn"}
+
+
+def normalize_status(value) -> str:
+    """A blank Status is an unapplied one. Case and spacing never matter."""
+    return (value or "").strip().lower() or "unapplied"
+
+
+def is_active(value) -> bool:
+    """An application in flight."""
+    return normalize_status(value) in ACTIVE_STATUS
+
+
+def is_open(value) -> bool:
+    """Still worth showing you as something to apply to."""
+    return normalize_status(value) not in (ACTIVE_STATUS | ARCHIVED_STATUS
+                                           | FINISHED_STATUS)
+
+
+def active_applications(ledger) -> list:
+    """
+    Your applications in flight, read from the LEDGER rather than from the
+    postings this scan happened to return.
+
+    That distinction is the whole difference between a tracker and a list.
+    A posting you applied to is among the likeliest to disappear — the
+    employer fills it, or pulls it down while they interview — and this
+    section used to be built from the scan's own results, so the moment
+    that happened your application dropped off the dashboard entirely. The
+    row was still sitting in applications.csv; nothing put it in front of
+    you. An application in progress is exactly the thing a job tracker must
+    not forget.
+    """
+    rows = [r for r in ledger.values() if is_active(r.get("Status"))]
+    rows.sort(key=lambda r: (
+        ACTIVE_ORDER.get(normalize_status(r.get("Status")), 9),
+        r.get("Applied On") or r.get("Marked active") or "",
+        r.get("Employer") or ""))
+    return rows
+
+
+def finished_applications(ledger) -> list:
+    rows = [r for r in ledger.values()
+            if normalize_status(r.get("Status")) in FINISHED_STATUS]
+    rows.sort(key=lambda r: (r.get("Applied On") or r.get("Marked active") or "",
+                             r.get("Employer") or ""), reverse=True)
+    return rows
+
+
+def applied_on(row) -> str:
+    """
+    The date to show beside an application.
+
+    "Applied On" is yours and the scanner never writes it — but you are
+    usually marking a job applied by editing a CSV on a phone, where typing
+    a date as well is exactly the step that gets skipped. So the scanner
+    keeps its own "Marked active": the first scan at which it saw the row
+    in an active status. Yours wins when you filled it in.
+    """
+    return (row.get("Applied On") or "").strip() or (
+        row.get("Marked active") or "").strip()
+
+
+def still_listed(row, now) -> bool:
+    """Was this posting in the scan that just ran?"""
+    return (row.get("Last seen") or "") == now
+
+# The two buckets a new grad can act on today.
+ENTRY_LEVEL = ("STAFF_NURSE_I", "NO_EXPERIENCE")
+
+
+@dataclass
+class Digest:
+    """Everything the two renderers draw, decided once in build()."""
+    shown: list
+    top: list           # entry-level and unapplied — the day's action list
+    new: list           # new since last scan, unapplied
+    watch: list         # needs experience you do not have yet
+    active: list        # ledger rows: applications in flight
+    finished: list      # ledger rows: rejected / declined / withdrawn
+    review: list
+    hidden: int
+    now: str
+    quick: bool = False
+
 
 BUCKET_LABEL = {
     "STAFF_NURSE_I": "Level I / new grad",
@@ -163,16 +269,48 @@ def build(rows, review, quick=False):
     # it, so an application you already sent keeps its history.
     live = {p.key for p in shown}
     for key, row in ledger.items():
-        if key not in live and row.get("Status") == "unapplied":
+        if key not in live and is_open(row.get("Status")):
             row["Status"] = "closed"
+
+    # Remember when an application became active. This is a scanner-owned
+    # column: "Applied On" is yours and is never written here, but it is
+    # also the field that gets skipped when you are editing a CSV on a
+    # phone, and the dashboard needs a date to sort by and to show. Written
+    # once, on the first scan that sees the row active, and cleared only if
+    # you put the row back to unapplied.
+    for row in ledger.values():
+        if is_active(row.get("Status")):
+            if not (row.get("Marked active") or "").strip():
+                row["Marked active"] = now[:10]
+        elif is_open(row.get("Status")):
+            row["Marked active"] = ""
 
     save_ledger(ledger)
 
     for p in shown:
         p.status = ledger[p.key]["Status"]
 
+    # A job you have applied to is not a job to apply to. Everything you
+    # have marked — active or finished — comes off the lists below and
+    # lives in its own section, which is what "remove it from the main
+    # page" means. Only ACUTE_REQUIRED is still hidden outright; nothing
+    # here is ever dropped, only moved.
+    open_shown = [p for p in shown if is_open(getattr(p, "status", ""))]
+    new_open = [p for p in new if is_open(getattr(p, "status", ""))]
+    top = [p for p in open_shown if p.bucket in ENTRY_LEVEL]
+    # "Watching" is the roles needing experience you do not have yet, as
+    # the README has always described it. It used to be every unapplied
+    # posting that was not new, so an entry-level job appeared in both
+    # "Worth applying to now" and here, in the same digest, twice.
+    watch = [p for p in open_shown if p not in top and p not in new_open]
+
+    d = Digest(shown=shown, top=top, new=new_open, watch=watch,
+               active=active_applications(ledger),
+               finished=finished_applications(ledger),
+               review=review, hidden=hidden, now=now, quick=quick)
+
     with open("digest.html", "w") as f:
-        f.write(render(shown, new, review, hidden, now, quick))
+        f.write(render(d))
 
     # DIGEST.md matters more than the HTML for most people: GitHub renders
     # Markdown inside private repos, on mobile, for free. GitHub Pages does
@@ -180,7 +318,7 @@ def build(rows, review, quick=False):
     # otherwise force a paid plan or a public repo full of your application
     # history. Read DIGEST.md on your phone; keep the HTML for desktop.
     with open("DIGEST.md", "w") as f:
-        f.write(render_md(shown, new, review, hidden, now))
+        f.write(render_md(d))
 
     for p in shown:
         seen.setdefault(p.key, now)
@@ -188,11 +326,7 @@ def build(rows, review, quick=False):
     return shown, new
 
 
-def render_md(shown, new, review, hidden, now):
-    applied = [p for p in shown if getattr(p, "status", "") in STATUS_APPLIED]
-    rest = [p for p in shown
-            if not getattr(p, "is_new", False) and p not in applied]
-
+def render_md(d):
     def row(p):
         drive = p.drive_time_bucket or "?"
         ev = (p.evidence or "").replace("|", "/").replace("\n", " ")[:150]
@@ -212,37 +346,73 @@ def render_md(shown, new, review, hidden, now):
             return f"_{empty}_"
         return head + "\n" + "\n".join(row(p) for p in items)
 
-    top = [p for p in shown
-           if p.bucket in ("STAFF_NURSE_I", "NO_EXPERIENCE")]
+    def app_row(r):
+        detail = (r.get("Details") or "").replace("|", "/")
+        title = (r.get("Title") or "").replace("|", "/")
+        role = f"[{title}]({r.get('URL')})" + (f"<br>{detail}" if detail else "")
+        since = applied_on(r) or "—"
+        # Whether the posting is still up is real information about an
+        # application in flight: a listing that comes down is usually the
+        # role being filled or frozen.
+        last = (r.get("Last seen") or "")[:10]
+        listing = ("still listed" if still_listed(r, d.now)
+                   else f"not listed since {last}" if last else "not listed")
+        return (f"| **{normalize_status(r.get('Status'))}** | {since} | {role} | "
+                f"{r.get('Employer')} | {r.get('Location')} | {listing} |")
+
+    def app_table(rows, empty):
+        if not rows:
+            return f"_{empty}_"
+        return ("| Status | Since | Role | Employer | Location | Listing |\n"
+                "|---|---|---|---|---|---|\n"
+                + "\n".join(app_row(r) for r in rows))
+
+    finished_line = "\n".join(
+        f"- **{normalize_status(r.get('Status'))}** — [{r.get('Title')}]"
+        f"({r.get('URL')}), {r.get('Employer')}"
+        + (f" ({applied_on(r)})" if applied_on(r) else "")
+        for r in d.finished[:20]) or "_Nothing closed out yet._"
 
     return f"""# Staff RN openings within two hours of Oakland
 
-_Scanned {now.replace('T', ' ')[:16]} UTC. {len(shown)} shown, {hidden} hidden
+_Scanned {d.now.replace('T', ' ')[:16]} UTC. {len(d.shown)} shown, {d.hidden} hidden
 as acute-care-required._
 
-**{len(top)} worth your attention** — Level I or no experience required.
-The other {len(shown) - len(top)} need experience you do not have yet; they are
-here to watch, not to apply to.
+**{len(d.top)} worth your attention** — Level I or no experience required,
+and not already in your pile. {len(d.watch)} more need experience you do not
+have yet; they are here to watch, not to apply to.
+{f"You have {len(d.active)} application{'s' if len(d.active) != 1 else ''} in progress."
+ if d.active else "Nothing sent yet."}
 
-## Worth applying to now — {len(top)}
+## Worth applying to now — {len(d.top)}
 
-{table(top, 'Nothing entry-level open right now.')}
+{table(d.top, 'Nothing entry-level open right now.')}
 
-## New since last scan — {len(new)}
+## In progress — {len(d.active)}
 
-{table(new, 'Nothing new this run.')}
+Applications you have marked. These are kept here whatever happens to the
+posting, and they no longer appear in the lists above.
 
-## Not applied yet — {len(rest)}
+{app_table(d.active, 'Nothing sent yet. Set Status to applied in applications.csv.')}
 
-{table(rest, 'Nothing waiting.')}
+## New since last scan — {len(d.new)}
 
-## Applications pending — {len(applied)}
+{table(d.new, 'Nothing new this run.')}
 
-{table(applied, 'Nothing sent yet. Set Status to applied in applications.csv.')}
+## Watching — {len(d.watch)}
 
-## Location needs checking — {len(review)}
+Experience you do not have yet. Here so you can see them coming, not to
+apply to today.
 
-{chr(10).join(f'- {p.title} — {p.employer}, {p.location}' for p in review[:20])
+{table(d.watch, 'Nothing waiting.')}
+
+## Closed out — {len(d.finished)}
+
+{finished_line}
+
+## Location needs checking — {len(d.review)}
+
+{chr(10).join(f'- {p.title} — {p.employer}, {p.location}' for p in d.review[:20])
  or '_Every location resolved._'}
 
 ---
@@ -251,13 +421,26 @@ Each row shows the requirement sentence its verdict rests on. If a quote does
 not support its label, the rule is wrong — that has happened six times in this
 project. Read the quote before trusting the label.
 
-To move a job to Applications pending, change its **Status** column in
-`applications.csv` from `unapplied` to `applied`. The scanner never overwrites
-that column.
+**To track an application**, change its **Status** column in
+`applications.csv`:
+
+| Set it to | What happens |
+|---|---|
+| `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress** and off every list above |
+| `rejected`, `declined`, `withdrawn` | Moves to **Closed out** |
+| `unapplied` | Comes back to the main lists |
+
+The scanner never writes Status, Applied On or Notes. **Since** shows your
+Applied On when you filled it in, and otherwise the date this scanner first
+saw the row marked. A posting that stops appearing is marked `closed` only
+if you had not applied to it — your applications are never overwritten.
 """
 
 
-def render(shown, new, review, hidden, now, quick):
+def render(d):
+    shown, new, review, now, quick = d.shown, d.new, d.review, d.now, d.quick
+    hidden = d.hidden
+
     def esc(s):
         return (str(s or "").replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace('"', "&quot;"))
@@ -276,9 +459,24 @@ def render(shown, new, review, hidden, now, quick):
         <blockquote>{esc((p.evidence or '')[:260])}</blockquote>
       </li>"""
 
-    applied = [p for p in shown if getattr(p, "status", "") in STATUS_APPLIED]
-    rest = [p for p in shown
-            if not getattr(p, "is_new", False) and p not in applied]
+    def acard(r):
+        """A card for a ledger row rather than a live posting."""
+        status = normalize_status(r.get("Status"))
+        last = (r.get("Last seen") or "")[:10]
+        listing = ("still listed" if still_listed(r, now)
+                   else f"not listed since {last}" if last else "not listed")
+        since = applied_on(r)
+        return f"""
+      <li class="job app">
+        <div class="meta"><span class="status">{esc(status)}</span>
+          {f'<span class="since">since {esc(since)}</span>' if since else ""}
+          <span class="listing">{esc(listing)}</span></div>
+        <h3><a href="{esc(r.get('URL'))}">{esc(r.get('Title'))}</a></h3>
+        {f'<p class="detail">{esc(r.get("Details"))}</p>' if r.get("Details") else ""}
+        <p class="where">{esc(r.get('Employer'))} &middot; {esc(r.get('Location'))}</p>
+        {f'<p class="notes">{esc(r.get("Notes"))}</p>' if r.get("Notes") else ""}
+      </li>"""
+
     counts = {}
     for p in shown:
         counts[p.bucket] = counts.get(p.bucket, 0) + 1
@@ -332,6 +530,12 @@ def render(shown, new, review, hidden, now, quick):
              border-left:2px solid var(--line);color:var(--dim);
              font-size:.85rem}}
   .empty{{color:var(--dim);font-size:.9rem;padding:.5rem 0}}
+  .note{{color:var(--dim);font-size:.85rem;margin:-.4rem 0 .6rem}}
+  .job.app{{border-left:3px solid var(--signal);padding-left:.8rem}}
+  .status{{color:var(--signal);font-weight:600;text-transform:uppercase;
+          letter-spacing:.04em}}
+  .since,.listing{{color:var(--dim)}}
+  .notes{{margin:.35rem 0 0;font-size:.85rem;color:var(--ink)}}
   footer{{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);
          color:var(--dim);font-size:.8rem}}
   a:focus-visible{{outline:2px solid var(--signal);outline-offset:3px}}
@@ -340,25 +544,42 @@ def render(shown, new, review, hidden, now, quick):
   <h1>Staff RN openings within two hours of Oakland</h1>
   <p class="sub">Scanned {esc(now.replace('T',' ')[:16])} UTC &middot;
      {len(shown)} shown &middot; {hidden} hidden as acute-care-required
+     {f' &middot; {len(d.active)} application' + ('s' if len(d.active) != 1 else '') + ' in progress' if d.active else ''}
      {' &middot; quick mode, requirements not analysed' if quick else ''}</p>
   <p class="tallies">{tally}</p>
 </header>
 
+<h2>Worth applying to now &mdash; {len(d.top)}</h2>
+<ul>{''.join(card(p) for p in d.top) or '<li class="empty">Nothing entry-level open right now.</li>'}</ul>
+
+<h2>In progress &mdash; {len(d.active)}</h2>
+<p class="note">Applications you have marked. Kept here whatever happens to
+the posting, and gone from every list above.</p>
+<ul>{''.join(acard(r) for r in d.active) or '<li class="empty">Nothing sent yet. Set Status in applications.csv once you apply.</li>'}</ul>
+
 <h2>New since last scan &mdash; {len(new)}</h2>
 <ul>{''.join(card(p) for p in new) or '<li class="empty">Nothing new this run.</li>'}</ul>
 
-<h2>Not applied yet &mdash; {len(rest)}</h2>
-<ul>{''.join(card(p) for p in rest) or '<li class="empty">Nothing waiting.</li>'}</ul>
+<h2>Watching &mdash; {len(d.watch)}</h2>
+<p class="note">Experience you do not have yet. Here so you can see them
+coming, not to apply to today.</p>
+<ul>{''.join(card(p) for p in d.watch) or '<li class="empty">Nothing waiting.</li>'}</ul>
 
-<h2>Applications pending &mdash; {len(applied)}</h2>
-<ul>{''.join(card(p) for p in applied) or '<li class="empty">Nothing sent yet. Set Status in applications.csv once you apply.</li>'}</ul>
+<h2>Closed out &mdash; {len(d.finished)}</h2>
+<ul>{''.join(acard(r) for r in d.finished[:20]) or '<li class="empty">Nothing closed out yet.</li>'}</ul>
 
 <h2>Location needs checking &mdash; {len(review)}</h2>
 <ul>{''.join(f'<li class="job"><h3>{esc(p.title)}</h3><p class="where">{esc(p.employer)} &middot; {esc(p.location)}</p></li>' for p in review[:20]) or '<li class="empty">Every location resolved.</li>'}</ul>
 
-<footer>Set <strong>Status</strong> in applications.csv to move a job from
-Not applied to Applications pending &mdash; the scanner never overwrites that
-column. A posting that disappears is marked closed, not deleted.<br><br>
+<footer>Set <strong>Status</strong> in applications.csv to
+<code>applied</code>, <code>pending</code>, <code>interviewing</code> or
+<code>offer</code> and the job moves to <strong>In progress</strong> and off
+every list above; <code>rejected</code>, <code>declined</code> or
+<code>withdrawn</code> moves it to <strong>Closed out</strong>;
+<code>unapplied</code> brings it back. The scanner never writes Status,
+Applied On or Notes. <em>Since</em> is your Applied On where you filled it
+in, otherwise the date this scanner first saw the row marked. A posting that
+disappears is marked closed only if you had not applied to it.<br><br>
 Each posting shows the requirement sentence the verdict rests on.
 If a quote does not support its label, the rule is wrong &mdash; the classifier
 has been wrong before. Only acute-care-required roles are hidden.</footer>

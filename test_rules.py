@@ -1,6 +1,6 @@
 """
-Regression tests for the title filter, the geo table, the classifier and
-the front-of-list detail line.
+Regression tests for the title filter, the geo table, the classifier, the
+front-of-list detail line and the application ledger.
 
 Every case here is a bug that actually shipped and cost real postings.
 Run before pushing a rule change:  python3 test_rules.py
@@ -15,6 +15,7 @@ import adapters as A
 import classifier as C
 import geo
 import highlights as H
+import run_scan as S
 
 
 CASES: list[tuple[str, bool, str]] = []          # (name, passed, detail)
@@ -380,6 +381,84 @@ check("the structured experience field still reaches the duration veto",
                  "Current and valid CA Registered Nurse license required. "
                  "Stated experience requirement: Minimum 2 Years.").bucket
       != "NO_EXPERIENCE", True)
+
+
+# ── application tracking (run_scan.py) ───────────────────────────────
+# You mark a job applied by editing a CSV on a phone. Everything here has
+# to survive that: stray capitals, stray spaces, a blank cell, a typo.
+
+check("a blank status is an unapplied one", S.normalize_status(""), "unapplied")
+check("a missing status is an unapplied one", S.normalize_status(None),
+      "unapplied")
+check("case and spacing never matter",
+      [S.is_active(" Applied "), S.is_active("INTERVIEWING")], [True, True])
+check("every in-flight status counts as active",
+      [S.is_active(x) for x in ("applied", "pending", "interviewing", "offer")],
+      [True] * 4)
+check("a finished application is not active",
+      [S.is_active(x) for x in ("rejected", "declined", "withdrawn")],
+      [False] * 3)
+# The whole point of the change: anything you have marked comes off the
+# lists of jobs to apply to.
+check("anything marked is off the main lists",
+      [S.is_open(x) for x in ("applied", "offer", "rejected", "closed")],
+      [False] * 4)
+check("unapplied and blank stay on the main lists",
+      [S.is_open("unapplied"), S.is_open("")], [True, True])
+# A typo must not swallow a job. Showing it to you again is the safe error.
+check("an unrecognised status is treated as open",
+      S.is_open("appleid"), True)
+
+
+def _ledger(*rows):
+    return {r["Key"]: r for r in rows}
+
+
+def _row(key, status, **kw):
+    r = {"Key": key, "Status": status, "Applied On": "", "Notes": "",
+         "Title": key, "Employer": "E", "Location": "L", "URL": "u",
+         "Details": "", "Last seen": "2026-09-04T12:00:00", "Marked active": ""}
+    r.update(kw)
+    return r
+
+
+# The bug this fixes: you apply, the employer takes the posting down, and
+# the application vanishes off the dashboard because the section was built
+# from the scan's results instead of from the ledger. The row was always
+# in applications.csv; nothing showed it to you.
+_closed = _row("gone", "pending", **{"Last seen": "2026-08-30T07:00:00"})
+_LEDGER = _ledger(
+    _row("a", "applied"), _row("b", "unapplied"), _closed,
+    _row("c", "offer"), _row("d", "rejected"), _row("e", "closed"))
+
+check("an application survives its posting being taken down",
+      "gone" in [r["Key"] for r in S.active_applications(_LEDGER)], True)
+check("only in-flight applications are listed as active",
+      sorted(r["Key"] for r in S.active_applications(_LEDGER)),
+      ["a", "c", "gone"])
+check("an offer sorts above a bare applied",
+      [r["Key"] for r in S.active_applications(_LEDGER)][0], "c")
+# "closed" is the scanner saying a posting vanished while you had not
+# applied. That is not an outcome you produced and does not belong in a
+# list of your outcomes.
+check("a vanished posting is not one of your closed-out applications",
+      [r["Key"] for r in S.finished_applications(_LEDGER)], ["d"])
+check("a still-listed posting is recognised",
+      [S.still_listed(_row("x", "applied"), "2026-09-04T12:00:00"),
+       S.still_listed(_closed, "2026-09-04T12:00:00")], [True, False])
+
+# Applied On is yours and the scanner never writes it — but it is also the
+# field that gets skipped when you are editing a CSV on a phone, so the
+# scanner keeps its own date. Yours wins when you filled it in.
+check("your applied date wins when you set one",
+      S.applied_on(_row("x", "applied", **{"Applied On": "2026-08-01",
+                                           "Marked active": "2026-08-20"})),
+      "2026-08-01")
+check("the scanner's date fills in when you did not",
+      S.applied_on(_row("x", "applied", **{"Marked active": "2026-08-20"})),
+      "2026-08-20")
+check("no date at all is blank, not invented",
+      S.applied_on(_row("x", "applied")), "")
 
 
 if __name__ == "__main__":

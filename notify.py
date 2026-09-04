@@ -18,6 +18,8 @@ import csv
 import os
 import sys
 
+import run_scan as R
+
 LEDGER = "applications.csv"
 ALERT = os.path.join("state", "alert.md")
 TITLE = os.path.join("state", "alert_title.txt")
@@ -38,7 +40,11 @@ def new_and_applicable(rows):
     """
     out = []
     for r in rows:
-        if r.get("Status") != "unapplied":
+        # Anything you have already marked — applied, interviewing, even
+        # rejected — is not a new posting to tell you about. Read through
+        # the same helper the dashboard uses so the email and the digest
+        # can never disagree about what "already handled" means.
+        if not R.is_open(r.get("Status")):
             continue
         if r.get("Bucket") not in WORTH_APPLYING:
             continue

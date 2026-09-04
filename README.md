@@ -141,22 +141,45 @@ same rule applies to it as to the requirement quote: **everything on that
 line is stated by the posting.** A blank where the shift should be means
 the posting never said, not that it's flexible.
 
-The rest are in *Not applied yet* on purpose. They require experience you
-don't have yet. They're there so you can watch them, not so you apply to
+The rest are in *Watching* on purpose. They require experience you don't
+have yet. They're there so you can see them coming, not so you apply to
 them. Postings that require acute-care experience are hidden entirely.
 
 **When you apply**, open `applications.csv`, find the row, change **Status**
-from `unapplied` to `applied`. Commit. On the next scan it moves to
-*Applications pending*.
+from `unapplied` to `applied`. Commit. On the next scan the job moves to
+*In progress* and **disappears from every list of jobs to apply to** — you
+already did.
 
 You can do this from your phone: tap the file, tap the pencil icon, edit,
 commit. It's slightly fiddly but it keeps everything in one place with full
 history.
 
+| Set Status to | What happens |
+|---|---|
+| `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress**, off every list above |
+| `rejected`, `declined`, `withdrawn` | Moves to **Closed out** |
+| `unapplied` | Comes back to the main lists |
+
+Capitals and stray spaces don't matter. A value it doesn't recognise is
+treated as `unapplied` and the job stays on the main list — a typo should
+show you a job again, never swallow one.
+
+**An application in progress is remembered even after the posting comes
+down.** That matters more than it sounds: a job you applied to is among the
+likeliest to disappear, because the employer fills it or pulls it while
+they interview. *In progress* is built from your ledger, not from what the
+scan found today, so the row stays put and tells you `not listed since
+2026-08-30` instead of silently vanishing.
+
+The **Since** column is your `Applied On` where you filled it in. If you
+didn't — and typing a date into a CSV on a phone is exactly the step that
+gets skipped — it falls back to the date the scanner first saw the row
+marked, which it records itself in `Marked active`.
+
 The scanner **never** touches Status, Applied On, or Notes. It only adds new
 rows and refreshes employer-controlled fields. A posting that disappears from
-the employer's site gets marked `closed` rather than deleted, so anything you
-already applied to keeps its record.
+the employer's site gets marked `closed` rather than deleted, and only if you
+hadn't applied to it — your applications are never overwritten.
 
 ---
 
