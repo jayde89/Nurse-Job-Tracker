@@ -1,13 +1,13 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-04 08:14 UTC. 75 shown._
+_Scanned 2026-09-04 18:04 UTC. 71 shown._
 
-**20 worth your attention** — Level I or no experience required,
-and not already in your pile. 55 more need experience you do not
+**19 worth your attention** — Level I or no experience required,
+and not already in your pile. 51 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 20
+## Worth applying to now — 19
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
@@ -17,7 +17,6 @@ Nothing sent yet.
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445)<br>White Blossom Care Center · Skilled nursing · Full-time · NOC · $46–$55/hr | PACS Group | San Jose | No experience required | Responsibilities Provide direct nursing care to residents in accordance with established care plans Administer medications and treatments accurately a |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR176905)<br>Vasona Creek Healthcare Center · Skilled nursing · Full-time · NOC / Night · $48.00–$55.00/hr | PACS Group | Los Gatos | No experience required | Skilled nursing or long-term care experience preferred |
 | 60-90 | [Registered Nurse RN Full Time Relocate to Fargo ND 20K](https://careers-vibratravels.icims.com/jobs/24124/login)<br>Long-term acute care / rehab · Full-time | Vibra Healthcare | Sacramento, California | No experience required | Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requir |
-| 90-120 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Cypress-Ridge-Care-Center/RN_JR179817)<br>Cypress Ridge Care Center · Skilled nursing · Full-time · AM · $53.00–$55.00/hr | PACS Group | Monterey | No experience required | Experience in skilled nursing, rehabilitation, or long-term care preferred. |
 | 90-120 | [NOC RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Rock-Creek-Care-Center/Registered-Nurse_JR174365)<br>Rock Creek Care Center · Skilled nursing · Full-time · NOC · $47/hr | PACS Group | Auburn | No experience required | What We’re Looking For: ✅ Current and in good standing RN license in the State of California ✅ Strong leadership and communication skills ✅ Compassion |
 | 90-120 | [RN- part time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN--part-time_JR155963)<br>Santa Rosa Post Acute · Skilled nursing · Part-time · PM / NOC · $48–$57/hr | PACS Group | Santa Rosa | No experience required | Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred. |
 | 90-120 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN_JR155539)<br>Santa Rosa Post Acute · Skilled nursing · Full-time · PM / NOC · $48.00–$57.00/hr | PACS Group | Santa Rosa | No experience required | Previous experience in a skilled nursing facility, long-term care, or geriatric care preferred. |
@@ -39,11 +38,13 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 1
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| <30 | [Public Health Nurse (2830) – Citywide – H00192](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015078451-public-health-nurse-2830-citywide-h00192)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Experience required, not acute | (Required) LICENSE : Possession of a valid permanent/temporary California license as a Registered Nurse issued by the California Board of Registered N |
 
-## Watching — 55
+## Watching — 51
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -74,7 +75,6 @@ apply to today.
 | 30-60 | [Registered Nurse, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-139411-1)<br>Part-time · Nights · $66.40–$90.82/hr | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Charge Nurse, Labor & Delivery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Charge-Nurse--Labor---Delivery_R-139280)<br>Part-time · Nights · $82.66–$115.72/hr | Sutter Health | Tracy | Experience required, not acute | 8 years recent relevant experience |
 | 30-60 | [Registered Nurse, Birthing Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--Birthing-Center_R-139275)<br>Part-time · Nights · $66.40–$90.82/hr | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
-| 30-60 | [Discharge Support Nurse Coordinator](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Discharge-Support-Nurse-Coordinator_R-137592)<br>Full-time · Days · $0.00–$0.00/hr | Sutter Health | Burlingame | Experience required, not acute | 2 years recent relevant experience |
 | 30-60 | [RN, Certified Would Care Lead, WOCN](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/RN--Certified-Would-Care-Lead--WOCN_R-130195)<br>Full-time · Days · $78.49–$109.88/hr | Sutter Health | Novato | Experience required, not acute | 8 years of recent relevant experience |
 | 60-90 | [RN All Shifts Full-Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Shift-Full-Time_JR179199)<br>Garden City Healthcare Center · Skilled nursing · Full-time · NOC · $40.00–$45.00/hr | PACS Group | Modesto | Experience required, not acute | Essential Duties and Responsibilities Administrative & Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing |
 | 60-90 | [RN NOC Per Diem](https://pacs.wd108.myworkdayjobs.com/pacs/job/Garden-City-Healthcare-Center/RN-NOC-Per-Diem_JR179198)<br>Garden City Healthcare Center · Skilled nursing · Per diem · NOC · $40.00–$45.00/hr | PACS Group | Modesto | Experience required, not acute | Essential Duties and Responsibilities Administrative & Leadership Functions Assist the Director of Nursing (DON) and/or ADON with oversight of nursing |
@@ -84,15 +84,12 @@ apply to today.
 | 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139760)<br>Full-time · Nights · $74.98–$104.96/hr | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
 | 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-139761)<br>Full-time · Nights · $74.98–$104.96/hr | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
 | 60-90 | [Nurse Navigator Oncology Clinic](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Nurse-Navigator-Oncology-Clinic_R-139351)<br>Full-time · Days · $82.48–$115.46/hr | Sutter Health | Sacramento | Experience required, not acute | 5 years recent relevant experience |
-| 60-90 | [Registered Nurse, Emergency - Limited Term](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency---Limited-Term_R-138278)<br>Full-time · Varied · $76.40–$101.18/hr | Sutter Health | Davis | Experience required, not acute | 2 years of recent relevant experience. |
-| 60-90 | [Registered Nurse, Emergency](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency_R-138284-1)<br>Full-time · Varied · $76.40–$101.18/hr | Sutter Health | Davis | Experience required, not acute | 2 years of recent relevant experience. |
 | 60-90 | [Nurse Navigator Oncology Clinic](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Nurse-Navigator-Oncology-Clinic_R-139067)<br>Full-time · Days · $82.48–$115.46/hr | Sutter Health | Sacramento | Experience required, not acute | 5 years recent relevant experience |
 | 60-90 | [RN, CWOCN, Certified Wound Care Nurse Lead, Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/RN--CWOCN--Certified-Wound-Care-Nurse-Lead--Home-Health_R-136908)<br>Full-time · Days · $74.74–$104.64/hr | Sutter Health | Sacramento | Experience required, not acute | 8 years of recent relevant experience |
 | 90-120 | [Part time RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595)<br>Whitney Oaks Care Center · Skilled nursing · Part-time | PACS Group | Carmichael | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
 | 90-120 | [Registered Nurse, Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse--Home-Health_R-139208)<br>Full-time · Days · $62.57–$77.40/hr | Sutter Health | Auburn | Experience required, not acute | 5 years recent relevant experience |
 | 90-120 | [Lead Wound Care RN (CWON), Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Lead-Wound-Care-RN--CWON---Home-Health_R-134548)<br>Full-time · Days · $78.49–$109.88/hr | Sutter Health | Santa Rosa | Experience required, not acute | 8 years of recent relevant experience |
 | <30 | [Per Diem Registered Nurse - (All Specialties) - DPH - (P103)](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878516-per-diem-registered-nurse-all-specialties-dph-p103-)<br>Public Health · Per diem | City & County of San Francisco | San Francisco | Experience required, not acute | Applicants may be required to submit verification of qualifying education and experience at any point during the recruitment and selection process. |
-| <30 | [Public Health Nurse (2830) – Citywide – H00192](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990013878866-public-health-nurse-2830-citywide-h00192)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Experience required, not acute | (Required) LICENSE : Possession of a valid permanent/temporary California license as a Registered Nurse issued by the California Board of Registered N |
 | <30 | [Charge RN - Emergency 313](https://app.smarthires.com/showempjob.htm?viewId=KgiiaY3p97o%3D)<br>Acute hospital · Per diem · NOC · $80.68–$99.23/hr | St. Rose Hospital | Hayward, CA | Experience required, not acute | Stated experience requirement: Minimum 2 Years. |
 | <30 | [RN - Emergency 334](https://app.smarthires.com/showempjob.htm?viewId=Qg82uTc1VW8%3D)<br>Acute hospital · Full-time · NOC 1900-0700 · $73.35–$90.22/hr | St. Rose Hospital | Hayward, CA | Experience required, not acute | Stated experience requirement: Minimum 2 Years. |
 | <30 | [Oncology - Complex Care RN Coordinator](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/SMSHCC---Complex-Care-RN-Coordinator_R-135369)<br>Full-time · Varied · $0.00–$0.00/hr | Sutter Health | Oakland | Experience required, not acute | 2 years of recent relevant experience |
