@@ -18,6 +18,8 @@ import csv
 import os
 import sys
 
+import run_scan as R
+
 LEDGER = "applications.csv"
 ALERT = os.path.join("state", "alert.md")
 TITLE = os.path.join("state", "alert_title.txt")
@@ -38,7 +40,11 @@ def new_and_applicable(rows):
     """
     out = []
     for r in rows:
-        if r.get("Status") != "unapplied":
+        # Anything you have already marked — applied, interviewing, even
+        # rejected — is not a new posting to tell you about. Read through
+        # the same helper the dashboard uses so the email and the digest
+        # can never disagree about what "already handled" means.
+        if not R.is_open(r.get("Status")):
             continue
         if r.get("Bucket") not in WORTH_APPLYING:
             continue
@@ -66,8 +72,12 @@ def body(rows, repo):
         ev = (r.get("Requirement evidence") or "").replace("|", "/")
         ev = " ".join(ev.split())[:180]
         title = (r.get("Title") or "").replace("|", "/")
+        # The email is read on a phone, where "RN" and "RN" and "RN" is not
+        # a list you can act on. The detail line is what tells them apart.
+        detail = (r.get("Details") or "").replace("|", "/")
+        role = f"[{title}]({r.get('URL')})" + (f"<br>{detail}" if detail else "")
         lines.append(
-            f"| {r.get('Drive time') or '?'} | [{title}]({r.get('URL')}) | "
+            f"| {r.get('Drive time') or '?'} | {role} | "
             f"{r.get('Employer')} | {r.get('Location')} | {ev} |")
     lines += [
         "",
