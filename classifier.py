@@ -39,7 +39,7 @@ import re
 from dataclasses import dataclass
 
 SHOW = {"STAFF_NURSE_I", "NO_EXPERIENCE", "GENERAL_EXPERIENCE", "UNCLEAR"}
-HIDE = {"ACUTE_REQUIRED"}
+HIDE = {"ACUTE_REQUIRED", "LEVEL_II_TITLE"}
 
 # Rank for sorting the digest — lower is more interesting to you.
 RANK = {"STAFF_NURSE_I": 0, "NO_EXPERIENCE": 1, "UNCLEAR": 2,
@@ -253,6 +253,29 @@ TITLE_LEVEL_I = re.compile(
 # "Nurse II" must never match Level I. Guard explicitly.
 TITLE_LEVEL_2PLUS = re.compile(r"(?i)\b(ii|iii|iv|v|2|3|4|5)\b")
 
+# A graded Level II+ title, anchored to the nurse noun itself.
+#
+# At Sutter and the systems that copy its ladder, the "II" in "Registered
+# Nurse II" is the job grade, not a description of the unit: it is the
+# rung above Level I and it is what HR screens on. No amount of reading
+# the requirement text changes that, and the text often understates it —
+# "Registered Nurse II, Medical Acute" in Roseville asks for six months of
+# acute experience and marks it *Preferred*, so every clause reads as
+# optional and the posting arrives looking open to anyone.
+#
+# Measured against a live scan, graded titles were 66 of 122 open rows —
+# 54% of the list — and not one of them landed in NO_EXPERIENCE or
+# STAFF_NURSE_I. The grade never coincides with the buckets a new grad can
+# actually use, which is why suppressing on it costs nothing and halves
+# the noise.
+#
+# Anchored to "nurse"/"rn" immediately before the numeral on purpose. A
+# bare \b(ii|2)\b anywhere in the title matches "RN, 2 West Medical",
+# "Unit 4 South" and "12 Hour Nights", and would have hidden three staff
+# postings that carry no grade at all.
+TITLE_LEVEL_II_GRADED = re.compile(
+    r"(?i)\b(?:nurse|rn)\s*(ii|iii|iv|2|3|4)\b")
+
 ACUTE = re.compile(
     r"(?i)\b(acute care|acute[- ]care|inpatient|hospital|med[- ]?surg"
     r"|telemetry|critical care|icu|intensive care|emergency (?:room|department|dept)"
@@ -282,7 +305,7 @@ def _snippet(text: str, pattern: re.Pattern, width: int = 170) -> str:
 
 # ── the rule pass ────────────────────────────────────────────────────
 
-def classify(title: str, description: str) -> Verdict:
+def _classify_requirements(title: str, description: str) -> Verdict:
     t = title or ""
     desc = clean(description)
 
@@ -386,6 +409,37 @@ def classify(title: str, description: str) -> Verdict:
 
     return Verdict("GENERAL_EXPERIENCE", required_clauses[0][:200],
                    "requires nursing experience, but not acute care")
+
+
+def classify(title: str, description: str) -> Verdict:
+    """
+    Read the requirements first, then apply the title grade.
+
+    Order matters, and getting it wrong is how this rule went in the first
+    time. Applying the grade up front short-circuited the acute-care check,
+    so "Staff Nurse II, Pre-Registration" came back labelled by its title
+    instead of by the sentence that actually disqualifies it. Both verdicts
+    hide the posting, so nothing looked wrong on the page — but the rule
+    that guards the most expensive bug in this codebase had stopped being
+    reached, and its regression test was the only thing that noticed.
+
+    So: let the posting earn a verdict on its own evidence, and only fall
+    back to the grade when the verdict would otherwise have been shown.
+
+      - STAFF_NURSE_I survives the grade. A posting that says "new grads
+        welcome" in its body, or offers a Level I rung as "RN I/II", is a
+        job you can take whatever the title says on it.
+      - ACUTE_REQUIRED survives it too, and keeps the requirement sentence
+        as its evidence, which a title-only verdict cannot give you.
+    """
+    v = _classify_requirements(title, description)
+    if v.bucket == "STAFF_NURSE_I" or v.bucket in HIDE:
+        return v
+    if TITLE_LEVEL_II_GRADED.search(title or ""):
+        return Verdict("LEVEL_II_TITLE", title or "",
+                       "title is a graded Level II+ role, the rung above the "
+                       "one a new graduate is hired into")
+    return v
 
 
 def should_show(v: Verdict) -> bool:

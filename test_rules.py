@@ -73,6 +73,48 @@ check("spelled-out LVN still excluded",
 check("nurse assistant still excluded",
       A.title_passes("Nurse Assistant - Oncology"), False)
 
+# ── graded Level II titles ───────────────────────────────────────────
+# "Registered Nurse II, Medical Acute" in Roseville asks for six months of
+# acute experience and marks it *Preferred*, so every clause read as
+# optional and it arrived looking open to anyone. The II is the job grade,
+# not a unit description, and graded roles were 54% of the open list.
+check("graded Level II title is hidden",
+      C.classify("Registered Nurse II, Medical Acute",
+                 "TYPICAL EXPERIENCE: Minimum of six (6) months area "
+                 "specific acute care experience within the last two (2) "
+                 "years Preferred.").bucket,
+      "LEVEL_II_TITLE")
+check("a hidden Level II role does not reach you",
+      C.should_show(C.classify("Staff Nurse II, ICU/CPU",
+                               "EDUCATION: Graduate of nursing school.")),
+      False)
+# The grade is read off the nurse noun, never a bare numeral. These three
+# carry no grade at all and were staff postings.
+for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
+           "RN - 12 Hour Nights"):
+    check(f"no false grade in {_t!r}",
+          C.classify(_t, "EDUCATION: Graduate of nursing school.").bucket
+          != "LEVEL_II_TITLE", True)
+# A Level I rung offered alongside II is still a job you can take.
+check("I/II title survives the grade",
+      C.classify("Staff Nurse I/II, Cardiac",
+                 "EDUCATION: Graduate of nursing school.").bucket
+      != "LEVEL_II_TITLE", True)
+# New-grad language in the body beats the grade in the title.
+check("new grads welcome beats the grade",
+      C.classify("Registered Nurse II, Med Surg",
+                 "New graduates are welcome to apply.").bucket,
+      "STAFF_NURSE_I")
+# Applying the grade first short-circuited the acute check: the verdict
+# stopped resting on the sentence that disqualifies the posting. Both
+# hide it, so only this test noticed.
+check("acute requirement outranks the grade",
+      C.classify("Staff Nurse II, Pre-Registration",
+                 "CERTIFICATION & LICENSURE: RN of California AS TYPICALLY "
+                 "ACQUIRED IN: Acute Care Previous experience as an RN in an "
+                 "acute care hospital setting. EPIC.").bucket,
+      "ACUTE_REQUIRED")
+
 # ── geo ──────────────────────────────────────────────────────────────
 # Never tokenize the gazetteer: "Sutter Creek" is out of range, "Walnut
 # Creek" is not, and splitting on whitespace once conflated them.

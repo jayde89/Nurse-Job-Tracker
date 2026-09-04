@@ -14,8 +14,16 @@ State lives in state/seen.json so "new since last scan" is real across runs.
 Run it three times a day; anything already seen stays in the CSV but drops
 out of the New section.
 
-Suppression is narrow on purpose: only ACUTE_REQUIRED is hidden. Everything
-else reaches you, ranked, with the requirement sentence attached.
+Suppression is narrow on purpose. Two things are hidden: ACUTE_REQUIRED,
+and titles carrying a graded Level II+ rung ("Registered Nurse II"), which
+is the grade above the one a new graduate is hired into. Everything else
+reaches you, ranked, with the requirement sentence attached.
+
+The Level II rule is a deliberate exception to "bias toward showing too
+much", made at the user's request after the graded roles crowded out the
+usable ones. It is safe to the extent that the grade and the entry-level
+buckets never coincided in live data -- if that stops being true, this is
+the rule to re-examine first.
 """
 
 from __future__ import annotations
@@ -157,6 +165,7 @@ BUCKET_LABEL = {
     "UNCLEAR": "Requirements unclear",
     "GENERAL_EXPERIENCE": "Experience required, not acute",
     "ACUTE_REQUIRED": "Acute care required",
+    "LEVEL_II_TITLE": "Level II role",
 }
 
 
@@ -267,7 +276,14 @@ def build(rows, review, quick=False):
 
     # A posting that stops appearing has closed. Flag it rather than deleting
     # it, so an application you already sent keeps its history.
-    live = {p.key for p in shown}
+    #
+    # "live" is every posting this scan CLASSIFIED, not every posting it
+    # showed. Those are different sets the moment anything is suppressed,
+    # and reading it off `shown` meant "we stopped displaying this" was
+    # recorded as "the employer took it down". Hiding graded Level II
+    # titles would have marked 66 still-open roles closed on the next scan
+    # and written that into your ledger, where closed rows never come back.
+    live = {p.key for p in rows}
     for key, row in ledger.items():
         if key not in live and is_open(row.get("Status")):
             row["Status"] = "closed"
@@ -293,8 +309,8 @@ def build(rows, review, quick=False):
     # A job you have applied to is not a job to apply to. Everything you
     # have marked — active or finished — comes off the lists below and
     # lives in its own section, which is what "remove it from the main
-    # page" means. Only ACUTE_REQUIRED is still hidden outright; nothing
-    # here is ever dropped, only moved.
+    # page" means. ACUTE_REQUIRED and graded Level II titles are hidden
+    # outright; nothing else here is ever dropped, only moved.
     open_shown = [p for p in shown if is_open(getattr(p, "status", ""))]
     new_open = [p for p in new if is_open(getattr(p, "status", ""))]
     top = [p for p in open_shown if p.bucket in ENTRY_LEVEL]
@@ -383,8 +399,7 @@ def render_md(d):
 
     return f"""# Staff RN openings within two hours of Oakland
 
-_Scanned {d.now.replace('T', ' ')[:16]} UTC. {len(d.shown)} shown, {d.hidden} hidden
-as acute-care-required._
+_Scanned {d.now.replace('T', ' ')[:16]} UTC. {len(d.shown)} shown._
 
 **{len(d.top)} worth your attention** — Level I or no experience required,
 and not already in your pile. {len(d.watch)} more need experience you do not
@@ -551,7 +566,7 @@ def render(d):
 <header>
   <h1>Staff RN openings within two hours of Oakland</h1>
   <p class="sub">Scanned {esc(now.replace('T',' ')[:16])} UTC &middot;
-     {len(shown)} shown &middot; {hidden} hidden as acute-care-required
+     {len(shown)} shown
      {f' &middot; {len(d.active)} application' + ('s' if len(d.active) != 1 else '') + ' in progress' if d.active else ''}
      {' &middot; quick mode, requirements not analysed' if quick else ''}</p>
   <p class="tallies">{tally}</p>
@@ -590,7 +605,7 @@ in, otherwise the date this scanner first saw the row marked. A posting that
 disappears is marked closed only if you had not applied to it.<br><br>
 Each posting shows the requirement sentence the verdict rests on.
 If a quote does not support its label, the rule is wrong &mdash; the classifier
-has been wrong before. Only acute-care-required roles are hidden.</footer>
+has been wrong before.</footer>
 </div></body></html>"""
 
 
@@ -600,6 +615,7 @@ if __name__ == "__main__":
     rows, review = scan(fetch_details=not quick)
     shown, new = build(rows, review, quick)
     print(f"\n{len(shown)} shown, {len(new)} new, "
-          f"{len(rows) - len(shown)} hidden as acute-required")
+          f"{len(rows) - len(shown)} hidden "
+          f"(acute-required or graded Level II)")
     print("wrote DIGEST.md, digest.html, index.html, applications.csv, "
           "state/seen.json")

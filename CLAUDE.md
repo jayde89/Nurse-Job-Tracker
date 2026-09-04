@@ -15,8 +15,20 @@ doesn't support the label, the rule is wrong.** Four bugs of exactly this
 shape were found by reading labels against their own evidence — see the
 "Read the evidence" section of the README.
 
-Bias toward showing too much. `UNCLEAR` reaches the user; only
-`ACUTE_REQUIRED` is suppressed. Never widen suppression to tidy the list.
+Bias toward showing too much. `UNCLEAR` reaches the user. Two buckets are
+suppressed: `ACUTE_REQUIRED`, and `LEVEL_II_TITLE` — a title carrying a
+graded Level II+ rung, which is the grade above the one a new graduate is
+hired into. Do not widen suppression past those two to tidy the list.
+
+**The Level II rule is an exception the user asked for on 2026-09-04**, so
+don't "fix" it back. Graded roles were 66 of 122 open rows and were
+crowding out the usable ones; a live scan showed the grade never once
+coincided with `NO_EXPERIENCE` or `STAFF_NURSE_I`, which is what makes
+hiding it cheap. If that stops being true, this is the first rule to
+re-examine. It is applied *after* the requirement rules in `classify()`,
+never before — see the docstring there for why, and keep it that way.
+The user also chose to show no count of what was hidden, so the digest
+says nothing about it; the scan's stdout line still reports it honestly.
 
 `highlights.py` puts a line of detail under each title in the digest —
 facility, setting, full-time or per diem, shift, pay — and it is under the
@@ -30,7 +42,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 84 cases, no dependencies, ~instant
+python3 test_rules.py     # 98 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -58,6 +70,12 @@ between requests. Keep that pause.
 
 ## Invariants
 
+- **A posting is "closed" when the source stops listing it, never when we
+  stop showing it.** `live` in `run_scan.py` is built from every posting
+  the scan *classified*, not from `shown`. Those sets differ the moment
+  anything is suppressed, and reading it off `shown` would have written
+  `closed` onto 66 still-open Level II rows the first time that rule ran —
+  into the ledger, where a closed row never comes back.
 - **`applications.csv` is the user's file.** The scanner may add rows and
   refresh employer-controlled columns. It must never write `Status`,
   `Applied On` or `Notes`. A posting that disappears is marked `closed`,
