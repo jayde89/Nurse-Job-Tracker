@@ -1,1 +1,112 @@
-{}
+{
+ "WorkdayCXS:John Muir Health": {
+  "employer": "John Muir Health",
+  "adapter": "WorkdayCXS",
+  "status": "ok",
+  "error": null,
+  "listings": 34,
+  "in_range": 4,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "WorkdayCXS:Sutter Health": {
+  "employer": "Sutter Health",
+  "adapter": "WorkdayCXS",
+  "status": "failed",
+  "error": "Expecting value: line 1 column 1 (char 0)",
+  "listings": 0,
+  "in_range": 0,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": null
+ },
+ "WorkdayCXS:El Camino Health": {
+  "employer": "El Camino Health",
+  "adapter": "WorkdayCXS",
+  "status": "ok",
+  "error": null,
+  "listings": 62,
+  "in_range": 5,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "HealthcareSource:Alameda Health System": {
+  "employer": "Alameda Health System",
+  "adapter": "HealthcareSource",
+  "status": "ok",
+  "error": null,
+  "listings": 48,
+  "in_range": 31,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "PACS:PACS Group": {
+  "employer": "PACS Group",
+  "adapter": "PACS",
+  "status": "ok",
+  "error": null,
+  "listings": 112,
+  "in_range": 28,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "ScionHealth:Kindred / ScionHealth": {
+  "employer": "Kindred / ScionHealth",
+  "adapter": "ScionHealth",
+  "status": "ok",
+  "error": null,
+  "listings": 14,
+  "in_range": 0,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "NeoGov:CA counties & cities (NEOGOV)": {
+  "employer": "CA counties & cities (NEOGOV)",
+  "adapter": "NeoGov",
+  "status": "ok",
+  "error": null,
+  "listings": 211,
+  "in_range": 11,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "Jibe:Vibra Healthcare": {
+  "employer": "Vibra Healthcare",
+  "adapter": "Jibe",
+  "status": "ok",
+  "error": null,
+  "listings": 88,
+  "in_range": 4,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "SmartRecruiters:City & County of San Francisco": {
+  "employer": "City & County of San Francisco",
+  "adapter": "SmartRecruiters",
+  "status": "ok",
+  "error": null,
+  "listings": 170,
+  "in_range": 3,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "SmartHires:St. Rose Hospital": {
+  "employer": "St. Rose Hospital",
+  "adapter": "SmartHires",
+  "status": "ok",
+  "error": null,
+  "listings": 33,
+  "in_range": 4,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": "2026-09-05T07:31:58+00:00"
+ },
+ "USAJobs:US Dept of Veterans Affairs": {
+  "employer": "US Dept of Veterans Affairs",
+  "adapter": "USAJobs",
+  "status": "failed",
+  "error": "USAJOBS_KEY not set \u2014 request one at https://developer.usajobs.gov/apirequest/ (adapter is untested)",
+  "listings": 0,
+  "in_range": 0,
+  "checked_at": "2026-09-05T07:31:58+00:00",
+  "last_success": null
+ }
+}
