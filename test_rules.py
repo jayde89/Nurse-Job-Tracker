@@ -20,6 +20,7 @@ import adapters as A
 import classifier as C
 import geo
 import highlights as H
+import notify as N
 import run_scan as S
 
 
@@ -666,6 +667,111 @@ check("digest reports N/M ok with one failure",
       "_Sources: 1/2 ok_" in S.render_md(_digest(_one_failed)), True)
 check("a failed source is named in the digest",
       "failed: Emp2" in S.render_md(_digest(_one_failed)), True)
+
+
+# ── notify.py: new_and_applicable() row filtering ──────────────────────
+# Fixture rows only — no CSV file, no network. notify.main() is never
+# called, so applications.csv and state/ are never touched.
+
+def _row(**overrides):
+    row = {k: "" for k in S.LEDGER_FIELDS}
+    row.update({
+        "Key": "k1",
+        "Status": "unapplied",
+        "Bucket": "No experience required",
+        "Title": "Staff RN",
+        "Employer": "Test Health",
+        "Location": "Oakland, CA",
+        "Drive time": "<30",
+        "Requirement evidence": "No experience required.",
+        "First seen": "2026-09-05T07:00:00+00:00",
+        "Last seen": "2026-09-05T07:00:00+00:00",
+        "URL": "https://example.com/job",
+    })
+    row.update(overrides)
+    return row
+
+
+check("new+applicable row is returned",
+      [r["Key"] for r in N.new_and_applicable([_row(Key="a")])], ["a"])
+check("Level I / new grad also qualifies",
+      [r["Key"] for r in N.new_and_applicable(
+          [_row(Key="a", Bucket="Level I / new grad")])], ["a"])
+check("a row seen before today (First seen != Last seen) is not new",
+      N.new_and_applicable([_row(
+          Key="b", **{"First seen": "2026-09-04T07:00:00+00:00",
+                       "Last seen": "2026-09-05T07:00:00+00:00"})]), [])
+check("a bucket outside WORTH_APPLYING is excluded",
+      N.new_and_applicable([_row(
+          Key="c", Bucket="Experience required, not acute")]), [])
+for _status in ("applied", "interviewing", "rejected", "closed"):
+    check(f"a {_status!r} row is not new-and-applicable (via is_open)",
+          N.new_and_applicable([_row(Key="d", Status=_status)]), [])
+check("an empty First seen is excluded",
+      N.new_and_applicable([_row(Key="e", **{"First seen": ""})]), [])
+
+_sort_rows = [
+    _row(Key="a", Employer="Zeta", **{"Drive time": "60-90"}),
+    _row(Key="b", Employer="Beta", **{"Drive time": "<30"}),
+    _row(Key="c", Employer="Alpha", **{"Drive time": "<30"}),
+    _row(Key="d", Employer="Mid", **{"Drive time": "not-a-bucket"}),
+]
+check("results sort by drive time (nearest first), ties by employer, "
+      "unknown drive buckets last",
+      [r["Key"] for r in N.new_and_applicable(_sort_rows)],
+      ["c", "b", "a", "d"])
+
+
+# ── notify.py: body() digest text ───────────────────────────────────────
+_repo = "someuser/somerepo"
+
+check("one posting uses the singular",
+      "**1 new posting you could apply to today.**" in N.body([_row()], _repo),
+      True)
+check("two postings use the plural",
+      "**2 new postings you could apply to today.**"
+      in N.body([_row(Key="a"), _row(Key="b")], _repo), True)
+
+_pipe_row = _row(Title="RN | ICU", **{"Requirement evidence": "No exp | needed"})
+_pipe_body = N.body([_pipe_row], _repo)
+check("a pipe in Title is replaced so it can't add a table column",
+      "RN / ICU" in _pipe_body and "RN | ICU" not in _pipe_body, True)
+check("a pipe in Requirement evidence is replaced too",
+      "No exp / needed" in _pipe_body and "No exp | needed" not in _pipe_body,
+      True)
+
+_messy_evidence = ("Must   have\n\ncurrent   " * 12) + "license."
+_ws_body = N.body([_row(**{"Requirement evidence": _messy_evidence})], _repo)
+_expected_ev = " ".join(_messy_evidence.split())[:180]
+check("evidence is whitespace-collapsed and cut to 180 chars",
+      _expected_ev in _ws_body and len(_expected_ev) <= 180, True)
+check("the raw, uncollapsed evidence never appears",
+      _messy_evidence in _ws_body, False)
+
+_detail_body = N.body([_row(Title="Staff RN", URL="https://x/1",
+                             Details="Full-time, Nights, $60-80/hr")], _repo)
+check("a non-empty Details line appears as <br> after the linked title",
+      "[Staff RN](https://x/1)<br>Full-time, Nights, $60-80/hr" in _detail_body,
+      True)
+_no_detail_body = N.body([_row(Title="Staff RN", URL="https://x/1", Details="")],
+                          _repo)
+check("an empty Details adds no <br>",
+      "<br>" in _no_detail_body, False)
+
+check("Title renders as a markdown link to URL",
+      "[Staff RN](https://example.com/job)"
+      in N.body([_row(Title="Staff RN", URL="https://example.com/job")], _repo),
+      True)
+
+_repo_body = N.body([_row()], _repo)
+check("the DIGEST.md link uses the repo argument",
+      f"https://github.com/{_repo}/blob/main/DIGEST.md" in _repo_body, True)
+check("the applications.csv link uses the repo argument",
+      f"https://github.com/{_repo}/blob/main/applications.csv" in _repo_body,
+      True)
+
+check("a missing Drive time renders as '?'",
+      "| ? |" in N.body([_row(**{"Drive time": ""})], _repo), True)
 
 
 if __name__ == "__main__":
