@@ -1,7 +1,7 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-05 07:35 UTC. 47 shown._
-_Sources: 9/11 ok_ — failed: Sutter Health, US Dept of Veterans Affairs
+_Scanned 2026-09-05 17:11 UTC. 70 shown._
+_Sources: 10/11 ok_ — failed: US Dept of Veterans Affairs
 
 **16 worth your attention** — Level I or no experience required,
 and not already in your pile. 30 more need experience you do not
@@ -36,11 +36,9 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 1
+## New since last scan — 0
 
-| Drive | Role | Employer | Location | Requirements | Evidence |
-|---|---|---|---|---|---|
-| 30-60 | [RN - CMC Emergency Services - Part Time - 12 Hour - Nights - CNA](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---CMC-Emergency-Services---Part-Time---12-Hour---Nights---CNA_JR0017503-1)<br>Part-time · Nights | John Muir Health | Concord | Requirements unclear |  |
+_Nothing new this run._
 
 ## Watching — 30
 
@@ -84,9 +82,12 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 0
+## Location needs checking — 4
 
-_Every location resolved._
+- Advice RN, MIST - Work From Home — Sutter Health, West Valley (+8 more)
+- Advice Nurse, Mental Health Work From Home — Sutter Health, West Valley
+- Advice Nurse, Mental Health Work From Home — Sutter Health, Salt Lake City (+3 more)
+- Home Health Wound care Nurse III — Sutter Health, Salida
 
 ---
 
