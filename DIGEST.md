@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-06 22:41 UTC. 70 shown._
+_Scanned 2026-09-07 08:13 UTC. 67 shown._
 _Sources: 10/11 ok_ — failed: US Dept of Veterans Affairs
 
 **16 worth your attention** — Level I or no experience required,
-and not already in your pile. 30 more need experience you do not
+and not already in your pile. 29 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -40,7 +40,7 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 30
+## Watching — 29
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -59,7 +59,6 @@ apply to today.
 | 90-120 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Roseville-Care-Center/RN_JR175934)<br>Roseville Care Center · Skilled nursing · Full-time · $50.00/hr | PACS Group | Roseville | Requirements unclear | Minimum of two (2) years of nursing experience preferred Long-term care or skilled nursing experience pr |
 | 90-120 | [Full-Time RN | PM Shift](https://pacs.wd108.myworkdayjobs.com/pacs/job/Westview-Healthcare-Center/RN_JR174851)<br>Westview Healthcare Center · Skilled nursing · Full-time · PM | PACS Group | Auburn | Requirements unclear | Provide RN nursing services in a skilled nursing unit or facility; may include supervision of nurse assistants, medication passes and treatments We ar |
 | 90-120 | [RN On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Western-Slope-Health-Center/RN-On-Call_JR155609)<br>Western Slope Health Center · Skilled nursing · On-call · $48/hr | PACS Group | Placerville | Requirements unclear | Minimum 2 years of nursing experience |
-| <30 | [CN II - Ambulatory Clinic Nurse](https://alameda-health-system-careers.hctsportals.com/jobs/2222004-cn-ii-ambulatory-clinic-nurse)<br>$78.14/hr | Alameda Health System | 1411 East 31st Street, Oakland, CA | Requirements unclear | Six months of fulltime recent experience as an RN in a comparable area of specialty |
 | <30 | [CN II - Ambulatory Clinic Nurse](https://alameda-health-system-careers.hctsportals.com/jobs/2217834-cn-ii-ambulatory-clinic-nurse)<br>Full-time · $78.14/hr | Alameda Health System | 1411 East 31st Street, Oakland, CA | Requirements unclear | Six months of fulltime recent experience as an RN in a comparable area of specialty |
 | <30 | [CN II - Ambulatory Clinic Nurse](https://alameda-health-system-careers.hctsportals.com/jobs/2109574-cn-ii-ambulatory-clinic-nurse)<br>Full-time · $74.07–$108.57/hr | Alameda Health System | 1411 East 31st Street, Oakland, CA | Requirements unclear | Six months of fulltime recent experience as an RN in a comparable area of specialty |
 | <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878446-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Requirements unclear | one (1) year of experience working as a Registered Nurse |
@@ -82,11 +81,9 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 4
+## Location needs checking — 2
 
 - Advice RN, MIST - Work From Home — Sutter Health, West Valley (+8 more)
-- Advice Nurse, Mental Health Work From Home — Sutter Health, West Valley
-- Advice Nurse, Mental Health Work From Home — Sutter Health, Salt Lake City (+3 more)
 - Home Health Wound care Nurse III — Sutter Health, Salida
 
 ---
