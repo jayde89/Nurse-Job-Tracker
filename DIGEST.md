@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-08 08:03 UTC. 67 shown._
+_Scanned 2026-09-08 18:21 UTC. 69 shown._
 _Sources: 10/11 ok_ — failed: US Dept of Veterans Affairs
 
 **16 worth your attention** — Level I or no experience required,
-and not already in your pile. 29 more need experience you do not
+and not already in your pile. 27 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -36,11 +36,16 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 4
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015109716-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Requirements unclear | one (1) year of experience working as a Registered Nurse |
+| 30-60 | [RN - BHC Psychiatric Services - Inpatient - Per Diem - 8 Hour - Variable](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---BHC-Psychiatric-Services---Inpatient---Per-Diem---8-Hour---Variable_JR0017829)<br>Per diem · Days / Day · $76.30–$103.85/hr | John Muir Health | Concord | Experience required, not acute | Nursing - Psychiatry - Required |
+| 60-90 | [Specialty Registered Nurse Coordinator, Surgery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Specialty-Registered-Nurse-Coordinator_R-136962)<br>Part-time · Days · $78.73–$110.21/hr | Sutter Health | Modesto | Experience required, not acute | 5 years of recent relevant OR background experience |
+| <30 | [Per Diem Registered Nurse - (All Specialties) - DPH - (P103)](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015109685-per-diem-registered-nurse-all-specialties-dph-p103-)<br>Public Health · Per diem | City & County of San Francisco | San Francisco | Experience required, not acute | Applicants may be required to submit verification of qualifying education and experience at any point during the recruitment and selection process. |
 
-## Watching — 29
+## Watching — 27
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -61,7 +66,6 @@ apply to today.
 | 90-120 | [RN On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Western-Slope-Health-Center/RN-On-Call_JR155609)<br>Western Slope Health Center · Skilled nursing · On-call · $48/hr | PACS Group | Placerville | Requirements unclear | Minimum 2 years of nursing experience |
 | <30 | [CN II - Ambulatory Clinic Nurse](https://alameda-health-system-careers.hctsportals.com/jobs/2217834-cn-ii-ambulatory-clinic-nurse)<br>Full-time · $78.14/hr | Alameda Health System | 1411 East 31st Street, Oakland, CA | Requirements unclear | Six months of fulltime recent experience as an RN in a comparable area of specialty |
 | <30 | [CN II - Ambulatory Clinic Nurse](https://alameda-health-system-careers.hctsportals.com/jobs/2109574-cn-ii-ambulatory-clinic-nurse)<br>Full-time · $74.07–$108.57/hr | Alameda Health System | 1411 East 31st Street, Oakland, CA | Requirements unclear | Six months of fulltime recent experience as an RN in a comparable area of specialty |
-| <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878446-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Requirements unclear | one (1) year of experience working as a Registered Nurse |
 | <30 | [RN - Coordinator - Care Coordination and Resource Services - Full Time - 8 Hour - Days](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/1914-Tice-Valley-Blvd/RN---Coordinator---Care-Coordination-and-Resource-Services---Full-Time---8-Hour---Days_JR0017799)<br>Full-time · Days · $87.18–$117.68/hr | John Muir Health | 1914 Tice Valley Blvd | Requirements unclear | 1 year Care Coordination or Care Management - Required Two (2) years Nursing - Ambulat |
 | 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Clinic Registered Nurse (Senior)](https://www.governmentjobs.com/careers/solanocounty/jobs/5327355/clinic-registered-nurse-senior)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | A minimum score of 70% is required to continue in the selection process, unless otherwise announced. |
@@ -73,7 +77,6 @@ apply to today.
 | 60-90 | [Registered Nurse](https://pacs.wd108.myworkdayjobs.com/pacs/job/North-Pointe-Care-Center/Registered-Nursing_JR164288)<br>North Pointe Care Center · Skilled nursing | PACS Group | Sacramento | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
 | 90-120 | [Part time RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595)<br>Whitney Oaks Care Center · Skilled nursing · Part-time | PACS Group | Carmichael | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
 | <30 | [Public Health Nurse (2830) – Citywide – H00192](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015078451-public-health-nurse-2830-citywide-h00192)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Experience required, not acute | (Required) LICENSE : Possession of a valid permanent/temporary California license as a Registered Nurse issued by the California Board of Registered N |
-| <30 | [Per Diem Registered Nurse - (All Specialties) - DPH - (P103)](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990014878516-per-diem-registered-nurse-all-specialties-dph-p103-)<br>Public Health · Per diem | City & County of San Francisco | San Francisco | Experience required, not acute | Applicants may be required to submit verification of qualifying education and experience at any point during the recruitment and selection process. |
 | <30 | [Charge RN - Emergency 313](https://app.smarthires.com/showempjob.htm?viewId=KgiiaY3p97o%3D)<br>Acute hospital · Per diem · NOC · $80.68–$99.23/hr | St. Rose Hospital | Hayward, CA | Experience required, not acute | Stated experience requirement: Minimum 2 Years. |
 | <30 | [RN - Emergency 334](https://app.smarthires.com/showempjob.htm?viewId=Qg82uTc1VW8%3D)<br>Acute hospital · Full-time · NOC 1900-0700 · $73.35–$90.22/hr | St. Rose Hospital | Hayward, CA | Experience required, not acute | Stated experience requirement: Minimum 2 Years. |
 
@@ -81,9 +84,8 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 2
+## Location needs checking — 1
 
-- Advice RN, MIST - Work From Home — Sutter Health, West Valley (+8 more)
 - Home Health Wound care Nurse III — Sutter Health, Salida
 
 ---
