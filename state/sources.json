@@ -4,10 +4,10 @@
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 40,
+  "listings": 41,
   "in_range": 3,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "John Muir Health"
   ]
@@ -17,10 +17,10 @@
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 1186,
-  "in_range": 109,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "listings": 1191,
+  "in_range": 111,
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Sutter Health"
   ]
@@ -32,8 +32,8 @@
   "error": null,
   "listings": 60,
   "in_range": 3,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "El Camino Health"
   ]
@@ -45,8 +45,8 @@
   "error": null,
   "listings": 35,
   "in_range": 22,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Alameda Health System"
   ]
@@ -56,10 +56,10 @@
   "adapter": "PACS",
   "status": "ok",
   "error": null,
-  "listings": 113,
+  "listings": 114,
   "in_range": 27,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "PACS Group"
   ]
@@ -71,8 +71,8 @@
   "error": null,
   "listings": 16,
   "in_range": 1,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Kindred / ScionHealth"
   ]
@@ -82,23 +82,23 @@
   "adapter": "NeoGov",
   "status": "degraded",
   "error": null,
-  "listings": 148,
-  "in_range": 10,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "listings": 253,
+  "in_range": 11,
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
+   "City of Berkeley",
+   "City of Oakland",
    "Contra Costa County",
+   "County of Santa Clara",
    "Marin County",
+   "Napa County",
    "Solano County"
   ],
   "missed": [
-   "City of Berkeley",
-   "City of Oakland",
    "County of Monterey",
    "County of San Mateo",
-   "County of Santa Clara",
    "County of Sonoma",
-   "Napa County",
    "Sacramento County"
   ]
  },
@@ -107,10 +107,10 @@
   "adapter": "Jibe",
   "status": "ok",
   "error": null,
-  "listings": 89,
+  "listings": 90,
   "in_range": 4,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Vibra Healthcare"
   ]
@@ -120,10 +120,10 @@
   "adapter": "SmartRecruiters",
   "status": "ok",
   "error": null,
-  "listings": 177,
+  "listings": 178,
   "in_range": 3,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "City & County of San Francisco"
   ]
@@ -135,8 +135,8 @@
   "error": null,
   "listings": 40,
   "in_range": 8,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "St. Rose Hospital"
   ]
@@ -148,8 +148,8 @@
   "error": null,
   "listings": 146,
   "in_range": 19,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "MarinHealth"
   ]
@@ -161,8 +161,8 @@
   "error": null,
   "listings": 94,
   "in_range": 22,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Salinas Valley Health"
   ]
@@ -172,10 +172,10 @@
   "adapter": "OracleORC",
   "status": "ok",
   "error": null,
-  "listings": 779,
-  "in_range": 30,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "listings": 785,
+  "in_range": 32,
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "UCSF Health"
   ]
@@ -185,10 +185,10 @@
   "adapter": "OracleORC",
   "status": "ok",
   "error": null,
-  "listings": 227,
+  "listings": 226,
   "in_range": 14,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Tenet Health"
   ]
@@ -198,10 +198,10 @@
   "adapter": "OracleORC",
   "status": "ok",
   "error": null,
-  "listings": 492,
+  "listings": 493,
   "in_range": 6,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Providence"
   ]
@@ -211,10 +211,10 @@
   "adapter": "OracleORC",
   "status": "ok",
   "error": null,
-  "listings": 1131,
+  "listings": 1133,
   "in_range": 20,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "Adventist Health"
   ]
@@ -226,8 +226,8 @@
   "error": null,
   "listings": 121,
   "in_range": 18,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "NorthBay Health"
   ]
@@ -239,8 +239,8 @@
   "error": null,
   "listings": 309,
   "in_range": 20,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "CommonSpirit / Dignity Health"
   ]
@@ -252,8 +252,8 @@
   "error": null,
   "listings": 88,
   "in_range": 5,
-  "checked_at": "2026-09-09T21:40:37+00:00",
-  "last_success": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
+  "last_success": "2026-09-09T22:50:21+00:00",
   "covered": [
    "San Joaquin County"
   ]
@@ -265,7 +265,7 @@
   "error": "USAJOBS_KEY not set \u2014 request one at https://developer.usajobs.gov/apirequest/ (adapter is untested)",
   "listings": 0,
   "in_range": 0,
-  "checked_at": "2026-09-09T21:40:37+00:00",
+  "checked_at": "2026-09-09T22:50:21+00:00",
   "last_success": null,
   "covered": []
  }
