@@ -9,6 +9,7 @@ No test framework on purpose — this runs anywhere Python does, including
 inside the Actions container, with nothing to install.
 """
 
+import csv
 import json
 import os
 import re
@@ -667,6 +668,537 @@ check("digest reports N/M ok with one failure",
 check("a failed source is named in the digest",
       "failed: Emp2" in S.render_md(_digest(_one_failed)), True)
 
+
+# ── title prefilter: two leaks found adding CommonSpirit ─────────────
+# Both are unambiguous from the title alone, which is what this filter is
+# for; anything hedged still belongs to the classifier.
+check("a misspelled 'Licensed Vocation Nurse' is still an LVN role",
+      A.title_passes("Licensed Vocation Nurse"), False)
+check("the correctly spelled LVN title still drops",
+      A.title_passes("Licensed Vocational Nurse II, Urology"), False)
+check("an informaticist is excluded like informatics",
+      A.title_passes("RN Clinical Informaticist"), False)
+# The loosening must not undo what the include side was widened for.
+check("a bare Level I nurse title still reaches the classifier",
+      A.title_passes("Ambulatory Services Nurse I, PreOp & PACU"), True)
+check("the CNA bargaining-unit suffix still does not veto an RN role",
+      A.title_passes(
+          "RN - CMC Emergency Services - Part Time - 12 Hour - Nights - CNA"),
+      True)
+
+
+# ── closing a row requires having read the source ────────────────────
+# The bug these cover: on 2026-09-08 and 09-09 governmentjobs.com timed
+# out for five of six NEOGOV agencies. The adapter still returned the
+# sixth, so it counted as a healthy source, and build() marked eleven
+# still-open postings "closed" because absence-from-results was read as
+# absence-from-the-employer. Six were Contra Costa Regional Medical
+# Center RN roles verified live the next day, and a closed row never
+# comes back on its own.
+
+def _ledger_after_build(ledger_rows, scanned, sources):
+    """Run build() over a scratch ledger and return it keyed by Key."""
+    # build() writes DIGEST.md, digest.html and index.html to relative
+    # paths, so this runs from inside the scratch directory. Monkeypatching
+    # the state constants alone is not enough: the digest would land in the
+    # repo and overwrite three committed files.
+    tmp = tempfile.mkdtemp()
+    orig = (S.STATE_DIR, S.SOURCES_PATH, S.LEDGER_PATH, S.SEEN_PATH,
+            os.getcwd())
+    S.STATE_DIR = os.path.join(tmp, "state")
+    S.SOURCES_PATH = os.path.join(S.STATE_DIR, "sources.json")
+    S.SEEN_PATH = os.path.join(S.STATE_DIR, "seen.json")
+    S.LEDGER_PATH = os.path.join(tmp, "applications.csv")
+    os.makedirs(S.STATE_DIR, exist_ok=True)
+    os.chdir(tmp)
+    try:
+        with open(S.SOURCES_PATH, "w") as f:
+            json.dump(sources, f)
+        with open(S.LEDGER_PATH, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=S.LEDGER_FIELDS)
+            w.writeheader()
+            for r in ledger_rows:
+                w.writerow({k: r.get(k, "") for k in S.LEDGER_FIELDS})
+        S.build(scanned, [], quick=False)
+        with open(S.LEDGER_PATH) as f:
+            return {r["Key"]: r for r in csv.DictReader(f)}
+    finally:
+        (S.STATE_DIR, S.SOURCES_PATH, S.LEDGER_PATH, S.SEEN_PATH,
+         cwd) = orig
+        os.chdir(cwd)
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _row(key, employer, status="unapplied"):
+    return {"Key": key, "Employer": employer, "Status": status,
+            "Title": "Registered Nurse", "Bucket": "Level I / new grad",
+            "Location": "Martinez", "Drive time": "30-60",
+            "First seen": "2026-09-01T00:00", "Last seen": "2026-09-01T00:00",
+            "URL": "https://example.invalid/1"}
+
+
+_HEALTHY = {"NeoGov:CA": {"employer": "CA", "status": "ok",
+                          "covered": ["Contra Costa County"]}}
+_DEGRADED = {"NeoGov:CA": {"employer": "CA", "status": "ok", "covered": []}}
+
+# The posting is gone AND we read the source: that is a real close.
+_gone_covered = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County")], [], _HEALTHY)
+check("a posting absent from a source we read is closed",
+      _gone_covered["Contra Costa County::1"]["Status"], "closed")
+
+# The posting is gone but the agency timed out: leave the row alone.
+_gone_degraded = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County")], [], _DEGRADED)
+check("a posting absent from a source that FAILED is not closed",
+      _gone_degraded["Contra Costa County::1"]["Status"], "unapplied")
+
+# An employer nothing this scan covers is never closed, even by a
+# sources.json that predates the "covered" key.
+_legacy = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County")], [],
+    {"NeoGov:CA": {"employer": "CA", "status": "ok"}})
+check("a sources.json with no 'covered' key closes nothing",
+      _legacy["Contra Costa County::1"]["Status"], "unapplied")
+
+# An application you already sent is never closed, covered or not.
+_applied = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County", "applied")],
+    [], _HEALTHY)
+check("a posting you applied to is never closed",
+      _applied["Contra Costa County::1"]["Status"], "applied")
+
+
+# ── a posting that comes back reopens ────────────────────────────────
+# Without this, a row wrongly closed by an outage stays invisible forever:
+# is_open() rejects "closed", and nothing else ever cleared it.
+
+class _Back:
+    key = "Contra Costa County::1"
+    employer = "Contra Costa County"
+    req_id = "1"
+    title = "Registered Nurse"
+    location = "Martinez"
+    url = "https://example.invalid/1"
+    drive_time_bucket = "30-60"
+    bucket = "STAFF_NURSE_I"
+    evidence = "New graduates welcome."
+    posted_date = ""
+    details = ""
+    is_new = False
+
+
+_reopened = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County", "closed")],
+    [_Back()], _HEALTHY)
+check("a closed posting that reappears is reopened",
+      _reopened["Contra Costa County::1"]["Status"], "unapplied")
+
+# "closed" is the only archived status the scanner sets, so it is the only
+# one it may clear. A rejection you recorded must survive the posting
+# being relisted.
+_kept = _ledger_after_build(
+    [_row("Contra Costa County::1", "Contra Costa County", "rejected")],
+    [_Back()], _HEALTHY)
+check("a reappearing posting does not undo YOUR status",
+      _kept["Contra Costa County::1"]["Status"], "rejected")
+
+
+# ── adapters report what they actually reached ───────────────────────
+
+_ng = A.NeoGov(agencies={"a": ("Agency A", "Oakland")})
+check("a NEOGOV agency never fetched is not reported covered",
+      _ng.covered_employers(), set())
+
+_rad = A.Radancy("Emp", "example.invalid")
+_rad.failed_cities = {"san francisco"}
+check("Radancy reports nothing covered when a city page failed",
+      _rad.covered_employers(), set())
+_rad.failed_cities = set()
+check("Radancy reports its employer covered when every city page read",
+      _rad.covered_employers(), {"Emp"})
+
+
+# ── Oracle Recruiting Cloud ──────────────────────────────────────────
+
+_orc = A.OracleORC("Tenet Health", "eodr.fa.us2.oraclecloud.com")
+check("ORC keeps a California posting",
+      _orc._in_california({"PrimaryLocation": "San Ramon, CA, United States"}),
+      True)
+check("ORC drops an out-of-state posting",
+      _orc._in_california({"PrimaryLocation": "San Antonio, TX, United States"}),
+      False)
+# A job whose primary site is out of state but which is also open in CA
+# still has to reach geo.
+check("ORC keeps a posting whose SECONDARY location is California",
+      _orc._in_california({"PrimaryLocation": "Phoenix, AZ, United States",
+                           "secondaryLocations": [
+                               {"Location": "San Ramon, CA, United States"}]}),
+      True)
+check("ORC trims the country off a location",
+      _orc._city("San Ramon, CA, United States"), "San Ramon, CA")
+# Composing the branded URL from the Oracle requisition id produced links
+# that 404 — Tenet keys jobs.tenethealth.com on an unrelated Radancy id.
+check("ORC links to the Oracle-hosted page, not a branded guess",
+      _orc._url("2603016285"),
+      "https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/"
+      "sites/CX_1/job/2603016285")
+
+
+# Patience multiplies. Eleven agencies each burning four 45s timeouts plus
+# backoff is over half an hour, and the workflow is killed at 60 minutes —
+# which publishes nothing at all, worse than a short scan. The budget is a
+# hard stop; agencies past it are simply not read, which covered_employers()
+# already makes safe.
+check("NEOGOV bounds its own wall-clock spend",
+      A.NeoGov.BUDGET_SEC <= 600, True)
+# The budget is checked BEFORE an agency starts, so total worst-case spend
+# is the budget plus one agency's full failure, not the budget alone.
+_WORST_AGENCY = A.NeoGov.RETRIES * A.NeoGov.TIMEOUT + 2 ** A.NeoGov.RETRIES
+check("one agency's worst case is bounded", _WORST_AGENCY < 240, True)
+check("the adapter cannot outlast the workflow timeout",
+      (A.NeoGov.BUDGET_SEC + _WORST_AGENCY) < 15 * 60, True)
+# An agency that is never reached must not be reported as covered, or its
+# rows would be closed on a scan that never looked at it.
+_ng2 = A.NeoGov(agencies={"a": ("Agency A", "Oakland"),
+                          "b": ("Agency B", "Berkeley")})
+check("an adapter that read nothing covers nothing",
+      _ng2.covered_employers(), set())
+check("but it still declares everything it is responsible for",
+      _ng2.all_employers(), {"Agency A", "Agency B"})
+
+# ── a source can fail in part ────────────────────────────────────────
+# NEOGOV reads eleven agencies through one adapter. When five time out it
+# still returns the other six and still counted as "ok", which is how a
+# two-day Contra Costa outage went unreported in the digest.
+
+_part = {"NeoGov:CA": {"employer": "CA counties", "status": "degraded",
+                       "missed": ["Contra Costa County", "Solano County"]},
+         "W:Sutter": {"employer": "Sutter Health", "status": "ok"}}
+_md = S.render_md(_digest(_part))
+check("a degraded source names the employers that went unread",
+      "not read this scan: Contra Costa County, Solano County" in _md, True)
+check("a degraded source is not reported as failed",
+      "failed:" in _md, False)
+check("a degraded source does not count toward N ok",
+      "_Sources: 1/2 ok_" in _md, True)
+
+# ── Radancy row parsing, both templates ──────────────────────────────
+# An earlier parser took the title from the nearest <h2> in a window
+# around the anchor. On a Redwood City page that produced the titles
+# "Filter Results" and "Related Content" for two of sixteen rows — the
+# page's own furniture, read as job postings.
+
+_RAD = A.Radancy("CommonSpirit", "www.commonspirit.careers")
+
+# CommonSpirit: the anchor sits inside the <h2>, and the job-info fields
+# are <li> elements nested inside the row's own outer <li>.
+_NEW_TPL = (
+    '<ul id="search-results-jobs">'
+    '<li class="search-results-list__item">'
+    '<h2 class="search-results-list__job-title">'
+    '<a class="job-link" href="/job/redwood-city/rn-cardiac-telemetry/1/9"'
+    ' data-job-id="9">RN Cardiac Telemetry</a></h2>'
+    '<ul class="job-info-list">'
+    '<li class="job-info job-department"> Telemetry </li>'
+    '<li class="job-info job-facility"> Sequoia Hospital </li>'
+    '<li class="job-info job-location"> Redwood City, CA </li>'
+    '</ul></li></ul><h2>Related Content</h2>')
+
+# Tenet: the <h2> is inside the anchor, with the fields as sibling spans.
+_OLD_TPL = (
+    '<section id="search-results-list"><ul><li>'
+    '<a href="/job/san-ramon/ambulatory-or-rn/1/8" data-job-id="8">'
+    '<h2>Ambulatory OR RN</h2>'
+    '<span class="job-info job-facility">San Ramon Regional</span>'
+    '<span class="job-info job-location">San Ramon, CA</span>'
+    '</a></li></ul></section>')
+
+_new_rows = _RAD._rows(_NEW_TPL, "redwood city")
+check("newer Radancy template yields one row", len(_new_rows), 1)
+check("newer template reads the title from the anchor, not page furniture",
+      _new_rows[0].title, "RN Cardiac Telemetry")
+check("newer template reads the location out of a NESTED <li>",
+      _new_rows[0].location, "Redwood City, CA")
+
+_old_rows = _RAD._rows(_OLD_TPL, "san ramon")
+check("older Radancy template yields one row", len(_old_rows), 1)
+check("older template takes the <h2> inside the anchor, not its whole text",
+      _old_rows[0].title, "Ambulatory OR RN")
+check("older template reads its sibling-span location",
+      _old_rows[0].location, "San Ramon, CA")
+
+# A row that prints no location is filed under the city page it came from
+# rather than going blank and landing in the review bucket.
+check("a row with no location falls back to the city page it came from",
+      _RAD._rows(
+          '<ul id="search-results-jobs"><li><h2><a href="/job/x/y/1/7" '
+          'data-job-id="7">RN Float</a></h2></li></ul>',
+          "santa cruz")[0].location,
+      "Santa Cruz, CA")
+
+# Radancy's page 2 is a path suffix on a DIFFERENT path than the sitemap
+# publishes: the sitemap gives
+#   /location/redwood-city-california-united-states-jobs/.../4
+# and the site's own next-link is
+#   /location/redwood-city-jobs/.../4/2
+# Appending "&p=2" to the sitemap URL returns HTTP 200 and an empty list,
+# which reads as "last page" — it collected 15 of Redwood City's 25
+# postings, hiding an RN House Supervisor role that only appears on
+# page 2. So the next-link is read off the page, never composed.
+_PAGED = (
+    '<ul id="search-results-jobs"><li><h2>'
+    '<a href="/job/a/b/1/1" data-job-id="1">RN One</a></h2></li></ul>'
+    '<nav class="pagination" data-total-pages="2">'
+    '<a class="next" href="/location/redwood-city-jobs/35300/x/4/2">Next</a>'
+    '</nav>')
+check("the next-link is read off the page, not composed from the sitemap URL",
+      A.Radancy._NEXT.search(_PAGED).group(1),
+      "/location/redwood-city-jobs/35300/x/4/2")
+check("a page with no next-link ends the walk",
+      A.Radancy._NEXT.search('<ul id="search-results-jobs"></ul>'), None)
+check("total-pages is read so a page-cap stop can be reported",
+      A.Radancy._TOTAL_PAGES.search(_PAGED).group(1), "2")
+
+# ── JobAps (San Joaquin General, French Camp) ────────────────────────
+
+_ja = A.JobAps()
+# JobAps writes `<td class="Locs">French Camp<br </td>`, with the <br
+# never closed before the cell ends. Stripping only well-formed tags left
+# "French Camp<br", which geo cannot match — a county hospital inside the
+# ring would have gone to the review bucket on every scan.
+check("an unclosed trailing tag is stripped out of a cell",
+      _ja._text("French Camp<br "), "French Camp")
+check("a well-formed cell is unchanged",
+      _ja._text("S J General Hospital "), "S J General Hospital")
+check("French Camp is a city geo places in range",
+      geo.classify("French Camp")[0], geo.Geo.IN)
+
+
+# ── the review bucket must stay readable ─────────────────────────────
+# Adding Tenet, Providence and Adventist — three statewide employers whose
+# California postings are mostly southern — put 119 rows into "Location
+# needs checking" in one scan, from fifteen towns. A review list that long
+# is one nobody reads, so the towns went into the out-of-range table.
+for _city in ("Simi Valley, CA", "Tehachapi, CA", "Reedley, CA",
+              "Joshua Tree, CA", "Orange, CA", "Indio, CA", "Fullerton, CA",
+              "Templeton, CA", "Mission Hills, CA", "Apple Valley, CA",
+              "Montebello, CA", "Mission Viejo, CA", "San Pedro, CA",
+              "Tarzana, CA", "Brea, CA"):
+    check(f"{_city} is out of range", geo.classify(_city)[0], geo.Geo.OUT)
+
+# _csv splits on commas and nothing else, so a comment written inside one
+# of those triple-quoted blocks becomes a city name and swallows the first
+# real entry after it. That is not hypothetical: it happened while adding
+# the list above, and left Simi Valley UNKNOWN while looking correct.
+check("no comment text leaked into the city table",
+      [c for c in geo.OUT_CITIES if "#" in c or "added" in c], [])
+
+# Salida is the opposite mistake and was in neither table: it sits beside
+# Modesto, which is 60-90, so it was landing in review every scan.
+check("Salida is in range, bucketed with Modesto",
+      geo.classify("Salida")[:2], (geo.Geo.IN, "60-90"))
+
+# The additions must not have moved anything that was already in range.
+for _city, _bucket in (("Walnut Creek", "<30"), ("San Ramon", "30-60"),
+                       ("San Jose", "60-90"), ("Santa Rosa", "90-120"),
+                       ("French Camp", "60-90"), ("San Francisco", "<30")):
+    check(f"{_city} is still in range at {_bucket}",
+          geo.classify(_city)[:2], (geo.Geo.IN, _bucket))
+
+# ── the user's stated criteria, reinforced 2026-09-09 ────────────────
+# An audit of one scan found 36 of 197 shown rows were charge, lead,
+# coordinator, navigator, consultant or specialist roles. A new graduate
+# is not hired into any of them. The user asked for these out in as many
+# words; this is a deliberate narrowing, not an accident, and it belongs
+# with the graded Level II rule as something not to "fix" back.
+for _t in ("Charge Nurse (RN) - ER",
+           "Charge RN - Surgery - Full Time Evening",
+           "RN, Nurse Lead - Surgery, Dayshift",
+           "Lead Wound Care RN (CWON), Home Health",
+           "Nurse Navigator Oncology Clinic",
+           "RN Coordinator -  Heart Transplant",
+           "Nurse Consultant",
+           "Lactation Specialist RN",
+           "Magnet Program Coordinator, Nurse",
+           "Clinical Effectiveness Consultant III, RN",
+           "RN House Supervisor"):
+    check(f"senior/non-bedside title dropped: {_t[:38]}",
+          A.title_passes(_t), False)
+
+# This one was reaching the digest labelled "Level I / new grad" while its
+# own title said Experienced — the exact shape of the most expensive bug
+# this project can produce.
+check("a coordinator role titled 'Experienced' never reaches the classifier",
+      A.title_passes("RN Education Program Site Coordinator Experienced"),
+      False)
+
+# The narrowing must not touch the roles the whole scan exists to find.
+for _t in ("Staff Nurse I, Medical Surgical",
+           "Registered Nurse (RN) - Med Surg",
+           "RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+           "New Grad Registered Nurse (RN) - Telemetry",
+           "Ambulatory Services Nurse I, PreOp & PACU",
+           "Registered Nurse Level I/II",
+           "Registered Nurse, ICU"):
+    check(f"applicable title still reaches the classifier: {_t[:34]}",
+          A.title_passes(_t), True)
+
+
+# ── an RN residency is a new-grad role ───────────────────────────────
+# Adventist writes "RN Resident", without the word "nurse", so the
+# residency pattern missed it and the single most applicable kind of
+# posting there is was landing as a generic NO_EXPERIENCE row.
+for _t in ("RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+           "RN Residency Program", "Registered Nurse Resident",
+           "Nurse Residency"):
+    check(f"residency recognised as new-grad: {_t[:36]}",
+          bool(C.NEW_GRAD.search(_t)), True)
+# The adjacency is load-bearing: in skilled nursing the residents are the
+# patients, and a bare \bresident\b would match every PACS posting.
+for _t in ("Provide exceptional nursing care to residents",
+           "Assess residents and monitor changes in condition"):
+    check(f"patients called residents are not a residency: {_t[:34]}",
+          bool(C.NEW_GRAD.search(_t)), False)
+
+
+# ── evidence must be the sentence the verdict rests on ───────────────
+# Adventist lists requirements as bullets. Stripping every tag to a space
+# merged them, and the digest quoted "(BSN): Preferred. Acute care
+# facility" — a truncated claim about a degree — as the grounds for "no
+# experience required".
+_BULLETS = ("<p>Job Requirements:</p><div><p>Education and Work Experience:</p>"
+            "<ul><li>Bachelor's Degree in Nursing (BSN): Preferred</li>"
+            "<li>Acute care facility experience: Preferred</li></ul></div>")
+_txt = A._html_to_text(_BULLETS)
+check("block tags become statement boundaries",
+      "(BSN): Preferred. Acute care facility experience: Preferred." in _txt,
+      True)
+check("the two bullets do not run together",
+      "Preferred Acute care" in _txt, False)
+
+_v = C.classify("RN Cath Lab", _txt)
+check("a posting hedging every requirement is still no-experience",
+      _v.bucket, "NO_EXPERIENCE")
+check("and it quotes the experience clause, not the degree clause",
+      _v.evidence, "Acute care facility experience: Preferred.")
+
+# The tightest clause wins, because the first match usually still carries
+# the section heading in front of it.
+check("the heading-laden clause is not chosen when a tighter one exists",
+      "Bachelor" in _v.evidence, False)
+
+# Widening the search for the QUOTE must never widen what gets shown: a
+# required duration still has to beat a hedge elsewhere in the posting.
+_hard = A._html_to_text(
+    "<ul><li>Acute care experience: 2 years Required</li>"
+    "<li>BSN: Preferred</li></ul>")
+check("a required acute duration is still suppressed",
+      C.classify("RN Med Surg", _hard).bucket, "ACUTE_REQUIRED")
+
+# ── evidence must come from whichever field actually said it ─────────
+# _snippet falls back to the opening of the text when its pattern does not
+# match, so a new-grad signal that lives only in the title was evidenced by
+# the first 170 characters of the description. Adventist's "RN Resident"
+# posting therefore reached the digest as a Level I role quoting "Located
+# in one of the most beautiful regions in the United States..." — hospital
+# marketing copy standing in for a requirement.
+_mktg = ("Located in one of the most beautiful regions in the United States, "
+         "St. Helena Hospital was founded in 1878 and has a rich history. "
+         "Job Requirements: Registered Nurse (RN) licensure: Required.")
+_v = C.classify("RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+                _mktg)
+check("a title-only residency signal is evidenced by the title",
+      _v.evidence, "RN Resident | Full Time Regular | Dayshift | Surgical ICU 1")
+check("and it is still a Level I verdict", _v.bucket, "STAFF_NURSE_I")
+check("no marketing prose is quoted as evidence",
+      "beautiful regions" in _v.evidence, False)
+
+# When the body does say it, the body is still what gets quoted.
+_v2 = C.classify("Registered Nurse - Med Surg",
+                 "We welcome new graduates to apply. BLS required.")
+check("a body new-grad signal is still evidenced by the body",
+      "new graduates" in _v2.evidence, True)
+
+# ── a job title with a pipe must not break the digest table ──────────
+# Adventist titles its postings "RN | Full Time Regular | Dayshift |
+# Telemetry 1". The detail line and the evidence were escaped; the title
+# was not, so three extra cells appeared in the row and 13 rows of the
+# digest rendered as unreadable fragments.
+class _PipeTitle:
+    key = "Adventist Health::1"
+    employer = "Adventist Health"
+    req_id = "1"
+    title = "RN | Full Time Regular | Dayshift | Telemetry 1"
+    location = "St. Helena, CA"
+    url = "https://example.invalid/1"
+    drive_time_bucket = "90-120"
+    bucket = "NO_EXPERIENCE"
+    evidence = "Acute care facility experience: Preferred."
+    posted_date = ""
+    details = "Full-time | Day"
+    is_new = True
+
+
+_md = S.render_md(_digest({}, shown=[_PipeTitle()], top=[_PipeTitle()]))
+_rows = [ln for ln in _md.splitlines()
+         if ln.startswith("| ") and "Telemetry 1" in ln]
+check("the posting renders as exactly one table row", len(_rows), 1)
+check("and that row has the six cells the header declares",
+      _rows[0].count("|"), 7)
+check("the title's pipes are replaced, not dropped",
+      "RN / Full Time Regular / Dayshift / Telemetry 1" in _rows[0], True)
+
+# ── the grade ladder, confirmed by the user 2026-09-09 ───────────────
+# "No staff nurse 2 jobs. Continue to give me the staff nurse 1 (I) jobs."
+_REQS = "Requirements: Current California RN license. BLS required."
+
+
+def _bucket(title):
+    if not A.title_passes(title):
+        return "DROPPED"
+    return C.classify(title, _REQS).bucket
+
+
+# Both rules were anchored to the numeral sitting immediately after the
+# nurse noun, so an employer that writes the grade out — "Staff Nurse
+# Level II, ICU", "Nurse Level 2 - Float Pool" — defeated both, and those
+# postings reached the list as UNCLEAR while the identical "Staff Nurse
+# II" was correctly hidden.
+for _t in ("Staff Nurse II, Emergency Services", "Staff Nurse 2 - Med Surg",
+           "Registered Nurse II, Primary Care", "RN II - Telemetry",
+           "Registered Nurse Level II", "Staff Nurse Level II, ICU",
+           "Nurse Level 2 - Float Pool", "RN Level III - ICU",
+           "Clinical Nurse III - Wound Care", "Nurse Level II/III",
+           "RN II-III"):
+    check(f"graded II+ is hidden: {_t[:38]}", _bucket(_t), "LEVEL_II_TITLE")
+
+for _t in ("Staff Nurse I, Medical Surgical", "Staff Nurse 1 - Med Surg",
+           "Registered Nurse Level I", "RN I - Telemetry",
+           "Clinical Nurse I - ICU",
+           "Ambulatory Services Nurse I, PreOp & PACU"):
+    check(f"Level I is a Level I verdict: {_t[:34]}",
+          _bucket(_t), "STAFF_NURSE_I")
+
+# A combined grade is the rung a new graduate is hired into, with the II
+# sitting above it on the same requisition. Sacramento County posts
+# several, including one with an assignment code between the noun and the
+# grade, and they were landing in UNCLEAR — shown, but buried below the
+# no-experience pile instead of surfacing in "worth applying to now".
+for _t in ("Registered Nurse Level I/II", "Public Health Nurse Level I/II",
+           "Registered Nurse D/CF (Level I/II)", "RN I-II",
+           "Staff Nurse I & II"):
+    check(f"combined I/II is hired at the I rung: {_t[:32]}",
+          _bucket(_t), "STAFF_NURSE_I")
+
+# The grade word is what makes the bare "Level I/II" form safe. A numeral
+# with no grade word in front of it is a unit or a shift length, and
+# reading it as a grade would hide three staff postings that carry no
+# grade at all.
+for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
+           "RN - 12 Hour Nights"):
+    check(f"a unit number is not a grade: {_t[:34]}",
+          _bucket(_t) != "LEVEL_II_TITLE", True)
 
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]

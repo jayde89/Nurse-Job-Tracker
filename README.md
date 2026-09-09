@@ -252,11 +252,41 @@ may need correcting.
 | Kentfield (Vibra, LTAC) | Working — JIBE JSON API, no Kentfield roles open today |
 | San Francisco DPH + citywide | Working — SmartRecruiters open API |
 | St. Rose Hospital, Hayward | Working — Smart Hires, whole board in one GET |
+| **UCSF Health** (SF + Benioff Oakland) | Working — Oracle Recruiting |
+| **Tenet** (San Ramon Regional, Doctors Modesto) | Working — Oracle Recruiting |
+| **Providence** (Queen of the Valley, Santa Rosa Memorial) | Working — Oracle Recruiting |
+| **Adventist Health** | Working — Oracle Recruiting |
+| **NorthBay Health** (Fairfield, Vacaville) | Working — Oracle Recruiting |
+| **CommonSpirit / Dignity** (Sequoia, Dominican, St. Joseph's, Woodland, Mercy) | Working — Radancy city pages |
+| **MarinHealth** (Greenbrae) | Working — Workday |
+| **Salinas Valley Health** | Working — Workday |
+| **County of Santa Clara** (Valley Medical Center, San Jose) | Working — NEOGOV |
+| **County of San Mateo** (San Mateo Medical Center) | Working — NEOGOV |
+| **County of Monterey** (Natividad, Salinas) | Working — NEOGOV |
+| **Sacramento County** | Working — NEOGOV |
+| **County of Sonoma** | Working — NEOGOV |
+| **San Joaquin County** (San Joaquin General, French Camp) | Working — JobAps |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
+| HCA (Good Samaritan + Regional Medical Center, San Jose) | Blocked — Cloudflare, needs a headless browser |
+| Washington Hospital, Fremont | Blocked — 403 to every non-browser request |
 
-Three of those moved out of "blocked" or "not built" without a headless
-browser, because the original read was of the wrong page:
+The bolded rows were added on 2026-09-09, after a San Ramon Regional
+posting reached you from outside every source the scanner had. The lesson
+is the same one St. Rose taught and it is worth repeating: the useful
+question is "which hospitals are within range?", not "which of these
+systems are we missing?" Asking it the second way is how a whole employer
+stays invisible.
+
+Two are still genuinely missing. HCA runs Good Samaritan and Regional
+Medical Center in San Jose behind a Cloudflare challenge that answers
+every path — `robots.txt` included — with an interstitial, and Washington
+Hospital in Fremont returns 403 to anything that isn't a real browser.
+Both need the same headless-browser work CalCareers needs.
+
+Three of the earlier sources moved out of "blocked" or "not built"
+without a headless browser, because the original read was of the wrong
+page:
 
 * **NEOGOV** (`governmentjobs.com`) looks client-rendered from every angle —
   `/careers/{agency}/jobs` serves a 976-byte shell, the agency root serves

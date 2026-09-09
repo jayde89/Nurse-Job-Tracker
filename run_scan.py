@@ -251,6 +251,7 @@ def scan(fetch_details=True):
                 "in_range": 0,
                 "checked_at": checked_at,
                 "last_success": prev_sources.get(source_id, {}).get("last_success"),
+                "covered": [],
             }
             continue
 
@@ -269,6 +270,28 @@ def scan(fetch_details=True):
             "checked_at": checked_at,
             "last_success": checked_at,
         }
+        # Which employers this source actually read end to end. An adapter
+        # that fans out over several — NEOGOV over county agencies, Radancy
+        # over city pages — says so itself; one that reads a single employer
+        # reached it by definition, because getting here means
+        # fetch_listings() returned. Recorded on the source rather than
+        # returned, because scan()'s (rows, review) shape is unpacked
+        # positionally by jayde-os and is not ours to change.
+        reached = (ad.covered_employers() if hasattr(ad, "covered_employers")
+                   else {name})
+        managed = (ad.all_employers() if hasattr(ad, "all_employers")
+                   else {name})
+        sources[source_id]["covered"] = sorted(reached)
+        # A source can fail in part. NEOGOV reads eleven county and city
+        # agencies through one adapter; when five of them time out it still
+        # returns the other six and still counts as "ok", which is how a
+        # two-day outage at Contra Costa went unreported. Name the gap.
+        missed = sorted(managed - reached)
+        if missed:
+            sources[source_id]["status"] = "degraded"
+            sources[source_id]["missed"] = missed
+            print(f"     !! {name}: degraded — no listing read for "
+                  f"{', '.join(missed)}")
 
         for p in in_range:
             if fetch_details:
@@ -340,9 +363,42 @@ def build(rows, review, quick=False):
     # titles would have marked 66 still-open roles closed on the next scan
     # and written that into your ledger, where closed rows never come back.
     live = {p.key for p in rows}
+
+    # And "the source stopped listing it" is not the same as "we could not
+    # read the source". `covered` holds only the employers whose listing
+    # this scan read end to end, so an employer that timed out has none of
+    # its rows touched.
+    #
+    # This is the second half of the same invariant and it was missing.
+    # On 2026-09-08 and 09-09 governmentjobs.com timed out for five of six
+    # agencies; the NEOGOV adapter still returned the sixth, so it counted
+    # as a healthy source, and eleven still-open postings were marked
+    # closed — six of them Contra Costa Regional Medical Center RN roles
+    # that were verified live the next day. It is read back out of
+    # state/sources.json, which scan() has just written. A missing or empty
+    # "covered" — an older sources.json, or a source that failed — closes
+    # nothing, because the failure this guards against is silent and
+    # permanent while the cost of skipping a close is one stale row until
+    # the next scan.
+    covered = set()
+    for rec in load_sources().values():
+        covered.update(rec.get("covered") or [])
     for key, row in ledger.items():
-        if key not in live and is_open(row.get("Status")):
+        if key in live or row.get("Employer") not in covered:
+            continue
+        if is_open(row.get("Status")):
             row["Status"] = "closed"
+
+    # A posting that comes back reopens. "closed" is the scanner's own
+    # status — the one state in ARCHIVED_STATUS that you never set — so
+    # clearing it cannot overwrite a decision you made, and every other
+    # archived status is left exactly alone. Without this, any row wrongly
+    # closed by an outage stays invisible forever even after the source
+    # recovers, which is what happened to the eleven rows above.
+    for p in rows:
+        row = ledger.get(p.key)
+        if row is not None and normalize_status(row.get("Status")) == "closed":
+            row["Status"] = "unapplied"
 
     # Remember when an application became active. This is a scanner-owned
     # column: "Applied On" is yours and is never written here, but it is
@@ -415,7 +471,13 @@ def render_md(d):
         # its own: the table already carries six, and GitHub renders <br>
         # inside a cell on both the mobile and the desktop view.
         detail = (getattr(p, "details", "") or "").replace("|", "/")
-        role = f"[{p.title}]({p.url})" + (f"<br>{detail}" if detail else "")
+        # The title needs the same treatment as the detail line and the
+        # evidence, and did not have it. Adventist titles its postings
+        # "RN | Full Time Regular | Dayshift | Telemetry 1", which put
+        # three extra cells into the row and broke 13 rows of the digest
+        # table into unreadable fragments.
+        role = (f"[{(p.title or '').replace('|', '/')}]({p.url})"
+                + (f"<br>{detail}" if detail else ""))
         return (f"| {drive} | {role} | {p.employer} | "
                 f"{p.location} | {BUCKET_LABEL.get(p.bucket, p.bucket)} | {ev} |")
 
@@ -430,7 +492,8 @@ def render_md(d):
     def app_row(r):
         detail = (r.get("Details") or "").replace("|", "/")
         title = (r.get("Title") or "").replace("|", "/")
-        role = f"[{title}]({r.get('URL')})" + (f"<br>{detail}" if detail else "")
+        role = (f"[{title}]({r.get('URL')})"
+                + (f"<br>{detail}" if detail else ""))
         since = applied_on(r) or "—"
         # Whether the posting is still up is real information about an
         # application in flight: a listing that comes down is usually the
@@ -457,10 +520,18 @@ def render_md(d):
     total_sources = len(d.sources)
     ok_sources = sum(1 for s in d.sources.values() if s.get("status") == "ok")
     failed_employers = sorted(s.get("employer", "?") for s in d.sources.values()
-                               if s.get("status") != "ok")
+                               if s.get("status") == "failed")
+    # Degraded is its own line, not folded into failed: a source that read
+    # nine of eleven agencies is still telling you about nine, and calling
+    # that "failed" would train you to ignore the word. What matters is
+    # which employers went unread, so name them rather than the adapter.
+    degraded = sorted({e for s in d.sources.values()
+                       for e in (s.get("missed") or [])})
     sources_line = f"_Sources: {ok_sources}/{total_sources} ok_"
-    if ok_sources < total_sources:
+    if failed_employers:
         sources_line += f" — failed: {', '.join(failed_employers)}"
+    if degraded:
+        sources_line += f" — not read this scan: {', '.join(degraded)}"
 
     return f"""# Staff RN openings within two hours of Oakland
 

@@ -118,11 +118,32 @@ INCLUDE_TITLE = re.compile(
 # side above admits them: Sutter posts "Licensed Vocational Nurse II,
 # Urology" and "Nurse Assistant - Oncology", neither of which contains the
 # LVN acronym or the word "nursing".
+# "licensed vocation nurse" with no "al" is not a typo worth ignoring:
+# CommonSpirit posts it that way in Sacramento, and the spelled-out form
+# was the only thing keeping LVN roles out once the include side loosened.
+# "informaticist" is the noun form of the "informatics" already here.
+# The senior and non-bedside words below were added 2026-09-09 at the
+# user's explicit instruction, after an audit of one scan found 36 of 197
+# shown rows were charge, lead, coordinator, navigator, consultant or
+# specialist roles — none of which a new graduate is hired into, and one
+# of which ("RN Education Program Site Coordinator Experienced") the
+# classifier had labelled "Level I / new grad" while its own title said
+# Experienced.
+#
+# This is a deliberate narrowing of a filter the rest of this file keeps
+# deliberately loose, so do not "fix" it back: the user asked for it in as
+# many words, the same way the graded Level II rule was asked for. Each
+# word here is unambiguous from the title alone, which is the standard
+# this filter holds itself to. "Charge" and "lead" are the supervisory
+# rungs above a new grad; "coordinator", "navigator" and "consultant" are
+# roles staffed from experienced nurses; "specialist" generalises the
+# "clinical nurse specialist" that was already here.
 EXCLUDE_TITLE = re.compile(
-    r"\b(LVN|LPN|licensed vocational nurse|licensed practical nurse"
+    r"\b(LVN|LPN|licensed vocationa?l? nurse|licensed practical nurse"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
-    r"|manager|director|supervisor|educator|informatics|analyst"
+    r"|manager|director|supervisor|educator|informatics|informaticist|analyst"
+    r"|charge|lead|coordinator|navigator|consultant|specialist|preceptor"
     r"|travel|per[- ]diem agency|locum"
     r"|student|intern|volunteer|extern)\b", re.I)
 
@@ -156,7 +177,51 @@ ACCEPT = ("text/html,application/xhtml+xml,application/xml;q=0.9,"
           "application/json;q=0.8,*/*;q=0.7")
 
 
-def _request(url, data=None, headers=None):
+# Block-level tags that end a statement. Stripping every tag to a space
+# reads fine on prose and destroys a bulleted requirements list: Adventist
+# writes
+#     <li>Bachelor's Degree in Nursing (BSN): Preferred</li>
+#     <li>Acute care facility experience: Preferred</li>
+# and a space-strip yields "...(BSN): Preferred Acute care facility
+# experience: Preferred" — one run-on in which the two bullets have merged.
+# The digest then quotes "(BSN): Preferred Acute care facility" as the
+# evidence for a verdict, which is a quote no reader can check, and the
+# contract in CLAUDE.md is that the quote must support the label. Worse,
+# a "2 years Required" bullet abutting a "Preferred" one puts both words
+# in the same clause and the requirement rules can read either.
+_BLOCK_END = re.compile(
+    r"(?is)</(?:li|p|div|tr|h[1-6]|ul|ol|table|section)>|<br\s*/?>")
+
+
+def _html_to_text(raw: str) -> str:
+    """HTML to plain text, keeping statement boundaries."""
+    if not raw:
+        return ""
+    text = _BLOCK_END.sub("\n", raw)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html.unescape(text)
+    # Collapse runs of spaces but keep the newlines the block tags left,
+    # then normalise each line. A line that already ends in punctuation is
+    # left alone; one that does not gets a period, so the classifier's
+    # sentence handling sees a bullet as the statement it is rather than
+    # as the opening of the next one.
+    out = []
+    for line in text.split("\n"):
+        line = re.sub(r"[ \t\xa0]+", " ", line).strip()
+        if not line:
+            continue
+        out.append(line if line[-1] in ".;:!?" else line + ".")
+    return " ".join(out)
+
+
+def _request(url, data=None, headers=None, timeout=None, retries=None):
+    """
+    One HTTP call with retries. `timeout` and `retries` are per-source
+    overrides for hosts that need more patience than the defaults; see
+    NeoGov, which is the reason they exist.
+    """
+    timeout = TIMEOUT_SEC if timeout is None else timeout
+    retries = MAX_RETRIES if retries is None else retries
     hdrs = {"User-Agent": UA, "Accept": ACCEPT,
             "Accept-Language": "en-US,en;q=0.9"}
     if data is not None:
@@ -164,17 +229,17 @@ def _request(url, data=None, headers=None):
         data = json.dumps(data).encode()
     hdrs.update(headers or {})
     last = None
-    for attempt in range(MAX_RETRIES):
+    for attempt in range(retries):
         try:
             req = urllib.request.Request(url, data=data, headers=hdrs)
-            with urllib.request.urlopen(req, timeout=TIMEOUT_SEC) as r:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
                 body = r.read().decode("utf-8", "replace")
             time.sleep(REQUEST_DELAY_SEC)
             return body
         except Exception as e:                      # noqa: BLE001
             last = e
             time.sleep(2 ** attempt)
-    raise RuntimeError(f"failed after {MAX_RETRIES} tries: {url} ({last})")
+    raise RuntimeError(f"failed after {retries} tries: {url} ({last})")
 
 
 # ── adapter 1: Workday CXS ───────────────────────────────────────────
@@ -760,6 +825,25 @@ class NeoGov:
     BASE = "https://www.governmentjobs.com/careers"
     HOST = "https://www.governmentjobs.com"
     XHR = {"X-Requested-With": "XMLHttpRequest"}
+
+    # governmentjobs.com is the slowest host this scan talks to and the
+    # only one that has ever failed in bulk: on 2026-09-08 and 09-09 it
+    # timed out for five of six agencies in the same run, twice, taking
+    # ~205 listings down to 50. Three tries over 30s was not enough
+    # patience for a host that answers in 20s on a good day.
+    TIMEOUT = 45
+    RETRIES = 4
+
+    # ...but patience has to be bounded, because it multiplies. Eleven
+    # agencies each burning four 45s timeouts plus backoff is over half an
+    # hour on its own, and the workflow is killed at 60 minutes — which
+    # publishes nothing at all, a worse outcome than a short scan. So the
+    # whole adapter gets a wall-clock budget. Agencies not reached before
+    # it runs out are simply not read, and covered_employers() already
+    # makes that safe: their rows are left alone and the digest names
+    # them. Generous against a healthy host (a full sweep is ~90s) and a
+    # hard stop against a sick one.
+    BUDGET_SEC = 420
     MAX_PAGES = 40          # 10 per page; largest agency here is ~75
 
     # Paging without an explicit sort is not stable: the server reorders
@@ -781,6 +865,21 @@ class NeoGov:
         "napacounty":   ("Napa County", "Napa"),
         "berkeley":     ("City of Berkeley", "Berkeley"),
         "oaklandca":    ("City of Oakland", "Oakland"),
+        # Added 2026-09-09. Each city below is the one the agency's
+        # hospital actually sits in, not the county seat: Santa Clara
+        # County's Valley Medical Center is in San Jose, and Monterey
+        # County's Natividad is in Salinas.
+        "santaclara":   ("County of Santa Clara", "San Jose"),
+        "sanmateo":     ("County of San Mateo", "San Mateo"),
+        "montereycounty": ("County of Monterey", "Salinas"),
+        "sacramento":   ("Sacramento County", "Sacramento"),
+        "sonoma":       ("County of Sonoma", "Santa Rosa"),
+        # Slugs that look right and are not, checked 2026-09-09:
+        #   "sjcounty"   is San Juan County, UT — not San Joaquin.
+        #   "alamedaca"  is the City of Alameda, not Alameda County;
+        #                Alameda Hospital is already read via
+        #                HealthcareSource (Alameda Health System).
+        # San Joaquin County is not on NEOGOV at all; it runs JobAps.
     }
 
     def __init__(self, employer="CA counties & cities (NEOGOV)", agencies=None):
@@ -788,22 +887,55 @@ class NeoGov:
         # agency that actually posted it.
         self.employer = employer
         self.agencies = agencies or self.AGENCIES
+        # Agencies whose listing this run actually read, by the employer
+        # name their postings carry. This is not bookkeeping for its own
+        # sake: on 2026-09-08 five of six agencies timed out, the adapter
+        # still returned the sixth and so still counted as "ok", and the
+        # scan marked eleven live postings closed because it could not
+        # tell an agency that went quiet from an agency it never reached.
+        # Six of those were Contra Costa Regional Medical Center roles
+        # that were still open, and a closed row never comes back.
+        self.reached: set[str] = set()
 
     @staticmethod
     def _text(fragment: str) -> str:
         return html.unescape(re.sub(r"\s+", " ",
                                     re.sub(r"<[^>]+>", " ", fragment))).strip()
 
+    def covered_employers(self) -> set[str]:
+        """The agencies this run actually read. See `reached`."""
+        return set(self.reached)
+
+    def all_employers(self) -> set[str]:
+        """Every agency this adapter is responsible for, read or not.
+        The gap between this and covered_employers() is what the digest
+        reports as a degraded source."""
+        return {name for name, _city in self.agencies.values()}
+
     def fetch_listings(self) -> list[Posting]:
         out: list[Posting] = []
+        self.reached = set()
+        deadline = time.monotonic() + self.BUDGET_SEC
         for slug, (name, city) in self.agencies.items():
+            if time.monotonic() > deadline:
+                print(f"     {name}: skipped, adapter budget "
+                      f"({self.BUDGET_SEC}s) spent")
+                continue
             seen: set[str] = set()
+            ok = True
             for page in range(1, self.MAX_PAGES + 1):
                 url = f"{self.BASE}/{slug}?page={page}{self.SORT}"
                 try:
-                    body = _request(url, headers=self.XHR)
+                    body = _request(url, headers=self.XHR,
+                                    timeout=self.TIMEOUT, retries=self.RETRIES)
                 except Exception as e:                      # noqa: BLE001
                     print(f"     {name} page {page}: {e}")
+                    # Page 1 failing means we saw nothing for this agency.
+                    # A later page failing means we saw a prefix of it —
+                    # equally unsafe to close rows on, because the tail we
+                    # did not read is indistinguishable from a tail that
+                    # was taken down.
+                    ok = False
                     break
                 rows = body.split('<li class="list-item"')[1:]
                 # The end of the listing is an empty page, and that is the
@@ -835,10 +967,12 @@ class NeoGov:
                         department=self._text(dept.group(1)) if dept else None,
                         source_adapter=f"neogov:{slug}",
                     ))
+            if ok:
+                self.reached.add(name)
         return out
 
     def fetch_detail(self, p: Posting) -> Posting:
-        body = _request(p.url)
+        body = _request(p.url, timeout=self.TIMEOUT, retries=self.RETRIES)
         m = re.search(r'<script type="application/ld\+json">(.*?)</script>',
                       body, re.S)
         if not m:
@@ -1221,6 +1355,472 @@ class SmartHires:
 # ── registry ─────────────────────────────────────────────────────────
 # Kaiser Permanente and Stanford Health Care are excluded by request.
 
+# ── adapter 11: Oracle Recruiting Cloud (Fusion) ─────────────────────
+
+class OracleORC:
+    """
+    Oracle Recruiting Cloud, the ATS behind a surprising share of the
+    hospitals this scan was missing. One class, N tenants:
+
+        UCSF Health        822 postings — San Francisco AND Oakland (Benioff)
+        Tenet Health      2919 postings — San Ramon Regional, Doctors Modesto
+        Providence        2050 postings — Queen of the Valley, Santa Rosa Mem.
+        Adventist Health  1427 postings
+        NorthBay Health    124 postings
+
+    All five present the same REST API, unauthenticated:
+
+        GET /hcmRestApi/resources/latest/recruitingCEJobRequisitions
+            ?onlyData=true&expand=requisitionList.secondaryLocations
+            &finder=findReqs;siteNumber={site},limit=200,offset=N
+
+    Two things about that URL are load-bearing:
+
+      * `expand=requisitionList.secondaryLocations` — without it the
+        response carries counts and facets but `requisitionList` comes back
+        empty, which reads exactly like an employer with no open jobs.
+      * limit is capped at 200 server-side. Asking for 500 returns 200 and
+        no error, so a loop that trusted its own page size would stop at
+        200 of 2919 and never say why. Page until offset >= total.
+
+    These are national employers, so most of what comes back is thousands
+    of miles away. Filtering to California here rather than in geo is not a
+    second geo filter — it is the difference between fetching detail for 60
+    in-state nurse postings and paying for 900 nationwide ones. A posting
+    is kept when EITHER its primary or any secondary location is in CA, so
+    a job listed in Phoenix but also open in San Ramon still reaches geo.
+    """
+
+    PAGE = 200          # server-side cap, not a preference
+    LIST = ("/hcmRestApi/resources/latest/recruitingCEJobRequisitions"
+            "?onlyData=true&expand=requisitionList.secondaryLocations"
+            "&finder=findReqs;siteNumber={site},limit={limit},offset={offset}")
+    DETAIL = ("/hcmRestApi/resources/latest/recruitingCEJobRequisitionDetails"
+              "?expand=all&onlyData=true"
+              "&finder=ById;Id=%22{rid}%22,siteNumber={site}")
+
+    _CA = re.compile(r",\s*CA\s*,|,\s*California\b", re.I)
+
+    def __init__(self, employer: str, host: str, site: str = "CX_1",
+                 setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.site = site
+        self.setting = setting
+
+    def _in_california(self, r: dict) -> bool:
+        places = [r.get("PrimaryLocation") or ""]
+        places += [s.get("Location") or s.get("Name") or ""
+                   for s in (r.get("secondaryLocations") or [])
+                   if isinstance(s, dict)]
+        return any(self._CA.search(p) for p in places)
+
+    @staticmethod
+    def _city(place: str) -> str:
+        """
+        'San Ramon, CA, United States' -> 'San Ramon, CA'.
+
+        geo matches whole city phrases, and the trailing ", United States"
+        is harmless to it, but the ledger and the digest show this string to
+        a human. Trim it there rather than teaching geo about countries.
+        """
+        parts = [x.strip() for x in (place or "").split(",")]
+        return ", ".join(parts[:2]) if len(parts) >= 2 else (place or "")
+
+    def _url(self, rid: str) -> str:
+        """
+        Always the Oracle-hosted candidate page, never the employer's
+        branded careers domain.
+
+        The branded one is tempting and wrong: Tenet's site really is at
+        jobs.tenethealth.com, but it keys its URLs on a Radancy job id
+        (97770889200) that has no relation to the Oracle requisition id
+        (2603016285) this API returns. Composing the branded URL from the
+        Oracle id produced a clean-looking link that 404s — a dead link on
+        a job posting costs exactly what a false "no experience required"
+        costs, an application that was never possible. The Oracle page
+        resolves for every tenant here and redirects to the right site
+        number on its own.
+        """
+        return (f"https://{self.host}/hcmUI/CandidateExperience/en/sites/"
+                f"{self.site}/job/{rid}")
+
+    # 200 pages x 200 = 40,000 postings of headroom. The loop already
+    # exits on `offset >= total`, so this only needs to be high enough
+    # never to be the thing that stops it — Workday's page cap silently
+    # hid 202 Sutter postings by being exactly that thing.
+    def fetch_listings(self, max_pages: int = 200) -> list[Posting]:
+        out: list[Posting] = []
+        offset, total = 0, None
+        for _ in range(max_pages):
+            url = "https://" + self.host + self.LIST.format(
+                site=self.site, limit=self.PAGE, offset=offset)
+            d = json.loads(_request(url))
+            items = d.get("items") or [{}]
+            head = items[0] if items else {}
+            if total is None:
+                total = head.get("TotalJobsCount") or 0
+            batch = head.get("requisitionList") or []
+            if not batch:
+                break
+            for r in batch:
+                if not self._in_california(r):
+                    continue
+                rid = str(r.get("Id") or "")
+                if not rid:
+                    continue
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=rid,
+                    title=r.get("Title") or "",
+                    location=self._city(r.get("PrimaryLocation") or ""),
+                    url=self._url(rid),
+                    posted_date=r.get("PostedDate"),
+                    schedule=r.get("JobSchedule"),
+                    shift=r.get("JobShift"),
+                    setting=self.setting,
+                    source_adapter=f"oracleorc:{self.host.split('.')[0]}",
+                ))
+            offset += len(batch)
+            if len(batch) < self.PAGE:
+                break
+            if total and offset >= total:
+                break
+        else:
+            # Fell out of the loop on max_pages rather than on the total.
+            # Say so: three silent truncations in this codebase were found
+            # by comparing an endpoint's own total against what was
+            # actually collected, and none of them announced themselves.
+            print(f"     !! {self.employer}: stopped at the page cap with "
+                  f"{offset} of {total} postings read")
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        url = "https://" + self.host + self.DETAIL.format(
+            rid=p.req_id, site=self.site)
+        items = json.loads(_request(url)).get("items") or []
+        if not items:
+            return p
+        d = items[0]
+        # Three separate fields, and the requirement sentence lives in
+        # whichever one the employer chose to type it into — UCSF puts
+        # "Required Qualifications:" in ExternalQualificationsStr, Tenet
+        # writes it into the description body. Join them and let the
+        # classifier find it. The headings are the employer's own; nothing
+        # is invented here, because a fabricated "Required Qualification:"
+        # prefix is exactly what produced a verdict quoting a heading as
+        # its evidence when St. Rose was added.
+        parts = [d.get("ExternalDescriptionStr") or "",
+                 d.get("ExternalResponsibilitiesStr") or "",
+                 d.get("ExternalQualificationsStr") or ""]
+        p.description = " ".join(_html_to_text(x) for x in parts if x).strip()
+        p.posted_date = d.get("PostedDate") or p.posted_date
+        p.schedule = d.get("JobSchedule") or p.schedule
+        p.shift = d.get("JobShift") or p.shift
+        return p
+
+
+# ── adapter 12: Radancy TalentBrew (CommonSpirit / Dignity Health) ────
+
+class Radancy:
+    """
+    CommonSpirit Health — Dignity Health in this half of the state — was the
+    largest hospital system with no adapter at all. It reaches, within range:
+    Saint Francis Memorial and St. Mary's in San Francisco, Sequoia in
+    Redwood City, Dominican in Santa Cruz, St. Joseph's in Stockton, Woodland
+    Memorial, and the Mercy hospitals around Sacramento and Folsom.
+
+    Its ATS is iCIMS, which is closed here — careers-commonspirit.icims.com
+    answers a search with 156 bytes and no rows. The Radancy TalentBrew front
+    end in front of it is fully server-rendered, and this reads that.
+
+    Getting a filtered list out of it is the whole problem. The obvious
+    endpoint, /search-jobs/results with Keywords and Location, accepts both
+    and ignores both: a search for nurses near San Ramon returns page 1 of
+    every job the company has, starting in San Antonio. Passing latitude and
+    longitude instead returns `{"results": ""}`. What does work is the
+    per-city page the site links from its own sitemap:
+
+        /location/{city}-california-united-states-jobs/{brand}/{geo ids}/4
+
+    So the sitemap is the index. Every California city page it lists is
+    checked against geo's own city table and fetched only if it is inside
+    the two-hour ring — which is why this adapter names no cities of its
+    own. Add a city to geo and this source starts reporting it.
+
+    Two page templates are in the wild and both appear on CommonSpirit
+    pages, so the row parser keys on `data-job-id` and reads the fields out
+    of the segment that follows it. Keying on the outer <li> instead looks
+    tidier and silently loses the facility and location on the newer
+    template, whose job-info fields are themselves <li> elements nested
+    inside that outer one.
+    """
+
+    SITEMAP = "/sitemap.xml"
+    _LOC_URL = re.compile(
+        r"https://[^<\s]+/location/([a-z0-9-]+)-california-united-states-jobs/[^<\s]+")
+    # One anchor, both attribute orders, capturing the link, the id and the
+    # anchor's own inner HTML. Reading the title out of the anchor is the
+    # point: an earlier version searched for the nearest <h2> in a window
+    # around the anchor, and on a Redwood City page that returned the
+    # titles "Filter Results" and "Related Content" — the page's own
+    # furniture — for two of sixteen rows.
+    _ROW = re.compile(
+        r'<a\b[^>]*?href="(/job/[^"]+)"[^>]*?data-job-id="([^"]+)"[^>]*>(.*?)</a>'
+        r'|<a\b[^>]*?data-job-id="([^"]+)"[^>]*?href="(/job/[^"]+)"[^>]*>(.*?)</a>',
+        re.S)
+    # The results list, so "jobs you might also like" from Bismarck, North
+    # Dakota do not get filed as Redwood City postings. geo would drop them
+    # anyway; they should not become Postings in the first place.
+    _LIST_START = re.compile(
+        r'id="(?:search-results-jobs|search-results-list)"')
+
+    # 15 rows a page, so 40 pages is 600 postings in a single city — far
+    # past anything in range (Redwood City, the busiest so far, is 3
+    # pages). Like every other cap in this file it exists only so a broken
+    # next-link cannot loop forever, never to be the thing that stops a
+    # sweep; when it *is* the thing that stops one, the loop says so.
+    MAX_PAGES = 40
+
+    def __init__(self, employer: str, host: str, setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.setting = setting
+        # Cities whose page failed this run, so the scan can tell "this
+        # employer has nothing here today" apart from "we could not look".
+        self.failed_cities: set[str] = set()
+
+    @staticmethod
+    def _text(fragment: str) -> str:
+        return html.unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+    def _city_pages(self) -> list[tuple[str, str]]:
+        """(city, url) for every California city page geo places in range."""
+        body = _request(f"https://{self.host}{self.SITEMAP}")
+        out, seen = [], set()
+        for m in self._LOC_URL.finditer(body):
+            url, slug = m.group(0), m.group(1)
+            city = slug.replace("-", " ")
+            if city in seen:
+                continue
+            seen.add(city)
+            verdict, _bucket, _mi = geo.classify(city)
+            if verdict is geo.Geo.IN:
+                out.append((city, url))
+        return sorted(out)
+
+    def _rows(self, body: str, city: str) -> list[Posting]:
+        m = self._LIST_START.search(body)
+        if m:
+            body = body[m.start():]
+        out = []
+        matches = list(self._ROW.finditer(body))
+        for i, m in enumerate(matches):
+            href, jid, inner = (m.group(1), m.group(2), m.group(3))
+            if href is None:
+                href, jid, inner = (m.group(5), m.group(4), m.group(6))
+            # Tenet nests the title in an <h2> inside the anchor alongside
+            # the facility and location spans; CommonSpirit puts the anchor
+            # inside the <h2> and its text is the title alone. Taking the
+            # <h2> when there is one covers both without a template flag.
+            h2 = re.search(r"<h2[^>]*>(.*?)</h2>", inner, re.S)
+            title = self._text(h2.group(1) if h2 else inner)
+            if not title:
+                continue
+            # Fields live between this anchor and the next one.
+            end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+            seg = inner + body[m.end():end]
+
+            def field(cls):
+                f = re.search(r"job-" + cls + r'"?[^>]*>(.*?)<', seg, re.S)
+                return self._text(f.group(1)) if f else ""
+
+            out.append(Posting(
+                employer=self.employer,
+                req_id=jid,
+                title=title,
+                # The city page is the authority. Some rows print no
+                # location at all, and defaulting those to blank would send
+                # a perfectly locatable posting to the review bucket.
+                location=field("location") or f"{city.title()}, CA",
+                url=f"https://{self.host}{html.unescape(href)}",
+                department=field("department") or None,
+                setting=self.setting,
+                source_adapter=f"radancy:{self.host.split('.')[1]}",
+            ))
+        return out
+
+    # Page 2 is a path suffix, not a query parameter, and the suffix goes
+    # on a DIFFERENT path than the sitemap gives you: the sitemap lists
+    # /location/redwood-city-california-united-states-jobs/.../4 and the
+    # site's own next-link is /location/redwood-city-jobs/.../4/2.
+    # Appending "&p=2" to the sitemap URL returns HTTP 200 with an empty
+    # result list, which reads as "that was the last page" — it silently
+    # collected 15 of Redwood City's 25 postings. So follow the next-link
+    # the page prints rather than composing one.
+    _NEXT = re.compile(r'<a[^>]*class="next"[^>]*href="([^"]+)"', re.I)
+    _TOTAL_PAGES = re.compile(r'data-total-pages="(\d+)"')
+
+    def fetch_listings(self) -> list[Posting]:
+        out: list[Posting] = []
+        self.failed_cities = set()
+        for city, url in self._city_pages():
+            seen: set[str] = set()
+            target, pages, expected = url, 0, None
+            while target and pages < self.MAX_PAGES:
+                try:
+                    body = _request(target)
+                except Exception as e:                      # noqa: BLE001
+                    print(f"     {self.employer} {city} page {pages + 1}: {e}")
+                    self.failed_cities.add(city)
+                    break
+                pages += 1
+                if expected is None:
+                    m = self._TOTAL_PAGES.search(body)
+                    expected = int(m.group(1)) if m else 1
+                for p in self._rows(body, city):
+                    if p.req_id in seen:
+                        continue
+                    seen.add(p.req_id)
+                    out.append(p)
+                nxt = self._NEXT.search(body)
+                target = (f"https://{self.host}{html.unescape(nxt.group(1))}"
+                          if nxt else None)
+            else:
+                if target:
+                    print(f"     !! {self.employer} {city}: stopped at the "
+                          f"page cap after {pages} of {expected} pages")
+        return out
+
+    def covered_employers(self) -> set[str]:
+        """
+        All-or-nothing. This adapter reads one employer across many city
+        pages, so a single city that failed leaves us unable to say which
+        of that employer's postings are gone and which we simply did not
+        fetch. Report nothing covered and let the rows stand.
+        """
+        return set() if self.failed_cities else {self.employer}
+
+    def all_employers(self) -> set[str]:
+        return {self.employer}
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        # The posting body is the one JSON-LD block on the page. Prefer it
+        # to the surrounding markup: it is the employer's own text, already
+        # delimited, with no navigation in it.
+        m = re.search(r'<script type="application/ld\+json">(.*?)</script>',
+                      body, re.S)
+        if m:
+            try:
+                d = json.loads(m.group(1))
+                # Unescape first — the field arrives with its markup
+                # escaped, so stripping before unescaping strips nothing —
+                # then convert with the block-aware helper so a bulleted
+                # requirements list does not collapse into one run-on.
+                raw = html.unescape(d.get("description", "") or "")
+                p.description = _html_to_text(raw)
+                p.posted_date = d.get("datePosted") or p.posted_date
+                p.schedule = d.get("employmentType") or p.schedule
+                return p
+            except json.JSONDecodeError:
+                pass
+        m = re.search(r'<div[^>]*class="[^"]*job-description[^"]*"[^>]*>(.*?)</div>',
+                      body, re.S)
+        if m:
+            p.description = self._text(m.group(1))
+        return p
+
+
+# ── adapter 13: JobAps (San Joaquin County) ──────────────────────────
+
+class JobAps:
+    """
+    JobAps is the third CA-government HR platform, after NEOGOV and
+    SmartRecruiters. San Joaquin County is on it, and San Joaquin General
+    Hospital in French Camp — a county hospital inside the ring — posts
+    there and nowhere else this scan reads.
+
+    It was nearly missed for the reason CLAUDE.md already warns about:
+    the search for it started from "which NEOGOV slug is San Joaquin?"
+    The answer looked like "sjcounty", which returns a real, populated,
+    plausible board — for San Juan County, Utah. Ask which hospitals are
+    in range, then find each one's platform; never assume the platform.
+
+    The listing is the agency's landing page. Everything is in it already:
+    one table row per open requisition with title, requisition number,
+    city and department, no paging and no JSON behind it.
+    """
+
+    BASE = "https://www.jobapscloud.com"
+    _ROW = re.compile(
+        r'<th[^>]*class="JobTitle"[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*'
+        r'class="JobTitle"[^>]*>(.*?)</a>\s*<a[^>]*class="JobNum"[^>]*>'
+        r'(.*?)</a>(.*?)</tr>', re.S | re.I)
+
+    def __init__(self, employer="San Joaquin County", agency="SJQ",
+                 default_city="Stockton"):
+        self.employer = employer
+        self.agency = agency
+        # Used only when a row prints no city of its own. The county seat
+        # is Stockton; San Joaquin General is in French Camp and says so,
+        # which is why the row's own value always wins.
+        self.default_city = default_city
+
+    @staticmethod
+    def _text(fragment: str) -> str:
+        # The trailing-fragment strip is not decoration. JobAps writes
+        # `<td class="Locs">French Camp<br </td>`, and that <br is never
+        # closed before the cell ends, so a plain <[^>]+> strip leaves
+        # "French Camp<br" — which geo cannot match, sending a French Camp
+        # posting to the review bucket instead of the 60-90 bucket.
+        fragment = re.sub(r"<[^>]*$", " ", fragment)
+        return html.unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment))).strip()
+
+    def _cell(self, chunk: str, cls: str) -> str:
+        m = re.search(r'<td[^>]*class="' + cls + r'"[^>]*>(.*?)</td>',
+                      chunk, re.S | re.I)
+        return self._text(m.group(1)) if m else ""
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(f"{self.BASE}/{self.agency}/")
+        out, seen = [], set()
+        for m in self._ROW.finditer(body):
+            href, title, num, rest = m.groups()
+            req = self._text(num)
+            title = self._text(title)
+            if not req or req in seen:
+                continue
+            seen.add(req)
+            url = html.unescape(href)
+            if url.startswith("/"):
+                url = self.BASE + url
+            out.append(Posting(
+                employer=self.employer,
+                req_id=req,
+                title=title,
+                location=self._cell(rest, "Locs") or self.default_city,
+                url=url,
+                department=self._cell(rest, "Dept") or None,
+                source_adapter=f"jobaps:{self.agency.lower()}",
+            ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        # The bulletin is the whole page; strip the chrome by taking the
+        # main content container when there is one and the body otherwise.
+        m = re.search(r'<div[^>]*id="bulletin"[^>]*>(.*?)</div>\s*</div>',
+                      body, re.S | re.I)
+        chunk = m.group(1) if m else body
+        chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
+                       " ", chunk)
+        p.description = _html_to_text(chunk)
+        return p
+
+
 ADAPTERS = [
     WorkdayCXS("John Muir Health", "jmh.wd5.myworkdayjobs.com",
                "jmh", "JohnMuirHealthCareers"),          # verified
@@ -1239,11 +1839,44 @@ ADAPTERS = [
     Jibe(),                                               # verified — Vibra/Kentfield LTAC, 87 CA postings
     SmartRecruiters(),                                    # verified — SF DPH + citywide, 182 postings
     SmartHires(),                                         # verified — St. Rose Hospital, Hayward
+
+    # ---- added 2026-09-09, after a San Ramon posting reached the user
+    # from outside every source above. All verified against live endpoints
+    # on the day they were added; the counts are that day's.
+    WorkdayCXS("MarinHealth", "mymarinhealth.wd5.myworkdayjobs.com",
+               "mymarinhealth", "MHCareers"),             # verified — 148 postings
+    WorkdayCXS("Salinas Valley Health",
+               "salinasvalleyhealth.wd5.myworkdayjobs.com",
+               "salinasvalleyhealth", "SalinasValleyHealth"),  # verified — 95 postings
+
+    # Oracle Recruiting Cloud. UCSF is the one that mattered most: 28 RN
+    # postings in San Francisco and Oakland, none of which any adapter
+    # above could see. Tenet is what finally reaches San Ramon Regional.
+    OracleORC("UCSF Health", "iazuqy.fa.ocs.oraclecloud.com"),      # 822 postings
+    OracleORC("Tenet Health", "eodr.fa.us2.oraclecloud.com"),       # 2919 — San Ramon
+    OracleORC("Providence", "evac.fa.us2.oraclecloud.com"),         # 2050 — Napa, Santa Rosa
+    OracleORC("Adventist Health", "ecvz.fa.us2.oraclecloud.com"),   # 1427
+    OracleORC("NorthBay Health", "erou.fa.us2.oraclecloud.com"),    # 124 — Fairfield
+
+    # CommonSpirit / Dignity: Sequoia, Dominican, St. Joseph's Stockton,
+    # Woodland, Mercy. Read through the Radancy front end because the
+    # iCIMS ATS behind it is closed.
+    Radancy("CommonSpirit / Dignity Health", "www.commonspirit.careers"),
+
+    # San Joaquin General Hospital, French Camp. Not on NEOGOV: the slug
+    # that looks like it ("sjcounty") is San Juan County, Utah.
+    JobAps(),                                             # verified — 30 nurse rows
+
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
-    # Add once host/site confirmed via DevTools:
-    #   WorkdayCXS("MarinHealth", ...)
-    #   WorkdayCXS("NorthBay Health", ...)
-    #   WorkdayCXS("Washington Hospital Healthcare System", ...)
+
+    # Genuinely blocked, checked 2026-09-09. Do not re-probe these without
+    # a browser; each was tried with full browser headers and failed:
+    #   HCA Healthcare (Good Samaritan San Jose, Regional Medical Center)
+    #     — Cloudflare interstitial on every path including robots.txt.
+    #       This is a real gap: Good Samaritan is a hospital the user
+    #       named. It needs Playwright, same as CalCareers.
+    #   Washington Hospital Healthcare System (Fremont) — 403 on whhs.com.
+    #   CalCareers / CDCR — ASP.NET WebForms behind DevExpress callbacks.
 ]
 
 

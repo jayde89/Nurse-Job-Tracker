@@ -64,7 +64,7 @@ for _bucket, _names in [
     ("60-90", """san jose, campbell, los gatos, saratoga, cupertino,
         morgan hill, vacaville, dixon, napa, american canyon, yountville,
         sonoma, petaluma, cotati, stockton, french camp, manteca, lathrop,
-        ripon, lodi, galt, modesto, ceres, riverbank, davis, west sacramento,
+        ripon, lodi, galt, modesto, ceres, riverbank, salida, davis, west sacramento,
         sacramento, woodland, rio vista, isleton, santa cruz, scotts valley,
         capitola, soquel, aptos, rancho cordova, vine hill"""),
     ("90-120", """santa rosa, rohnert park, sebastopol, windsor, healdsburg,
@@ -98,6 +98,23 @@ OUT_CITIES: set[str] = set(_csv("""
     loma linda, ojai,
     van nuys, northridge, glendale, torrance, inglewood, downey, whittier,
     pomona, ontario, fontana, rialto, corona, temecula, murrieta
+"""))
+
+# Added 2026-09-09, and kept in its own block because _csv splits on commas
+# and nothing else: a comment written inside the string above becomes a
+# city named "# added 2026-09-09 ..." and swallows the first real entry
+# after it, which is exactly what happened on the first attempt at this.
+#
+# Every one of these came out of the review bucket on the first scan after
+# Tenet, Providence and Adventist were added — three statewide employers
+# whose California postings are mostly southern. 119 of the 121 rows under
+# "Location needs checking" were these fifteen towns, which is enough noise
+# to make a review list nobody reads. All are 200+ miles out; none is a
+# close call, and a close call belongs in review rather than here.
+OUT_CITIES |= set(_csv("""
+    simi valley, tehachapi, reedley, joshua tree, orange, indio, fullerton,
+    templeton, mission hills, apple valley, montebello, mission viejo,
+    san pedro, tarzana, brea
 """))
 
 # Some employers record a street address and no city at all — John Muir
