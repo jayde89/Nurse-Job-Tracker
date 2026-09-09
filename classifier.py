@@ -218,6 +218,46 @@ def _has_unhedged_duration(text: str) -> str | None:
     return None
 
 
+def _hedged_experience_clause(text: str) -> str | None:
+    """
+    The clause a "no experience required" verdict actually rests on: one
+    that talks about experience AND hedges it as preferred.
+
+    Searched in the experience section first and then across the whole
+    posting, because the section itself can be cut short: "Acute care
+    facility experience: Preferred" contains the word the section splitter
+    treats as a heading, so the section ends mid-bullet at "Acute care
+    facility". Widening the *section* rule to fix that risks missing a real
+    requirement, which is the one direction that costs a job; widening the
+    search for the *quote* costs nothing, because the verdict is already
+    decided by the time this runs.
+
+    Without this the evidence was the first 200 characters of the whole
+    experience section, which on a bulleted posting is whatever bullet
+    happens to come first. Adventist lists
+
+        Bachelor's Degree in Nursing (BSN): Preferred
+        Acute care facility experience: Preferred
+
+    and the digest quoted "(BSN): Preferred. Acute care facility" as the
+    grounds for "no experience required" — a quote about a degree, cut off
+    mid-phrase, standing in for a claim about experience. The label was
+    right and the evidence did not show it, which is the same failure as a
+    wrong label: CLAUDE.md's contract is that the reader can check the
+    verdict against the sentence under it.
+    """
+    hits = [c.strip() for c in _clauses(text)
+            if re.search(r"(?i)\bexperience\b", c) and PREFERRED_ONLY.search(c)]
+    # The shortest match, not the first. The first is usually the clause
+    # that still carries the section heading in front of it — "Job
+    # Requirements: Education and Work Experience: Bachelor's Degree in
+    # Nursing (BSN): Preferred." matches on the heading's own word
+    # "Experience" and on a hedge about a degree. The clause that actually
+    # says what this verdict claims is the tight one underneath it,
+    # "Acute care facility experience: Preferred."
+    return min(hits, key=len) if hits else None
+
+
 def _clauses(text: str) -> list[str]:
     """
     Split an experience section into independent requirement clauses.
@@ -289,9 +329,19 @@ DURATION = re.compile(
     r"(?i)\b(" + _NUM_WORD + r")" + _PAREN_NUM +
     r"\s*(\+|plus)?\s*(year|yr|month)s?\b")
 
+# "RN Resident" / "RN Residency" are spelled without the word "nurse" by
+# Adventist, whose "RN Resident | Full Time Regular | Dayshift | Surgical
+# ICU 1" is a residency posting — the single most applicable kind of
+# posting there is — and was reaching the digest as a generic
+# NO_EXPERIENCE row instead of a Level I one.
+#
+# The adjacency is load-bearing. A bare \bresiden(t|cy)\b would match the
+# skilled-nursing postings that say "provide exceptional nursing care to
+# residents", where the residents are the patients.
 NEW_GRAD = re.compile(
     r"(?i)\b(new grad(uate)?s?( are)?( welcome| encouraged| eligible)?"
-    r"|nurse residen(cy|t)|graduate nurse program|no experience (is )?required"
+    r"|(nurse|rn|registered nurse) residen(cy|t)"
+    r"|graduate nurse program|no experience (is )?required"
     r"|new graduate rn)\b")
 
 
@@ -320,9 +370,21 @@ def _classify_requirements(title: str, description: str) -> Verdict:
                            "states a required acute-care duration")
 
     # 1. Explicit new-grad language beats everything.
-    if NEW_GRAD.search(desc) or NEW_GRAD.search(t):
+    #
+    # Quote whichever of the two actually said it. _snippet falls back to
+    # the opening of the text when its pattern does not match, so a
+    # title-only signal — Adventist's "RN Resident | Full Time Regular |
+    # Dayshift | Surgical ICU 1", whose body never says "resident" again —
+    # produced a verdict evidenced by "Located in one of the most
+    # beautiful regions in the United States, St. Helena Hospital was
+    # founded in 1878...". That is marketing copy standing in for a
+    # requirement, which is the failure this file exists to prevent.
+    if NEW_GRAD.search(desc):
         return Verdict("STAFF_NURSE_I", _snippet(desc, NEW_GRAD),
                        "posting explicitly names new grads or a residency")
+    if NEW_GRAD.search(t):
+        return Verdict("STAFF_NURSE_I", t,
+                       "title names a residency or new-graduate role")
 
     # 2. Level I in the title — but only if no higher level is also present.
     #    "Clinical Nurse II" contains no Level-I match; "RN I/II" does, and
@@ -357,7 +419,9 @@ def _classify_requirements(title: str, description: str) -> Verdict:
             return Verdict("UNCLEAR", hard,
                            "experience sits under a PREFERRED heading, but the "
                            "posting states a time requirement elsewhere")
-        return Verdict("NO_EXPERIENCE", exp[:200],
+        return Verdict("NO_EXPERIENCE",
+                       (_hedged_experience_clause(exp)
+                        or _hedged_experience_clause(desc) or exp)[:200],
                        "experience appears only under a PREFERRED heading")
 
     # 4. Judge each clause on its own. A clause is a hard requirement if it
@@ -397,7 +461,9 @@ def _classify_requirements(title: str, description: str) -> Verdict:
             return Verdict("UNCLEAR", hard,
                            "clauses read as preferred, but a time requirement "
                            "appears elsewhere in the posting")
-        return Verdict("NO_EXPERIENCE", exp[:200],
+        return Verdict("NO_EXPERIENCE",
+                       (_hedged_experience_clause(exp)
+                        or _hedged_experience_clause(desc) or exp)[:200],
                        "experience mentioned, but every clause is preferred "
                        "rather than required")
 
@@ -406,6 +472,29 @@ def _classify_requirements(title: str, description: str) -> Verdict:
         if ACUTE.search(c):
             return Verdict("ACUTE_REQUIRED", c[:200],
                            "requires acute-care or hospital experience")
+
+    # ...and the clause may have lost the words that make it acute. The
+    # section splitter treats "experience" as a heading wherever it finds
+    # it, so a posting whose requirement reads
+    #     Acute care experience: 2 years Required
+    # yields a section body that starts *after* the colon — "2 years
+    # Required" — with "Acute care" left outside it. That clause has a
+    # duration and a required-word and no acute marker, so it read as
+    # GENERAL_EXPERIENCE and the posting was shown as one a new graduate
+    # could apply to. Re-read each required clause in its full sentence
+    # before concluding the requirement is not acute.
+    #
+    # This only ever moves a posting from shown to hidden, so it is the
+    # one widening of suppression this file allows without the user
+    # asking: the posting states a required acute duration in its own
+    # words, and an application against it was never possible.
+    for c in required_clauses:
+        stem = c.strip()[:40]
+        for full in _clauses(desc):
+            if stem and stem in full and ACUTE.search(full):
+                return Verdict("ACUTE_REQUIRED", full[:200],
+                               "requires acute-care experience; the section "
+                               "split had separated it from its own clause")
 
     return Verdict("GENERAL_EXPERIENCE", required_clauses[0][:200],
                    "requires nursing experience, but not acute care")

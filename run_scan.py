@@ -471,7 +471,13 @@ def render_md(d):
         # its own: the table already carries six, and GitHub renders <br>
         # inside a cell on both the mobile and the desktop view.
         detail = (getattr(p, "details", "") or "").replace("|", "/")
-        role = f"[{p.title}]({p.url})" + (f"<br>{detail}" if detail else "")
+        # The title needs the same treatment as the detail line and the
+        # evidence, and did not have it. Adventist titles its postings
+        # "RN | Full Time Regular | Dayshift | Telemetry 1", which put
+        # three extra cells into the row and broke 13 rows of the digest
+        # table into unreadable fragments.
+        role = (f"[{(p.title or '').replace('|', '/')}]({p.url})"
+                + (f"<br>{detail}" if detail else ""))
         return (f"| {drive} | {role} | {p.employer} | "
                 f"{p.location} | {BUCKET_LABEL.get(p.bucket, p.bucket)} | {ev} |")
 
@@ -486,7 +492,8 @@ def render_md(d):
     def app_row(r):
         detail = (r.get("Details") or "").replace("|", "/")
         title = (r.get("Title") or "").replace("|", "/")
-        role = f"[{title}]({r.get('URL')})" + (f"<br>{detail}" if detail else "")
+        role = (f"[{title}]({r.get('URL')})"
+                + (f"<br>{detail}" if detail else ""))
         since = applied_on(r) or "—"
         # Whether the posting is still up is real information about an
         # application in flight: a listing that comes down is usually the

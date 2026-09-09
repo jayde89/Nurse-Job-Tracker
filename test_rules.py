@@ -1006,6 +1006,149 @@ for _city, _bucket in (("Walnut Creek", "<30"), ("San Ramon", "30-60"),
     check(f"{_city} is still in range at {_bucket}",
           geo.classify(_city)[:2], (geo.Geo.IN, _bucket))
 
+# ── the user's stated criteria, reinforced 2026-09-09 ────────────────
+# An audit of one scan found 36 of 197 shown rows were charge, lead,
+# coordinator, navigator, consultant or specialist roles. A new graduate
+# is not hired into any of them. The user asked for these out in as many
+# words; this is a deliberate narrowing, not an accident, and it belongs
+# with the graded Level II rule as something not to "fix" back.
+for _t in ("Charge Nurse (RN) - ER",
+           "Charge RN - Surgery - Full Time Evening",
+           "RN, Nurse Lead - Surgery, Dayshift",
+           "Lead Wound Care RN (CWON), Home Health",
+           "Nurse Navigator Oncology Clinic",
+           "RN Coordinator -  Heart Transplant",
+           "Nurse Consultant",
+           "Lactation Specialist RN",
+           "Magnet Program Coordinator, Nurse",
+           "Clinical Effectiveness Consultant III, RN",
+           "RN House Supervisor"):
+    check(f"senior/non-bedside title dropped: {_t[:38]}",
+          A.title_passes(_t), False)
+
+# This one was reaching the digest labelled "Level I / new grad" while its
+# own title said Experienced — the exact shape of the most expensive bug
+# this project can produce.
+check("a coordinator role titled 'Experienced' never reaches the classifier",
+      A.title_passes("RN Education Program Site Coordinator Experienced"),
+      False)
+
+# The narrowing must not touch the roles the whole scan exists to find.
+for _t in ("Staff Nurse I, Medical Surgical",
+           "Registered Nurse (RN) - Med Surg",
+           "RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+           "New Grad Registered Nurse (RN) - Telemetry",
+           "Ambulatory Services Nurse I, PreOp & PACU",
+           "Registered Nurse Level I/II",
+           "Registered Nurse, ICU"):
+    check(f"applicable title still reaches the classifier: {_t[:34]}",
+          A.title_passes(_t), True)
+
+
+# ── an RN residency is a new-grad role ───────────────────────────────
+# Adventist writes "RN Resident", without the word "nurse", so the
+# residency pattern missed it and the single most applicable kind of
+# posting there is was landing as a generic NO_EXPERIENCE row.
+for _t in ("RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+           "RN Residency Program", "Registered Nurse Resident",
+           "Nurse Residency"):
+    check(f"residency recognised as new-grad: {_t[:36]}",
+          bool(C.NEW_GRAD.search(_t)), True)
+# The adjacency is load-bearing: in skilled nursing the residents are the
+# patients, and a bare \bresident\b would match every PACS posting.
+for _t in ("Provide exceptional nursing care to residents",
+           "Assess residents and monitor changes in condition"):
+    check(f"patients called residents are not a residency: {_t[:34]}",
+          bool(C.NEW_GRAD.search(_t)), False)
+
+
+# ── evidence must be the sentence the verdict rests on ───────────────
+# Adventist lists requirements as bullets. Stripping every tag to a space
+# merged them, and the digest quoted "(BSN): Preferred. Acute care
+# facility" — a truncated claim about a degree — as the grounds for "no
+# experience required".
+_BULLETS = ("<p>Job Requirements:</p><div><p>Education and Work Experience:</p>"
+            "<ul><li>Bachelor's Degree in Nursing (BSN): Preferred</li>"
+            "<li>Acute care facility experience: Preferred</li></ul></div>")
+_txt = A._html_to_text(_BULLETS)
+check("block tags become statement boundaries",
+      "(BSN): Preferred. Acute care facility experience: Preferred." in _txt,
+      True)
+check("the two bullets do not run together",
+      "Preferred Acute care" in _txt, False)
+
+_v = C.classify("RN Cath Lab", _txt)
+check("a posting hedging every requirement is still no-experience",
+      _v.bucket, "NO_EXPERIENCE")
+check("and it quotes the experience clause, not the degree clause",
+      _v.evidence, "Acute care facility experience: Preferred.")
+
+# The tightest clause wins, because the first match usually still carries
+# the section heading in front of it.
+check("the heading-laden clause is not chosen when a tighter one exists",
+      "Bachelor" in _v.evidence, False)
+
+# Widening the search for the QUOTE must never widen what gets shown: a
+# required duration still has to beat a hedge elsewhere in the posting.
+_hard = A._html_to_text(
+    "<ul><li>Acute care experience: 2 years Required</li>"
+    "<li>BSN: Preferred</li></ul>")
+check("a required acute duration is still suppressed",
+      C.classify("RN Med Surg", _hard).bucket, "ACUTE_REQUIRED")
+
+# ── evidence must come from whichever field actually said it ─────────
+# _snippet falls back to the opening of the text when its pattern does not
+# match, so a new-grad signal that lives only in the title was evidenced by
+# the first 170 characters of the description. Adventist's "RN Resident"
+# posting therefore reached the digest as a Level I role quoting "Located
+# in one of the most beautiful regions in the United States..." — hospital
+# marketing copy standing in for a requirement.
+_mktg = ("Located in one of the most beautiful regions in the United States, "
+         "St. Helena Hospital was founded in 1878 and has a rich history. "
+         "Job Requirements: Registered Nurse (RN) licensure: Required.")
+_v = C.classify("RN Resident | Full Time Regular | Dayshift | Surgical ICU 1",
+                _mktg)
+check("a title-only residency signal is evidenced by the title",
+      _v.evidence, "RN Resident | Full Time Regular | Dayshift | Surgical ICU 1")
+check("and it is still a Level I verdict", _v.bucket, "STAFF_NURSE_I")
+check("no marketing prose is quoted as evidence",
+      "beautiful regions" in _v.evidence, False)
+
+# When the body does say it, the body is still what gets quoted.
+_v2 = C.classify("Registered Nurse - Med Surg",
+                 "We welcome new graduates to apply. BLS required.")
+check("a body new-grad signal is still evidenced by the body",
+      "new graduates" in _v2.evidence, True)
+
+# ── a job title with a pipe must not break the digest table ──────────
+# Adventist titles its postings "RN | Full Time Regular | Dayshift |
+# Telemetry 1". The detail line and the evidence were escaped; the title
+# was not, so three extra cells appeared in the row and 13 rows of the
+# digest rendered as unreadable fragments.
+class _PipeTitle:
+    key = "Adventist Health::1"
+    employer = "Adventist Health"
+    req_id = "1"
+    title = "RN | Full Time Regular | Dayshift | Telemetry 1"
+    location = "St. Helena, CA"
+    url = "https://example.invalid/1"
+    drive_time_bucket = "90-120"
+    bucket = "NO_EXPERIENCE"
+    evidence = "Acute care facility experience: Preferred."
+    posted_date = ""
+    details = "Full-time | Day"
+    is_new = True
+
+
+_md = S.render_md(_digest({}, shown=[_PipeTitle()], top=[_PipeTitle()]))
+_rows = [ln for ln in _md.splitlines()
+         if ln.startswith("| ") and "Telemetry 1" in ln]
+check("the posting renders as exactly one table row", len(_rows), 1)
+check("and that row has the six cells the header declares",
+      _rows[0].count("|"), 7)
+check("the title's pipes are replaced, not dropped",
+      "RN / Full Time Regular / Dayshift / Telemetry 1" in _rows[0], True)
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:

@@ -122,11 +122,28 @@ INCLUDE_TITLE = re.compile(
 # CommonSpirit posts it that way in Sacramento, and the spelled-out form
 # was the only thing keeping LVN roles out once the include side loosened.
 # "informaticist" is the noun form of the "informatics" already here.
+# The senior and non-bedside words below were added 2026-09-09 at the
+# user's explicit instruction, after an audit of one scan found 36 of 197
+# shown rows were charge, lead, coordinator, navigator, consultant or
+# specialist roles — none of which a new graduate is hired into, and one
+# of which ("RN Education Program Site Coordinator Experienced") the
+# classifier had labelled "Level I / new grad" while its own title said
+# Experienced.
+#
+# This is a deliberate narrowing of a filter the rest of this file keeps
+# deliberately loose, so do not "fix" it back: the user asked for it in as
+# many words, the same way the graded Level II rule was asked for. Each
+# word here is unambiguous from the title alone, which is the standard
+# this filter holds itself to. "Charge" and "lead" are the supervisory
+# rungs above a new grad; "coordinator", "navigator" and "consultant" are
+# roles staffed from experienced nurses; "specialist" generalises the
+# "clinical nurse specialist" that was already here.
 EXCLUDE_TITLE = re.compile(
     r"\b(LVN|LPN|licensed vocationa?l? nurse|licensed practical nurse"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|informaticist|analyst"
+    r"|charge|lead|coordinator|navigator|consultant|specialist|preceptor"
     r"|travel|per[- ]diem agency|locum"
     r"|student|intern|volunteer|extern)\b", re.I)
 
@@ -158,6 +175,43 @@ def title_passes(title: str) -> bool:
 # instead of 479 KB, with the data blob stripped out. Look like a browser.
 ACCEPT = ("text/html,application/xhtml+xml,application/xml;q=0.9,"
           "application/json;q=0.8,*/*;q=0.7")
+
+
+# Block-level tags that end a statement. Stripping every tag to a space
+# reads fine on prose and destroys a bulleted requirements list: Adventist
+# writes
+#     <li>Bachelor's Degree in Nursing (BSN): Preferred</li>
+#     <li>Acute care facility experience: Preferred</li>
+# and a space-strip yields "...(BSN): Preferred Acute care facility
+# experience: Preferred" — one run-on in which the two bullets have merged.
+# The digest then quotes "(BSN): Preferred Acute care facility" as the
+# evidence for a verdict, which is a quote no reader can check, and the
+# contract in CLAUDE.md is that the quote must support the label. Worse,
+# a "2 years Required" bullet abutting a "Preferred" one puts both words
+# in the same clause and the requirement rules can read either.
+_BLOCK_END = re.compile(
+    r"(?is)</(?:li|p|div|tr|h[1-6]|ul|ol|table|section)>|<br\s*/?>")
+
+
+def _html_to_text(raw: str) -> str:
+    """HTML to plain text, keeping statement boundaries."""
+    if not raw:
+        return ""
+    text = _BLOCK_END.sub("\n", raw)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html.unescape(text)
+    # Collapse runs of spaces but keep the newlines the block tags left,
+    # then normalise each line. A line that already ends in punctuation is
+    # left alone; one that does not gets a period, so the classifier's
+    # sentence handling sees a bullet as the statement it is rather than
+    # as the opening of the next one.
+    out = []
+    for line in text.split("\n"):
+        line = re.sub(r"[ \t\xa0]+", " ", line).strip()
+        if not line:
+            continue
+        out.append(line if line[-1] in ".;:!?" else line + ".")
+    return " ".join(out)
 
 
 def _request(url, data=None, headers=None, timeout=None, retries=None):
@@ -1459,9 +1513,7 @@ class OracleORC:
         parts = [d.get("ExternalDescriptionStr") or "",
                  d.get("ExternalResponsibilitiesStr") or "",
                  d.get("ExternalQualificationsStr") or ""]
-        body = " ".join(x for x in parts if x)
-        body = html.unescape(re.sub(r"<[^>]+>", " ", body))
-        p.description = re.sub(r"\s+", " ", body).strip()
+        p.description = " ".join(_html_to_text(x) for x in parts if x).strip()
         p.posted_date = d.get("PostedDate") or p.posted_date
         p.schedule = d.get("JobSchedule") or p.schedule
         p.shift = d.get("JobShift") or p.shift
@@ -1663,9 +1715,12 @@ class Radancy:
         if m:
             try:
                 d = json.loads(m.group(1))
+                # Unescape first — the field arrives with its markup
+                # escaped, so stripping before unescaping strips nothing —
+                # then convert with the block-aware helper so a bulleted
+                # requirements list does not collapse into one run-on.
                 raw = html.unescape(d.get("description", "") or "")
-                p.description = re.sub(
-                    r"\s+", " ", re.sub(r"<[^>]+>", " ", raw)).strip()
+                p.description = _html_to_text(raw)
                 p.posted_date = d.get("datePosted") or p.posted_date
                 p.schedule = d.get("employmentType") or p.schedule
                 return p
@@ -1762,7 +1817,7 @@ class JobAps:
         chunk = m.group(1) if m else body
         chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
                        " ", chunk)
-        p.description = self._text(chunk)
+        p.description = _html_to_text(chunk)
         return p
 
 

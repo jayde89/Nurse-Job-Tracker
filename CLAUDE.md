@@ -15,6 +15,28 @@ doesn't support the label, the rule is wrong.** Four bugs of exactly this
 shape were found by reading labels against their own evidence — see the
 "Read the evidence" section of the README.
 
+## Who this is for, in the user's own words
+
+Restated by the user on 2026-09-09, after an audit found the list drifting
+away from it. A posting belongs on the list when it is one of:
+
+- **no experience required**
+- **staff nurse I** / Level I
+- **new graduate nurse** or an RN residency
+- experience stated as **basic RN experience that is not acute care**
+
+And it does **not** belong when the title is a rung above a new graduate:
+charge, lead, supervisor, manager, director, coordinator, navigator,
+consultant, specialist, educator, preceptor. `EXCLUDE_TITLE` in
+`adapters.py` enforces this and the list there is deliberately narrower
+than the rest of that filter — 36 of 197 shown rows were these roles
+before it was tightened. Do not loosen it back on the general "bias toward
+showing too much" principle below; the user asked for this specifically,
+the same way he asked for the graded Level II rule.
+
+The two principles are not in tension. Show too much *within* the roles a
+new graduate can be hired into; show nothing from the roles above them.
+
 Bias toward showing too much. `UNCLEAR` reaches the user. Two buckets are
 suppressed: `ACUTE_REQUIRED`, and `LEVEL_II_TITLE` — a title carrying a
 graded Level II+ rung, which is the grade above the one a new graduate is
@@ -29,6 +51,33 @@ re-examine. It is applied *after* the requirement rules in `classify()`,
 never before — see the docstring there for why, and keep it that way.
 The user also chose to show no count of what was hidden, so the digest
 says nothing about it; the scan's stdout line still reports it honestly.
+
+**Evidence must come from the field that actually said it, and must be the
+tightest clause that says it.** Three ways this broke on 2026-09-09, all
+found by reading labels against their own quotes:
+
+- Stripping every HTML tag to a space merges a bulleted requirements list
+  into one run-on. Adventist's two bullets became "...(BSN): Preferred
+  Acute care facility experience: Preferred", and the digest quoted
+  "(BSN): Preferred Acute care facility" — a truncated claim about a
+  degree — as grounds for "no experience required". Use `_html_to_text`,
+  which turns block tags into statement boundaries.
+- The evidence for a hedged verdict was the first 200 characters of the
+  experience section, which on a bulleted posting is whatever bullet came
+  first. Quote the tightest clause that mentions experience and hedges it.
+- `_snippet` falls back to the opening of the text when its pattern does
+  not match, so a signal that lived only in the *title* was evidenced by
+  hospital marketing copy. Quote whichever field matched.
+
+**The section splitter treats "experience" as a heading wherever it
+appears**, including mid-sentence. "Acute care experience: 2 years
+Required" therefore yields a section body of "2 years Required" with the
+words "Acute care" outside it, and the posting read as
+`GENERAL_EXPERIENCE` — shown to a new graduate who could not apply.
+`_classify_requirements` re-reads each required clause in its full
+sentence before concluding a requirement is not acute. Widening the
+*section* rule instead would risk missing requirements, which is the one
+direction that costs a job.
 
 `highlights.py` puts a line of detail under each title in the digest —
 facility, setting, full-time or per diem, shift, pay — and it is under the
