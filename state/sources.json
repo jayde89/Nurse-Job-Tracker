@@ -4,70 +4,103 @@
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 37,
-  "in_range": 4,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 40,
+  "in_range": 3,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "John Muir Health"
+  ]
  },
  "WorkdayCXS:Sutter Health": {
   "employer": "Sutter Health",
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 1161,
-  "in_range": 119,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 1186,
+  "in_range": 109,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Sutter Health"
+  ]
  },
  "WorkdayCXS:El Camino Health": {
   "employer": "El Camino Health",
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 63,
+  "listings": 60,
   "in_range": 3,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "El Camino Health"
+  ]
  },
  "HealthcareSource:Alameda Health System": {
   "employer": "Alameda Health System",
   "adapter": "HealthcareSource",
   "status": "ok",
   "error": null,
-  "listings": 38,
-  "in_range": 23,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 35,
+  "in_range": 22,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Alameda Health System"
+  ]
  },
  "PACS:PACS Group": {
   "employer": "PACS Group",
   "adapter": "PACS",
   "status": "ok",
   "error": null,
-  "listings": 111,
+  "listings": 113,
   "in_range": 27,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "PACS Group"
+  ]
  },
  "ScionHealth:Kindred / ScionHealth": {
   "employer": "Kindred / ScionHealth",
   "adapter": "ScionHealth",
   "status": "ok",
   "error": null,
-  "listings": 15,
-  "in_range": 0,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 16,
+  "in_range": 1,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Kindred / ScionHealth"
+  ]
  },
  "NeoGov:CA counties & cities (NEOGOV)": {
   "employer": "CA counties & cities (NEOGOV)",
   "adapter": "NeoGov",
-  "status": "ok",
+  "status": "degraded",
   "error": null,
-  "listings": 40,
-  "in_range": 1,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 148,
+  "in_range": 10,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Contra Costa County",
+   "Marin County",
+   "Solano County"
+  ],
+  "missed": [
+   "City of Berkeley",
+   "City of Oakland",
+   "County of Monterey",
+   "County of San Mateo",
+   "County of Santa Clara",
+   "County of Sonoma",
+   "Napa County",
+   "Sacramento County"
+  ]
  },
  "Jibe:Vibra Healthcare": {
   "employer": "Vibra Healthcare",
@@ -76,28 +109,154 @@
   "error": null,
   "listings": 89,
   "in_range": 4,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Vibra Healthcare"
+  ]
  },
  "SmartRecruiters:City & County of San Francisco": {
   "employer": "City & County of San Francisco",
   "adapter": "SmartRecruiters",
   "status": "ok",
   "error": null,
-  "listings": 174,
+  "listings": 177,
   "in_range": 3,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "City & County of San Francisco"
+  ]
  },
  "SmartHires:St. Rose Hospital": {
   "employer": "St. Rose Hospital",
   "adapter": "SmartHires",
   "status": "ok",
   "error": null,
-  "listings": 34,
-  "in_range": 4,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": "2026-09-09T18:12:41+00:00"
+  "listings": 40,
+  "in_range": 8,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "St. Rose Hospital"
+  ]
+ },
+ "WorkdayCXS:MarinHealth": {
+  "employer": "MarinHealth",
+  "adapter": "WorkdayCXS",
+  "status": "ok",
+  "error": null,
+  "listings": 146,
+  "in_range": 19,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "MarinHealth"
+  ]
+ },
+ "WorkdayCXS:Salinas Valley Health": {
+  "employer": "Salinas Valley Health",
+  "adapter": "WorkdayCXS",
+  "status": "ok",
+  "error": null,
+  "listings": 94,
+  "in_range": 22,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Salinas Valley Health"
+  ]
+ },
+ "OracleORC:UCSF Health": {
+  "employer": "UCSF Health",
+  "adapter": "OracleORC",
+  "status": "ok",
+  "error": null,
+  "listings": 779,
+  "in_range": 30,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "UCSF Health"
+  ]
+ },
+ "OracleORC:Tenet Health": {
+  "employer": "Tenet Health",
+  "adapter": "OracleORC",
+  "status": "ok",
+  "error": null,
+  "listings": 227,
+  "in_range": 14,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Tenet Health"
+  ]
+ },
+ "OracleORC:Providence": {
+  "employer": "Providence",
+  "adapter": "OracleORC",
+  "status": "ok",
+  "error": null,
+  "listings": 492,
+  "in_range": 6,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Providence"
+  ]
+ },
+ "OracleORC:Adventist Health": {
+  "employer": "Adventist Health",
+  "adapter": "OracleORC",
+  "status": "ok",
+  "error": null,
+  "listings": 1131,
+  "in_range": 20,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "Adventist Health"
+  ]
+ },
+ "OracleORC:NorthBay Health": {
+  "employer": "NorthBay Health",
+  "adapter": "OracleORC",
+  "status": "ok",
+  "error": null,
+  "listings": 121,
+  "in_range": 18,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "NorthBay Health"
+  ]
+ },
+ "Radancy:CommonSpirit / Dignity Health": {
+  "employer": "CommonSpirit / Dignity Health",
+  "adapter": "Radancy",
+  "status": "ok",
+  "error": null,
+  "listings": 309,
+  "in_range": 20,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "CommonSpirit / Dignity Health"
+  ]
+ },
+ "JobAps:San Joaquin County": {
+  "employer": "San Joaquin County",
+  "adapter": "JobAps",
+  "status": "ok",
+  "error": null,
+  "listings": 88,
+  "in_range": 5,
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": "2026-09-09T21:40:37+00:00",
+  "covered": [
+   "San Joaquin County"
+  ]
  },
  "USAJobs:US Dept of Veterans Affairs": {
   "employer": "US Dept of Veterans Affairs",
@@ -106,7 +265,8 @@
   "error": "USAJOBS_KEY not set \u2014 request one at https://developer.usajobs.gov/apirequest/ (adapter is untested)",
   "listings": 0,
   "in_range": 0,
-  "checked_at": "2026-09-09T18:12:41+00:00",
-  "last_success": null
+  "checked_at": "2026-09-09T21:40:37+00:00",
+  "last_success": null,
+  "covered": []
  }
 }
