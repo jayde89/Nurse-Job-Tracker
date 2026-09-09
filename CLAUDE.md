@@ -71,11 +71,26 @@ between requests. Keep that pause.
 ## Invariants
 
 - **A posting is "closed" when the source stops listing it, never when we
-  stop showing it.** `live` in `run_scan.py` is built from every posting
-  the scan *classified*, not from `shown`. Those sets differ the moment
-  anything is suppressed, and reading it off `shown` would have written
-  `closed` onto 66 still-open Level II rows the first time that rule ran —
-  into the ledger, where a closed row never comes back.
+  stop showing it, and never when we could not read it.** Two halves,
+  both learned the hard way. `live` in `run_scan.py` is built from every
+  posting the scan *classified*, not from `shown` — those sets differ the
+  moment anything is suppressed, and reading it off `shown` would have
+  written `closed` onto 66 still-open Level II rows the first time that
+  rule ran. The second half: a row is only closed when its employer is in
+  `covered`, the set of employers whose listing this scan actually read
+  end to end, which `scan()` records per source in `state/sources.json`.
+  On 2026-09-08 and 09-09 governmentjobs.com timed out for five of six
+  agencies; the adapter still returned the sixth and so still counted as
+  a healthy source, and eleven live postings were marked closed — six of
+  them Contra Costa Regional Medical Center RN roles verified open the
+  next day. An adapter that fans out over several employers (NeoGov over
+  agencies, Radancy over city pages) must report which it truly reached
+  via `covered_employers()`; a partial read reports nothing.
+
+- **A posting that comes back reopens.** `closed` is the only archived
+  status the scanner sets, so it is the only one it may clear. Every
+  status you set yourself — applied, rejected, withdrawn — survives the
+  posting being relisted. Without this, one outage hid a job forever.
 - **`applications.csv` is the user's file.** The scanner may add rows and
   refresh employer-controlled columns. It must never write `Status`,
   `Applied On` or `Notes`. A posting that disappears is marked `closed`,
@@ -105,8 +120,10 @@ between requests. Keep that pause.
 
 ## Adding a source
 
-Ten adapters live in `adapters.py`, each a class with `fetch_listings()`
-and `fetch_detail()` returning `Posting`. Register it in `ADAPTERS`.
+Twenty adapters live in `adapters.py`, each a class with
+`fetch_listings()` and `fetch_detail()` returning `Posting`. Register it
+in `ADAPTERS`. If it reads more than one employer, give it
+`covered_employers()` too — see the closing invariant above.
 
 Set `Posting.setting` if the adapter knows what kind of nursing its
 employer does (PACS is skilled nursing, Kindred is LTAC). Leave it `None`
@@ -133,9 +150,45 @@ sources didn't:
   classifier something to anchor on: prefixing St. Rose's qualifications
   with `Required Qualification:` turned that phrase into a requirement
   clause and produced a verdict quoting a heading as its evidence.
+- **Oracle Recruiting Cloud** (Fusion) turned out to be the single
+  highest-yield platform here — UCSF, Tenet, Providence, Adventist and
+  NorthBay all run it, and none were covered before. Unauthenticated REST:
+  `/hcmRestApi/resources/latest/recruitingCEJobRequisitions?...finder=findReqs;siteNumber=CX_1,limit=200,offset=N`.
+  Two traps. `expand=requisitionList.secondaryLocations` is mandatory —
+  without it the response carries counts and facets but an empty
+  `requisitionList`, which reads exactly like an employer with no jobs.
+  And `limit` is capped at 200 server-side: asking for 500 returns 200
+  and no error. Link to the Oracle-hosted candidate page, never a branded
+  careers domain composed from the Oracle id — Tenet's own site keys on an
+  unrelated Radancy id, so the composed URL 404s.
+- **Radancy TalentBrew** (CommonSpirit/Dignity, and the front end on
+  Tenet) accepts `Keywords` and `Location` on `/search-jobs/results` and
+  ignores both: a nurse search near San Ramon returns page 1 of every job
+  in the company, starting in San Antonio. Latitude/longitude returns
+  `{"results": ""}`. What works is the per-city page linked from the
+  site's own `/sitemap.xml`. Two row templates are in the wild; key the
+  parser on `data-job-id`, because keying on the outer `<li>` silently
+  loses facility and location on the newer one, whose job-info fields are
+  themselves nested `<li>` elements.
+- **JobAps** (`jobapscloud.com`) is the third CA-government platform after
+  NEOGOV and SmartRecruiters. San Joaquin County is on it. Its landing
+  page is the whole listing — no paging, no JSON. Strip unclosed trailing
+  tags from its cells: it writes `<td class="Locs">French Camp<br </td>`,
+  and a well-formed-tags-only strip leaves `French Camp<br`, which geo
+  cannot match.
 - **CalCareers** genuinely is blocked: ASP.NET WebForms rendering through
   DevExpress AJAX callbacks. A `__VIEWSTATE` POST returns a page with no
   jobs in it.
+- **HCA Healthcare** (Good Samaritan San Jose, Regional Medical Center) is
+  genuinely blocked too, and differently: a Cloudflare interstitial on
+  every path, `robots.txt` included, with full browser headers. Needs a
+  browser. This one is a known live gap — Good Samaritan is a hospital the
+  user named as one he missed.
+- **Do not guess a government slug from the county name.** Searching
+  NEOGOV for San Joaquin County finds `sjcounty`, which is a real,
+  populated, entirely plausible board — for San Juan County, Utah.
+  `alamedaca` is the City of Alameda, not the county. Verify every slug
+  against a posting's own `addressLocality` before adding it.
 
 Check the careers subdomain, not the marketing site. Check whether the
 listing endpoint reports its own total, and compare that to what you
@@ -149,7 +202,23 @@ actually collect — three separate silent truncations were found that way
   asked as "which of these systems are we missing?" rather than "which
   hospitals are within range?" It is independent, so no system-level
   adapter reached it. Worth re-asking the second question before adding
-  depth to a source already covered.
+  depth to a source already covered. This repeated on 2026-09-09: a San
+  Ramon Regional posting reached the user from outside every source, and
+  the sweep that followed found UCSF, Tenet, Providence, Adventist,
+  NorthBay, MarinHealth, Salinas Valley, CommonSpirit, San Joaquin and
+  five more county agencies all unlisted. Ask the second question first.
+- **Still genuinely missing, and worth the next push**: HCA (Good
+  Samaritan San Jose, Regional Medical Center San Jose) and Washington
+  Hospital Healthcare System in Fremont — both bot-blocked, both named by
+  the user as places he has seen postings. Chinese Hospital in San
+  Francisco runs no recognisable ATS. All three, plus CalCareers, are the
+  remaining browser-shaped work.
+- **Whether UCSF now carries the two former Dignity hospitals in San
+  Francisco** — Saint Francis Memorial and St. Mary's — is unverified.
+  CommonSpirit's board no longer lists either and its San Francisco city
+  page is down to one posting, while UCSF shows 23 San Francisco RN roles
+  under a generic "San Francisco, CA". If they are not in there, SF has a
+  hole. Check a UCSF posting's facility field.
 - **USAJOBS / VA is the only adapter not returning.** It needs
   `USAJOBS_KEY` and `USAJOBS_EMAIL` as repo secrets; the key must be
   requested by the repo owner at https://developer.usajobs.gov/apirequest/.
@@ -171,3 +240,52 @@ actually collect — three separate silent truncations were found that way
   the user as `GENERAL_EXPERIENCE` or `UNCLEAR` rather than as
   no-experience-required. Check the first few runs of any new source for
   this shape — a hedged sentence over a hard field.
+
+<!-- BEGIN claude-batch-kit -->
+## Continuous batch working agreement
+
+You are running a long, mostly-unattended session. Jayde is watching from his
+phone through Claude Code Remote Control and will reply there. Work in batches,
+checkpoint between them, and never burn the session idling.
+
+### Batch shape
+- A batch is 4–6 related tasks, roughly 20–40 minutes of work.
+- Pick the batch yourself from the repo's own state (open TODOs, failing or
+  missing tests, the roadmap/backlog file if one exists, obvious debt) unless
+  Jayde has named the work.
+- Finish the whole batch before stopping. Do not stop to ask about small
+  judgement calls inside a batch — make the call, note it in the checkpoint,
+  and keep going. If a call is genuinely irreversible or ambiguous in a way
+  that would waste the batch, stop early and say so.
+
+### Checkpoint (every batch, no exceptions)
+End every batch with exactly this, as your final message:
+
+```
+# Batch <n> — <short title>
+## Done
+- <what changed, file-level, one line each>
+- tests: <command> → <result>
+## Notes
+- <anything surprising, any judgement call made, any new debt found>
+## Proposed next batch
+1. <task>
+2. <task>
+3. <task>
+## Reply
+"go" · "go, but <change>" · "instead: <other work>" · "stop"
+```
+
+Then stop and wait. Never start the proposed batch on your own.
+
+### Rules
+- Commit at the end of each batch on a working branch, never directly on the
+  default branch, never force-push, never merge. Merging is Jayde's.
+- Keep the tests green. A batch that leaves the suite red is not done — fix it
+  or revert within the same batch.
+- If a usage limit interrupts you, stay in the session; Claude Code resumes
+  automatically at the reset. Resume mid-batch, then checkpoint as normal.
+- If Jayde replies mid-batch, finish the current task, then treat his message
+  as the next instruction — don't abandon work half-applied.
+- Keep the checkpoint short. It is read on a phone.
+<!-- END claude-batch-kit -->

@@ -17,7 +17,12 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # Raised from 30 on 2026-09-09, when nine sources were added. The old
+    # ceiling was already close: the 2026-09-08 23:03 run took 27m40s with
+    # the smaller set, and a run that hits the timeout is killed before the
+    # commit step, so it publishes nothing at all — the scan silently stops
+    # updating rather than failing loudly.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
