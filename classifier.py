@@ -286,12 +286,38 @@ def _clauses(text: str) -> list[str]:
 
 # ── signals ──────────────────────────────────────────────────────────
 
+# The optional "level"/"lvl"/"grade" matters: Sacramento County writes
+# "Registered Nurse Level I/II" and "Public Health Nurse Level I/II", and
+# without it the grade word sat between the noun and the numeral so
+# neither this pattern nor the Level II one below saw the grade at all.
+_GRADE_WORD = r"(?:\s*(?:level|lvl|grade))?"
+
 TITLE_LEVEL_I = re.compile(
     r"(?i)\b(staff nurse|clinical nurse|registered nurse|ambulatory services nurse"
-    r"|nurse|rn)\s*(i|1)\b(?!\s*[iv])")
+    r"|nurse|rn)" + _GRADE_WORD + r"\s*(i|1)\b(?!\s*[iv])")
 
 # "Nurse II" must never match Level I. Guard explicitly.
 TITLE_LEVEL_2PLUS = re.compile(r"(?i)\b(ii|iii|iv|v|2|3|4|5)\b")
+
+# A combined grade — "Registered Nurse Level I/II", "Public Health Nurse
+# Level I/II", "RN I-II" — is a Level I role: it is the rung a new
+# graduate is hired into, with the II sitting above it on the same
+# requisition. Sacramento County posts several of these and they were
+# landing in UNCLEAR, which shows them but buries them below the
+# no-experience pile instead of putting them in "worth applying to now".
+#
+# It has to be checked before the guard above, because that guard sees the
+# "II" in "I/II" and refuses the Level I reading.
+# Two forms. The first needs the nurse noun in front of the grade; the
+# second matches a bare "Level I/II" anywhere, because Sacramento County
+# writes "Registered Nurse D/CF (Level I/II)" with the assignment code
+# between the noun and the grade. The word "level" is what makes the
+# second form safe — it marks the numerals as a job grade rather than a
+# unit number, so it cannot match "RN, 2 West Medical" or "Unit 4 South".
+TITLE_LEVEL_I_COMBINED = re.compile(
+    r"(?i)\b(?:nurse|rn)(?:\s*(?:level|lvl|grade))?\s*"
+    r"(?:i|1)\s*[/&-]\s*(?:ii|2)\b"
+    r"|\b(?:level|lvl|grade)\s*(?:i|1)\s*[/&-]\s*(?:ii|2)\b")
 
 # A graded Level II+ title, anchored to the nurse noun itself.
 #
@@ -313,8 +339,19 @@ TITLE_LEVEL_2PLUS = re.compile(r"(?i)\b(ii|iii|iv|v|2|3|4|5)\b")
 # bare \b(ii|2)\b anywhere in the title matches "RN, 2 West Medical",
 # "Unit 4 South" and "12 Hour Nights", and would have hidden three staff
 # postings that carry no grade at all.
+# The same grade word, and for the same reason in reverse: "Staff Nurse
+# Level II, ICU" and "Nurse Level 2 - Float Pool" were reaching the list
+# as UNCLEAR because "Level" sat between the noun and the numeral, while
+# the identical "Staff Nurse II" was correctly hidden. The user confirmed
+# on 2026-09-09 that no Staff Nurse II role should reach him.
+#
+# A combined "Level I/II" must still come through: it is a posting a new
+# graduate is hired into at the I rung. It survives because the numeral
+# has to follow the noun (with at most a grade word between), and in
+# "Nurse Level I/II" what follows is "I", not "II" — the "II" after the
+# slash has no nurse noun in front of it.
 TITLE_LEVEL_II_GRADED = re.compile(
-    r"(?i)\b(?:nurse|rn)\s*(ii|iii|iv|2|3|4)\b")
+    r"(?i)\b(?:nurse|rn)" + _GRADE_WORD + r"\s*(ii|iii|iv|2|3|4)\b")
 
 ACUTE = re.compile(
     r"(?i)\b(acute care|acute[- ]care|inpatient|hospital|med[- ]?surg"
@@ -389,6 +426,10 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     # 2. Level I in the title — but only if no higher level is also present.
     #    "Clinical Nurse II" contains no Level-I match; "RN I/II" does, and
     #    should not count as Level I.
+    if TITLE_LEVEL_I_COMBINED.search(t):
+        return Verdict("STAFF_NURSE_I", t,
+                       "title is a combined Level I/II role, which is hired "
+                       "at the Level I rung")
     head = re.split(r"[-–—,(]", t)[0]
     if TITLE_LEVEL_I.search(t) and not TITLE_LEVEL_2PLUS.search(head):
         return Verdict("STAFF_NURSE_I", t, "title is a Level I role")

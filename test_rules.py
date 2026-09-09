@@ -1149,6 +1149,57 @@ check("and that row has the six cells the header declares",
 check("the title's pipes are replaced, not dropped",
       "RN / Full Time Regular / Dayshift / Telemetry 1" in _rows[0], True)
 
+# ── the grade ladder, confirmed by the user 2026-09-09 ───────────────
+# "No staff nurse 2 jobs. Continue to give me the staff nurse 1 (I) jobs."
+_REQS = "Requirements: Current California RN license. BLS required."
+
+
+def _bucket(title):
+    if not A.title_passes(title):
+        return "DROPPED"
+    return C.classify(title, _REQS).bucket
+
+
+# Both rules were anchored to the numeral sitting immediately after the
+# nurse noun, so an employer that writes the grade out — "Staff Nurse
+# Level II, ICU", "Nurse Level 2 - Float Pool" — defeated both, and those
+# postings reached the list as UNCLEAR while the identical "Staff Nurse
+# II" was correctly hidden.
+for _t in ("Staff Nurse II, Emergency Services", "Staff Nurse 2 - Med Surg",
+           "Registered Nurse II, Primary Care", "RN II - Telemetry",
+           "Registered Nurse Level II", "Staff Nurse Level II, ICU",
+           "Nurse Level 2 - Float Pool", "RN Level III - ICU",
+           "Clinical Nurse III - Wound Care", "Nurse Level II/III",
+           "RN II-III"):
+    check(f"graded II+ is hidden: {_t[:38]}", _bucket(_t), "LEVEL_II_TITLE")
+
+for _t in ("Staff Nurse I, Medical Surgical", "Staff Nurse 1 - Med Surg",
+           "Registered Nurse Level I", "RN I - Telemetry",
+           "Clinical Nurse I - ICU",
+           "Ambulatory Services Nurse I, PreOp & PACU"):
+    check(f"Level I is a Level I verdict: {_t[:34]}",
+          _bucket(_t), "STAFF_NURSE_I")
+
+# A combined grade is the rung a new graduate is hired into, with the II
+# sitting above it on the same requisition. Sacramento County posts
+# several, including one with an assignment code between the noun and the
+# grade, and they were landing in UNCLEAR — shown, but buried below the
+# no-experience pile instead of surfacing in "worth applying to now".
+for _t in ("Registered Nurse Level I/II", "Public Health Nurse Level I/II",
+           "Registered Nurse D/CF (Level I/II)", "RN I-II",
+           "Staff Nurse I & II"):
+    check(f"combined I/II is hired at the I rung: {_t[:32]}",
+          _bucket(_t), "STAFF_NURSE_I")
+
+# The grade word is what makes the bare "Level I/II" form safe. A numeral
+# with no grade word in front of it is a unit or a shift length, and
+# reading it as a grade would hide three staff postings that carry no
+# grade at all.
+for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
+           "RN - 12 Hour Nights"):
+    check(f"a unit number is not a grade: {_t[:34]}",
+          _bucket(_t) != "LEVEL_II_TITLE", True)
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:
