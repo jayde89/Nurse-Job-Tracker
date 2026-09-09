@@ -1,17 +1,18 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-09 08:17 UTC. 61 shown._
+_Scanned 2026-09-09 18:31 UTC. 63 shown._
 _Sources: 10/11 ok_ — failed: US Dept of Veterans Affairs
 
-**14 worth your attention** — Level I or no experience required,
+**15 worth your attention** — Level I or no experience required,
 and not already in your pile. 27 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 14
+## Worth applying to now — 15
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| 90-120 | [Staff Nurse I, Medical Surgical](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-I--Medical-Surgical_R-139574-1)<br>Full-time · Nights · $73.12–$73.12/hr | Sutter Health | Santa Rosa | Level I / new grad | Staff Nurse I, Medical Surgical |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sonoma-Post-Acute/RN_JR147473)<br>Sonoma Post Acute · Skilled nursing | PACS Group | Sonoma | No experience required | Supportive Culture: Experience a supportive work environment where every team member is valued and respected. Prior experience in a skilled nursing or |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR176905)<br>Vasona Creek Healthcare Center · Skilled nursing · Full-time · NOC / Night · $48.00–$55.00/hr | PACS Group | Los Gatos | No experience required | Skilled nursing or long-term care experience preferred |
 | 60-90 | [Registered Nurse RN Full Time Relocate to Fargo ND 20K](https://careers-vibratravels.icims.com/jobs/24124/login)<br>Long-term acute care / rehab · Full-time | Vibra Healthcare | Sacramento, California | No experience required | Previous acute care experience is strongly preferred. Ability to project a professional image. Knowledge of regulatory standards and compliance requir |
@@ -34,9 +35,12 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 2
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| 90-120 | [Staff Nurse I, Medical Surgical](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-I--Medical-Surgical_R-139574-1)<br>Full-time · Nights · $73.12–$73.12/hr | Sutter Health | Santa Rosa | Level I / new grad | Staff Nurse I, Medical Surgical |
+| 30-60 | [Registered Nurse Specialist II, Cardiac Cath](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Registered-Nurse-Specialist-II--Cardiac-Cath_R-140370)<br>Full-time · Days · $90.58–$126.81/hr | Sutter Health | Burlingame | Experience required, not acute | 2 years of recent relevant Cardiac Cath Lab experience |
 
 ## Watching — 27
 
