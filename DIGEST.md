@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-08 23:31 UTC. 67 shown._
+_Scanned 2026-09-09 08:17 UTC. 61 shown._
 _Sources: 10/11 ok_ — failed: US Dept of Veterans Affairs
 
 **14 worth your attention** — Level I or no experience required,
-and not already in your pile. 26 more need experience you do not
+and not already in your pile. 27 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -34,25 +34,18 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 7
+## New since last scan — 0
 
-| Drive | Role | Employer | Location | Requirements | Evidence |
-|---|---|---|---|---|---|
-| 30-60 | [Charge Nurse](https://www.governmentjobs.com/careers/contracosta/jobs/907033/charge-nurse)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse ( Emergency, Perianesthesia, GI Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996127/registered-nurse-emergency-perianesthesia-gi-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse ( Inpatient Psych, Psych Emergency Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996170/registered-nurse-inpatient-psych-psych-emergency-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse (Critical Care, Intermediate Care, Telemetry, Surgical, and Medical Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4971428/registered-nurse-critical-care-intermediate-care-telemetry-surgical-and-medi)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse (Labor & Delivery, Nursery, and Postpartum Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996104/registered-nurse-labor-delivery-nursery-and-postpartum-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse (Operating Room Assignment)](https://www.governmentjobs.com/careers/contracosta/jobs/4996178/registered-nurse-operating-room-assignment)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
-| 30-60 | [Registered Nurse (Public Health, Behav Health, CC Health Plan, Ambulatory, & Detention Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4994598/registered-nurse-public-health-behav-health-cc-health-plan-ambulatory-dete)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
+_Nothing new this run._
 
-## Watching — 26
+## Watching — 27
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| 30-60 | [Charge Nurse](https://www.governmentjobs.com/careers/contracosta/jobs/907033/charge-nurse)<br>Health Services - Continuous | Contra Costa County | Martinez | Requirements unclear |  |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR181056)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred) Knowledge of long-term care regulations a |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR168910-1)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred) Knowledge of long-term care regulations a |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR179445)<br>White Blossom Care Center · Skilled nursing · Full-time · $46–$55/hr | PACS Group | San Jose | Requirements unclear | 2 years SNF experience Schedule Full time 4 on 2 off May include weekends, evenings, or |

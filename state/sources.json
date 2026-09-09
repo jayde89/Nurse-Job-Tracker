@@ -6,38 +6,38 @@
   "error": null,
   "listings": 34,
   "in_range": 3,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "WorkdayCXS:Sutter Health": {
   "employer": "Sutter Health",
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 1141,
-  "in_range": 122,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "listings": 1139,
+  "in_range": 120,
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "WorkdayCXS:El Camino Health": {
   "employer": "El Camino Health",
   "adapter": "WorkdayCXS",
   "status": "ok",
   "error": null,
-  "listings": 69,
+  "listings": 71,
   "in_range": 6,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "HealthcareSource:Alameda Health System": {
   "employer": "Alameda Health System",
   "adapter": "HealthcareSource",
   "status": "ok",
   "error": null,
-  "listings": 43,
+  "listings": 41,
   "in_range": 26,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "PACS:PACS Group": {
   "employer": "PACS Group",
@@ -46,28 +46,28 @@
   "error": null,
   "listings": 111,
   "in_range": 27,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "ScionHealth:Kindred / ScionHealth": {
   "employer": "Kindred / ScionHealth",
   "adapter": "ScionHealth",
   "status": "ok",
   "error": null,
-  "listings": 14,
+  "listings": 15,
   "in_range": 0,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "NeoGov:CA counties & cities (NEOGOV)": {
   "employer": "CA counties & cities (NEOGOV)",
   "adapter": "NeoGov",
   "status": "ok",
   "error": null,
-  "listings": 60,
-  "in_range": 7,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "listings": 50,
+  "in_range": 1,
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "Jibe:Vibra Healthcare": {
   "employer": "Vibra Healthcare",
@@ -76,18 +76,18 @@
   "error": null,
   "listings": 89,
   "in_range": 4,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "SmartRecruiters:City & County of San Francisco": {
   "employer": "City & County of San Francisco",
   "adapter": "SmartRecruiters",
   "status": "ok",
   "error": null,
-  "listings": 173,
+  "listings": 172,
   "in_range": 3,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "SmartHires:St. Rose Hospital": {
   "employer": "St. Rose Hospital",
@@ -96,8 +96,8 @@
   "error": null,
   "listings": 34,
   "in_range": 4,
-  "checked_at": "2026-09-08T23:03:47+00:00",
-  "last_success": "2026-09-08T23:03:47+00:00"
+  "checked_at": "2026-09-09T07:59:08+00:00",
+  "last_success": "2026-09-09T07:59:08+00:00"
  },
  "USAJobs:US Dept of Veterans Affairs": {
   "employer": "US Dept of Veterans Affairs",
@@ -106,7 +106,7 @@
   "error": "USAJOBS_KEY not set \u2014 request one at https://developer.usajobs.gov/apirequest/ (adapter is untested)",
   "listings": 0,
   "in_range": 0,
-  "checked_at": "2026-09-08T23:03:47+00:00",
+  "checked_at": "2026-09-09T07:59:08+00:00",
   "last_success": null
  }
 }
