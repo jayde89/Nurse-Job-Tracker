@@ -266,6 +266,7 @@ may need correcting.
 | **Sacramento County** | Working — NEOGOV |
 | **County of Sonoma** | Working — NEOGOV |
 | **San Joaquin County** (San Joaquin General, French Camp) | Working — JobAps |
+| **Central Valley Specialty Hospital** (LTAC, Modesto) | Working — Paylocity |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
 | HCA (Good Samaritan + Regional Medical Center, San Jose) | Blocked — Cloudflare, needs a headless browser |

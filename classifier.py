@@ -358,6 +358,33 @@ ACUTE = re.compile(
     r"|telemetry|critical care|icu|intensive care|emergency (?:room|department|dept)"
     r"|er experience|ed experience|bedside)\b")
 
+# ACUTE alone is far too loose to prove a requirement, because "hospital"
+# is one of its markers and every employer whose name contains the word
+# matches it. Central Valley Specialty Hospital is a long-term acute care
+# hospital in Modesto whose posting says "We encourage new RNs to apply"
+# and asks only for a licence, BLS and ACLS — and it was suppressed as
+# ACUTE_REQUIRED, because its own benefits paragraph ("wages determined
+# based on ... qualifications and experience") contains both an ACUTE
+# marker (the hospital's name) and the word "experience".
+#
+# That is the shape CLAUDE.md already warns about with Vibra's benefits
+# blurb; requiring the clause to also say "experience" was not enough,
+# because benefits copy says "experience" too. So the acute marker and the
+# experience word have to be *about each other*: "acute care experience",
+# "experience in an acute care setting", "hospital experience". A sentence
+# that merely contains both words somewhere no longer counts.
+#
+# This only ever moves a posting from hidden to shown, which is the safe
+# direction — the genuine gates ("two years of acute care experience
+# required", John Muir's "6 Months Nursing - Medical Acute Care -
+# Required") still match, and have tests.
+_ACUTE_WORD = (r"acute[- ]care|acute|inpatient|hospital|med[- ]?surg|telemetry"
+               r"|critical care|icu|intensive care|emergency (?:room|department|dept)"
+               r"|bedside")
+ACUTE_EXPERIENCE = re.compile(
+    r"(?i)(?:(?:" + _ACUTE_WORD + r")[\w ,/()-]{0,40}\bexperience\b"
+    r"|\bexperience\b[\w ,/()-]{0,40}(?:" + _ACUTE_WORD + r"))")
+
 REQUIRED_WORD = re.compile(r"(?i)\b(required|must have|minimum of|at least)\b")
 PREFERRED_ONLY = re.compile(r"(?i)\b(preferred|desirable|a plus|nice to have)\b")
 
@@ -375,11 +402,25 @@ DURATION = re.compile(
 # The adjacency is load-bearing. A bare \bresiden(t|cy)\b would match the
 # skilled-nursing postings that say "provide exceptional nursing care to
 # residents", where the residents are the patients.
+# "We encourage new RNs to apply" is an explicit invitation to new
+# graduates and was not matching, because the pattern only knew the phrase
+# "new grad". Central Valley Specialty Hospital — the LTAC in Modesto —
+# writes it that way, and its posting was landing as a generic
+# NO_EXPERIENCE row evidenced by its own benefits paragraph.
+#
+# Both word orders appear in the wild ("new RNs are encouraged",
+# "we encourage new RNs"), and an invitation verb is required in either
+# direction so that a bare "new RN" — which shows up in sentences about
+# onboarding and orientation — is not read as an invitation.
 NEW_GRAD = re.compile(
     r"(?i)\b(new grad(uate)?s?( are)?( welcome| encouraged| eligible)?"
     r"|(nurse|rn|registered nurse) residen(cy|t)"
     r"|graduate nurse program|no experience (is )?required"
-    r"|new graduate rn)\b")
+    r"|new graduate rn"
+    r"|new (?:grad\w*|RNs?|nurses?)\s+(?:are\s+)?"
+    r"(?:welcome|encouraged|eligible|invited)"
+    r"|(?:encourage|welcome|invite)\w*\s+(?:all\s+)?"
+    r"new\s+(?:grad\w*|RNs?|nurses?))\b")
 
 
 def _snippet(text: str, pattern: re.Pattern, width: int = 170) -> str:
@@ -492,7 +533,7 @@ def _classify_requirements(title: str, description: str) -> Verdict:
         # ACUTE and would otherwise suppress four postings whose one real
         # requirement sentence says "strongly preferred".
         for c in _clauses(exp):
-            if (ACUTE.search(c) and re.search(r"(?i)\bexperience\b", c)
+            if (ACUTE_EXPERIENCE.search(c)
                     and not PREFERRED_ONLY.search(c)):
                 return Verdict("ACUTE_REQUIRED", c[:200],
                                "names acute-care experience in a requirements "
@@ -532,7 +573,7 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     for c in required_clauses:
         stem = c.strip()[:40]
         for full in _clauses(desc):
-            if stem and stem in full and ACUTE.search(full):
+            if stem and stem in full and ACUTE_EXPERIENCE.search(full):
                 return Verdict("ACUTE_REQUIRED", full[:200],
                                "requires acute-care experience; the section "
                                "split had separated it from its own clause")
