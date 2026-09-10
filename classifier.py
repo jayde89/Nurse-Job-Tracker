@@ -353,8 +353,20 @@ TITLE_LEVEL_I_COMBINED = re.compile(
 TITLE_LEVEL_II_GRADED = re.compile(
     r"(?i)\b(?:nurse|rn)" + _GRADE_WORD + r"\s*(ii|iii|iv|2|3|4)\b")
 
+# "Sub-acute", "post-acute" and "non-acute" are not acute care — they are
+# the settings the user's own criteria call basic RN experience that is
+# not acute care, and a posting asking for that experience belongs on the
+# list. Without this guard the word "acute" inside them matched, and
+# Sonoma Specialty Hospital's staff RN posting — a long-term acute care
+# hospital in Sebastopol asking for "One-year sub/post-acute care
+# experience" — was suppressed as ACUTE_REQUIRED on the day the hospital
+# was added. Suppression is for the grade above a new graduate and for
+# acute-care gates, not for the settings next door to them.
+_ACUTE = r"(?<!sub)(?<!sub[- ])(?<!post)(?<!post[- ])(?<!non)(?<!non[- ])acute"
+
 ACUTE = re.compile(
-    r"(?i)\b(acute care|acute[- ]care|inpatient|hospital|med[- ]?surg"
+    r"(?i)\b(" + _ACUTE + r" care|" + _ACUTE + r"[- ]care|inpatient|hospital"
+    r"|med[- ]?surg"
     r"|telemetry|critical care|icu|intensive care|emergency (?:room|department|dept)"
     r"|er experience|ed experience|bedside)\b")
 
@@ -378,7 +390,8 @@ ACUTE = re.compile(
 # direction — the genuine gates ("two years of acute care experience
 # required", John Muir's "6 Months Nursing - Medical Acute Care -
 # Required") still match, and have tests.
-_ACUTE_WORD = (r"acute[- ]care|acute|inpatient|hospital|med[- ]?surg|telemetry"
+_ACUTE_WORD = (_ACUTE + r"[- ]care|" + _ACUTE + r"|inpatient|hospital"
+               r"|med[- ]?surg|telemetry"
                r"|critical care|icu|intensive care|emergency (?:room|department|dept)"
                r"|bedside")
 ACUTE_EXPERIENCE = re.compile(

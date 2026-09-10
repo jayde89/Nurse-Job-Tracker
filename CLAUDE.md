@@ -104,7 +104,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 98 cases, no dependencies, ~instant
+python3 test_rules.py     # 296 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -171,6 +171,14 @@ between requests. Keep that pause.
   taken down, and building that section from `shown` meant the application
   disappeared from the dashboard the moment the employer pulled the
   listing. The row was always in the CSV; nothing surfaced it.
+- **A posting whose location names another state is out of range, and
+  that is decided before the city table is consulted.** Only the last
+  comma-separated segment is tested and only against a whole state name
+  or code, because testing the whole string puts "Nevada City, CA" and
+  "Kansas City" out on a substring. This exists because 30 of one scan's
+  33 review rows were the same CommonSpirit posting in Lufkin and
+  Livingston, Texas, arriving without coordinates — a review bucket is
+  only useful while it is short enough to read.
 - **Never tokenize the city table in `geo.py`.** Match whole phrases,
   longest first. Splitting on whitespace once put "creek" (from Sutter
   Creek) in the out-of-range set and silently rejected every Walnut Creek
@@ -262,6 +270,35 @@ sources didn't:
   `alamedaca` is the City of Alameda, not the county. Verify every slug
   against a posting's own `addressLocality` before adding it.
 
+- **iCIMS** (Sonoma Valley Hospital) reads as an app and is not:
+  `/jobs/search?ss=1` renders the whole listing server-side, twenty cards
+  to a page. Follow the portal's own `<link rel="next">` rather than
+  guessing `pr=N` — a guessed parameter set silently re-serves page one,
+  which looks like the end of the board. The detail page carries a JSON-LD
+  JobPosting **only** with `in_iframe=1`; the plain URL is a 268 KB
+  marketing wrapper with no structured data at all.
+- **UKG Pro Recruiting** (`recruiting*.ultipro.com`, Telecare) POSTs to
+  `JobBoardView/LoadSearchResults` and answers an unauthenticated caller —
+  but only to a small payload. The full filter block the browser sends
+  returns HTTP 500; `{"opportunitySearch":{"Top","Skip","QueryString",
+  "OrderBy":[],"Filters":[]}}` works. The detail page embeds the whole
+  opportunity as JSON, description included; there is no separate JSON
+  endpoint that answers without a session.
+- **JobAps** writes `<th class="JobTitle">` on an agency's main table and
+  a bare `<th scope="row">` on its departmental ones. Keying on the class
+  read 88 of San Joaquin's 98 rows and none at all of Alameda's, whose
+  whole board uses the bare form. Key on the anchors inside the cell. The
+  listing is not always at the agency root either — Alameda's root is a
+  splash page and the board is at `jobboard.asp`, so reading the root
+  returns a populated-looking page with no jobs in it. The bulletin lives
+  in `class="JobBulletinBody"`, and taking it is not tidying: without it
+  the description opens with the site's navigation menu and the classifier
+  reads from the front of what it is given.
+- **Paycom** (`paycomonline.net`, Dameron Hospital in Stockton, Community
+  Medical Centers) is genuinely blocked. The board is a React app, no
+  `/api/*` path answers, the loader bundle carries no endpoint, and there
+  is no RSS or feed. Needs a browser, same as HCA and CalCareers.
+
 Check the careers subdomain, not the marketing site. Check whether the
 listing endpoint reports its own total, and compare that to what you
 actually collect — three separate silent truncations were found that way
@@ -269,8 +306,10 @@ actually collect — three separate silent truncations were found that way
 
 ## Long-term acute care
 
-The user asked for LTAC specifically on 2026-09-09. There are four inside
-the ring and all four are now read:
+The user asked for LTAC specifically on 2026-09-09. There are **five**
+inside the ring — the fifth was found the same day by asking which
+hospitals are in Sonoma County rather than which systems were missing —
+and all five are now read:
 
 - **Kindred Hospital San Francisco Bay Area**, San Leandro (<30) —
   ScionHealth. Routinely has zero open staff RN roles; a scan showing
@@ -281,6 +320,11 @@ the ring and all four are now read:
   only LTAC with anything open, and it is at the far edge of the ring.
 - **Central Valley Specialty Hospital**, Modesto (60-90) — Paylocity,
   added 2026-09-09. Was reached by nothing before.
+- **Sonoma Specialty Hospital**, Sebastopol (90-120) — Paylocity, added
+  2026-09-09. Sonoma County's only LTAC, 37 beds, belongs to no system,
+  and had two RN roles open on the day it was added. It was missing
+  because nothing had ever enumerated Sonoma County's hospitals; the
+  adapter it needed was already in the file.
 
 That distribution is why the list can look like it has no LTAC in it at
 all: the two nearest are usually empty, and the rest are 60-120 minutes
@@ -305,12 +349,21 @@ the nearest postings.
   the user as places he has seen postings. Chinese Hospital in San
   Francisco runs no recognisable ATS. All three, plus CalCareers, are the
   remaining browser-shaped work.
-- **Whether UCSF now carries the two former Dignity hospitals in San
-  Francisco** — Saint Francis Memorial and St. Mary's — is unverified.
-  CommonSpirit's board no longer lists either and its San Francisco city
-  page is down to one posting, while UCSF shows 23 San Francisco RN roles
-  under a generic "San Francisco, CA". If they are not in there, SF has a
-  hole. Check a UCSF posting's facility field.
+- **Settled 2026-09-09: UCSF does carry the two former Dignity hospitals
+  in San Francisco.** The purchase completed in August 2024 and Saint
+  Francis Memorial is now UCSF Health Stanyan Hospital. Their postings are
+  on the UCSF Oracle board filed under a generic "San Francisco, CA" with
+  no facility field on the listing or in the description, which is why
+  looking for the names finds nothing. SF has no hole; don't re-open this.
+- **The gap that is left is not hospitals.** `COVERAGE.md` enumerates
+  every RN employer inside the ring and says which are read, which are
+  blocked and why, and which are not read yet. The short version: hospital
+  coverage is now essentially complete, and the uncovered tier is skilled
+  nursing beyond PACS, dialysis, hospice, community clinics and the rest
+  of behavioural health — which is precisely the tier the user's own
+  criteria describe as "basic RN experience that is not acute care". An
+  Indeed cross-check near Santa Rosa put five of ten RN postings in that
+  tier, in a county where every hospital is read.
 - **USAJOBS / VA is the only adapter not returning.** It needs
   `USAJOBS_KEY` and `USAJOBS_EMAIL` as repo secrets; the key must be
   requested by the repo owner at https://developer.usajobs.gov/apirequest/.

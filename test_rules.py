@@ -1272,6 +1272,175 @@ check("the city comes from the nested JobLocation, not LocationName",
       f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
 check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
 
+# ── sub-acute and post-acute are not acute ──────────────────────────
+# Sonoma Specialty Hospital's staff RN posting asks for "One-year
+# sub/post-acute care experience", and the word "acute" inside
+# "post-acute" suppressed it as ACUTE_REQUIRED on the day the hospital
+# was added. Post-acute and sub-acute are the settings the user's own
+# criteria name as basic RN experience that is not acute care, so a
+# posting asking for them belongs on the list.
+check("sub/post-acute experience is not an acute-care gate",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Experience Required: One-year sub/post-acute care experience.")),
+      False)
+check("nor is sub-acute written out",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Minimum one year of sub-acute care experience required.")), False)
+check("nor non-acute",
+      bool(C.ACUTE_EXPERIENCE.search("Non-acute care experience required.")),
+      False)
+check("and a real acute-care gate still matches",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Two years of acute care experience required.")), True)
+check("including one written the other way round",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Experience in an acute care setting is required.")), True)
+_v = C.classify("Registered Nurse",
+                "Experience Required: One-year sub/post-acute care experience.")
+check("so the posting reaches the user as general experience",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and is not suppressed", _v.bucket in C.HIDE, False)
+
+
+# ── iCIMS (Sonoma Valley Hospital) ───────────────────────────────────
+# The portal reads as an app and is server-rendered. Two things this
+# parser has to get right: the screen-reader label that sits inside the
+# anchor ahead of the title, and following the portal's own rel="next"
+# rather than guessing a page parameter.
+_IC = A.ICIMS("Sonoma Valley Hospital", "careers-svh.icims.com",
+              default_city="Sonoma")
+_card = ('<ul class="container-fluid iCIMS_JobsTable">'
+         '<li class="iCIMS_JobCardItem"><div class="row">'
+         '<div class="col-xs-12 title">'
+         '<a href="https://careers-svh.icims.com/jobs/2401/'
+         'registered-nurse-%28per-diem%29/job?in_iframe=1" '
+         'class="iCIMS_Anchor" title="2401 - Registered Nurse (Per Diem)">'
+         '<span class="sr-only field-label">Title</span>'
+         '<h3 > Registered Nurse (Per Diem)</h3></a></div>'
+         '<div class="col-xs-12 description">One sentence of teaser.</div>'
+         '</div></li></ul>'
+         '<link rel="next" href="https://careers-svh.icims.com/jobs/search'
+         '?pr=1&amp;in_iframe=1" />')
+_found = A.ICIMS._CARD.findall(_card)
+check("an iCIMS job card is found", len(_found), 1)
+check("the job id comes from the URL", _found[0][1], "2401")
+check("the screen-reader label is not part of the title",
+      _IC._title(_found[0][2]), "Registered Nurse (Per Diem)")
+check("the next page is read from the portal's own rel=next",
+      A.ICIMS._NEXT.search(_card).group(1),
+      "https://careers-svh.icims.com/jobs/search?pr=1&amp;in_iframe=1")
+check("Sonoma is a city geo places in range",
+      geo.classify("Sonoma")[0], geo.Geo.IN)
+
+
+# ── UKG Pro Recruiting (Telecare) ────────────────────────────────────
+# A regional posting names several sites. File it under the nearest one,
+# the way the Workday multi-site postings are filed, and say how many
+# others there were rather than dropping them silently.
+check("the nearer of two sites wins",
+      min(["Stockton, CA", "San Leandro, CA"], key=A.UKGRecruiting._closeness),
+      "San Leandro, CA")
+check("an out-of-range site loses to an in-range one",
+      min(["Bakersfield, CA", "Ceres, CA"], key=A.UKGRecruiting._closeness),
+      "Ceres, CA")
+# Telecare runs programs in Oregon and Washington as well as California,
+# which is why nothing here may assume a posting is Californian.
+check("a Portland posting is out of range",
+      geo.classify("Portland, OR")[0], geo.Geo.OUT)
+
+
+# ── JobAps: the header cell's class is not the row marker ────────────
+# San Joaquin writes <th class="JobTitle"> on its main table and a bare
+# <th scope="row"> on the departmental tables below it. Keying on the
+# class read 88 of that agency's 98 rows, and none at all of Alameda's,
+# whose whole board uses the bare form. A Staff Nurse posting can land on
+# a departmental list.
+_ja_main = ('<tr><th class="JobTitle"><a href="/SJQ/sup/bulpreview.asp?R1=1"'
+            ' class="JobTitle">Staff Nurse II</a>'
+            '<a class="JobNum">0326-RH1102-AC</a></th>'
+            '<td class="Locs">French Camp<br </td>'
+            '<td class="Dept">Health Care Services</td></tr>')
+_ja_dept = ('<tr><th scope="row"><a href="/Alameda/sup/bulpreview.asp?R1=2"'
+            ' class="JobTitle" title="x">Public Health Nurse </a>'
+            '<a href="/Alameda/sup/bulpreview.asp?R1=2" class="JobNum IconNew"'
+            ' title="x">25-5301-01 </a></th>'
+            '<td class="Salary">$1</td></tr>')
+check("the main table's rows are read",
+      len(A.JobAps._ROW.findall(_ja_main)), 1)
+check("and so are the departmental table's",
+      len(A.JobAps._ROW.findall(_ja_dept)), 1)
+check("the JobNum modifier class does not hide a row",
+      A.JobAps._text(A.JobAps._ROW.findall(_ja_dept)[0][2]), "25-5301-01")
+# Alameda is on JobAps, not NEOGOV: the plausible slug "alamedaca" is the
+# City of Alameda. Its board lives at jobboard.asp, not at the root.
+check("an agency can put its listing somewhere other than the root",
+      A.JobAps(employer="Alameda County", agency="Alameda",
+               default_city="Oakland", path="jobboard.asp").path,
+      "jobboard.asp")
+check("Oakland is in range", geo.classify("Oakland")[0], geo.Geo.IN)
+
+
+# ── JobAps evidence must be the bulletin, not the site's menu ───────
+# The container this looked for (id="bulletin") exists on neither agency,
+# so every San Joaquin General posting was classified from the whole
+# page: the description opened with "HRS Home. Update Contact Info.
+# Logon. Job Portal Home. Current Openings..." and the classifier reads
+# from the front of what it is given.
+_ja_page = ('<div id="PageWrapper"><nav>Job Portal Home Current Openings'
+            ' How Do I Apply</nav>'
+            '<div class="JobBulletinBody"> Introduction. This recruitment is'
+            ' for the San Joaquin General Hospital.'
+            '<div id="ApplyPanelDiv">Apply now</div></div></div>')
+_i = _ja_page.find("JobBulletinBody")
+_i = _ja_page.find(">", _i) + 1
+_end = _ja_page.find("ApplyPanelDiv", _i)
+_chunk = _ja_page[_i:_end]
+check("the bulletin body is what gets read",
+      "Job Portal Home" in _chunk, False)
+check("and the attribute itself is not part of it",
+      _chunk.strip().startswith("Introduction"), True)
+
+
+# ── geo: places inside the ring the table did not know ───────────────
+# Kentfield is the load-bearing one. It is a long-term acute care
+# hospital this scan already reads through Vibra's board, the user asked
+# for LTAC by name, and its postings could never be ranked.
+check("Kentfield is in range", geo.classify("Kentfield, CA")[0], geo.Geo.IN)
+check("and it is ranked, not just accepted",
+      geo.classify("Kentfield, CA")[1], "30-60")
+check("San Lorenzo is in range", geo.classify("San Lorenzo, CA")[0], geo.Geo.IN)
+check("Oakdale is in range", geo.classify("Oakdale, CA")[0], geo.Geo.IN)
+check("Half Moon Bay is in range",
+      geo.classify("Half Moon Bay, CA")[0], geo.Geo.IN)
+# A name that is also a place somewhere else stays a question rather than
+# becoming a wrong answer. Ashland is in Alameda County and in Oregon,
+# and this scan now reads an employer with Oregon programs.
+check("an ambiguous name is left for review, not guessed",
+      geo.classify("Ashland")[0], geo.Geo.UNKNOWN)
+# ...and when the posting names the state, no guessing is needed at all.
+check("a state that isn't California is out of range",
+      geo.classify("Ashland, OR")[0], geo.Geo.OUT)
+# 30 of one scan's 33 review rows were the same Texas posting arriving
+# without coordinates. The review bucket is only useful if it is short.
+check("so is Texas", geo.classify("Lufkin, Texas")[0], geo.Geo.OUT)
+check("the state test reads the last segment only, not a substring",
+      geo.classify("Nevada City, CA")[0], geo.Geo.OUT)   # in OUT_CITIES
+check("and a Californian city with a state name in it is unharmed",
+      geo.classify("Kansas City, MO")[0], geo.Geo.OUT)
+check("a bare city with no state is still looked up",
+      geo.classify("French Camp")[0], geo.Geo.IN)
+check("and California spelled out is not mistaken for another state",
+      geo.classify("Oakland, California")[0], geo.Geo.IN)
+# The adapters that resolve a multi-site posting label it "City, ST
+# (+N more)", and that suffix would otherwise sit where the state is.
+check("the multi-site suffix does not hide the state",
+      geo.classify("Tukwila, WA (+1 more)")[0], geo.Geo.OUT)
+check("and does not break an in-range one",
+      geo.classify("Alameda, CA (+4 more)")[0], geo.Geo.IN)
+check("adding names did not break the longest-first ordering",
+      geo.classify("Sutter Creek, CA")[0], geo.Geo.OUT)
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:

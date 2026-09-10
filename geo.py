@@ -77,6 +77,49 @@ for _bucket, _names in [
     for _n in _csv(_names):
         IN_CITIES[_n] = _bucket
 
+# Added 2026-09-09, in its own block for the same reason the OUT block
+# below is: _csv splits on commas and nothing else, so a comment written
+# inside one of those strings becomes a city name.
+#
+# These are places inside the ring that the table simply did not know.
+# Every one of them was reaching `classify` as UNKNOWN, which does not
+# lose a posting — the review bucket exists for exactly this — but a
+# review list nobody reads is a review list that hides things, and one of
+# these was load-bearing: Kentfield is a long-term acute care hospital
+# this scan already reads through Vibra's board, and the user asked for
+# LTAC by name. Its postings could never be ranked.
+#
+# Names that are also a place somewhere else are deliberately left out
+# rather than guessed at, because a wrong IN is a silent wrong answer
+# while an UNKNOWN is a question. "Ashland" is in Alameda County and in
+# Oregon, and this scan reads an employer with Oregon programs; "Carmel"
+# is in Monterey County and in Indiana; "Empire" is in Stanislaus County
+# and inside "Inland Empire"; "Hillsborough" is on the Peninsula and in
+# three other states. Those stay in review.
+for _bucket, _names in [
+    ("<30", """san lorenzo, cherryland, fairview, north richmond"""),
+    ("30-60", """kentfield, ross, san anselmo, fairfax, san quentin,
+        pacifica, colma, half moon bay, montara, el granada, moss beach,
+        woodside, portola valley, redwood shores, alviso, los altos hills,
+        stanford, sunol, bay point, pacheco, crockett, rodeo, blackhawk,
+        byron, knightsen, bethel island, cordelia, mountain house"""),
+    ("60-90", """bolinas, point reyes station, glen ellen, kenwood,
+        boyes hot springs, penngrove, coyote, san martin, monte sereno,
+        escalon, linden, lockeford, woodbridge, thornton, banta, patterson,
+        farmington, walnut grove, courtland, clarksburg, arden arcade,
+        north highlands, rio linda, gold river, mather, mcclellan,
+        oakville, rutherford"""),
+    ("90-120", """guerneville, forestville, occidental, graton, geyserville,
+        oakdale, waterford, hughson, denair, keyes, el dorado hills,
+        cameron park, shingle springs, diamond springs, granite bay,
+        loomis, penryn, rancho murieta, wilton, deer park, felton,
+        ben lomond, boulder creek, la selva beach, castroville, prunedale,
+        del rey oaks, sand city, atwater, winton"""),
+]:
+    for _n in _csv(_names):
+        IN_CITIES[_n] = _bucket
+
+
 OUT_CITIES: set[str] = set(_csv("""
     crescent city, eureka, arcata, mckinleyville, fortuna, ukiah, willits,
     lakeport, clearlake, clear lake, kelseyville, middletown, mendocino,
@@ -146,6 +189,49 @@ def haversine_mi(lat, lon) -> float | None:
     return 3958.8 * 2 * math.asin(math.sqrt(a))
 
 
+# A posting in another state is out of range and does not need a city
+# lookup to prove it. This exists because 30 of the 33 rows in one scan's
+# review bucket were the same CommonSpirit "National Resident RN" posting
+# in Lufkin and Livingston, Texas — towns no California gazetteer will
+# ever list, arriving without coordinates, and crowding out the three
+# rows that were genuinely worth a look. The review bucket is only useful
+# if it is short enough to read.
+#
+# Only the last comma-separated segment is tested, and only against a
+# whole state name or code. Testing the whole string would put "Nevada
+# City, CA" and "Kansas City" out of range on a substring.
+_STATES = {
+    "alabama", "alaska", "arizona", "arkansas", "colorado", "connecticut",
+    "delaware", "florida", "georgia", "hawaii", "idaho", "illinois",
+    "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine",
+    "maryland", "massachusetts", "michigan", "minnesota", "mississippi",
+    "missouri", "montana", "nebraska", "nevada", "new hampshire",
+    "new jersey", "new mexico", "new york", "north carolina",
+    "north dakota", "ohio", "oklahoma", "oregon", "pennsylvania",
+    "rhode island", "south carolina", "south dakota", "tennessee", "texas",
+    "utah", "vermont", "virginia", "washington", "west virginia",
+    "wisconsin", "wyoming", "district of columbia",
+    "al", "ak", "az", "ar", "co", "ct", "de", "fl", "ga", "hi", "id", "il",
+    "in", "ia", "ks", "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo",
+    "mt", "ne", "nv", "nh", "nj", "nm", "ny", "nc", "nd", "oh", "ok", "or",
+    "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", "wa", "wv", "wi",
+    "wy", "dc",
+}
+
+
+def _other_state(location: str) -> bool:
+    """True when the location's last segment names a state that isn't CA."""
+    # A multi-site posting is labelled "City, ST (+N more)" by the adapters
+    # that resolve one, and that suffix would otherwise hide the state.
+    loc = re.sub(r"\s*\(\+\d+\s+more\)\s*$", "", location or "")
+    parts = [p.strip() for p in loc.split(",") if p.strip()]
+    if len(parts) < 2:
+        return False
+    tail = re.sub(r"[^a-z ]", " ", parts[-1].lower())
+    tail = re.sub(r"\s+", " ", tail).strip()
+    return tail in _STATES
+
+
 def _normalize(location: str) -> str:
     s = (location or "").lower()
     s = re.sub(r"[^a-z\s]", " ", s)
@@ -156,6 +242,8 @@ def _normalize(location: str) -> str:
 def classify(location: str, lat=None, lon=None):
     """Returns (verdict, drive_time_bucket, straight_line_miles)."""
     miles = haversine_mi(lat, lon)
+    if _other_state(location):
+        return Geo.OUT, None, miles
     norm = _normalize(location)
 
     for name, verdict, bucket in _ORDERED:

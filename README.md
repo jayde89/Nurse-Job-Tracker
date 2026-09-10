@@ -1,6 +1,6 @@
 # RN job scanner
 
-Scans sixteen employer and public-agency career systems three times a day
+Scans twenty-one employer and public-agency career systems three times a day
 for staff RN openings within two hours of Oakland, reads each posting's
 actual requirements, and hides the ones that require acute-care experience.
 
@@ -267,10 +267,22 @@ may need correcting.
 | **County of Sonoma** | Working — NEOGOV |
 | **San Joaquin County** (San Joaquin General, French Camp) | Working — JobAps |
 | **Central Valley Specialty Hospital** (LTAC, Modesto) | Working — Paylocity |
+| **Sonoma Specialty Hospital** (LTAC, Sebastopol) | Working — Paylocity |
+| **Sonoma Valley Hospital** (Sonoma) | Working — iCIMS |
+| **Telecare** (behavioural health: Oakland, San Leandro, San Jose, Stockton, Ceres, Santa Cruz) | Working — UKG |
+| **Marshall Medical Center** (Placerville) | Working — Workday |
+| **Alameda County** (public health, correctional health) | Working — JobAps |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
 | HCA (Good Samaritan + Regional Medical Center, San Jose) | Blocked — Cloudflare, needs a headless browser |
 | Washington Hospital, Fremont | Blocked — 403 to every non-browser request |
+| Dameron Hospital, Stockton | Blocked — Paycom board renders client-side |
+| UC Davis Medical Center, Sacramento | Not read — careers site answers 403 |
+
+`COVERAGE.md` is the full list: every RN employer inside two hours, whether
+this scan reads it, and if not, what is in the way. Read that before adding
+a source — it is the answer to "are we missing anything", kept in one place
+so the question doesn't have to be re-researched.
 
 The bolded rows were added on 2026-09-09, after a San Ramon Regional
 posting reached you from outside every source the scanner had. The lesson

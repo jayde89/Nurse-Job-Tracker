@@ -1754,19 +1754,34 @@ class JobAps:
     """
 
     BASE = "https://www.jobapscloud.com"
+    # Key on the anchors inside the header cell, never on the cell's own
+    # class. San Joaquin writes `<th class="JobTitle">` on its main table
+    # and a bare `<th scope="row">` on the promotional and departmental
+    # tables below it, and requiring the class read 88 of that agency's 98
+    # rows — the missing ten being every job posted to a departmental
+    # list, which is a place a Staff Nurse posting can land. Alameda
+    # County writes the bare form for its whole board, so the strict
+    # pattern read none of it at all.
     _ROW = re.compile(
-        r'<th[^>]*class="JobTitle"[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*'
-        r'class="JobTitle"[^>]*>(.*?)</a>\s*<a[^>]*class="JobNum"[^>]*>'
+        r'<th[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*'
+        r'class="JobTitle"[^>]*>(.*?)</a>\s*<a[^>]*class="JobNum[^"]*"[^>]*>'
         r'(.*?)</a>(.*?)</tr>', re.S | re.I)
 
     def __init__(self, employer="San Joaquin County", agency="SJQ",
-                 default_city="Stockton"):
+                 default_city="Stockton", path=""):
         self.employer = employer
         self.agency = agency
         # Used only when a row prints no city of its own. The county seat
         # is Stockton; San Joaquin General is in French Camp and says so,
-        # which is why the row's own value always wins.
+        # which is why the row's own value always wins. Alameda's board
+        # prints no location column at all, so for that agency this is the
+        # only city there is.
         self.default_city = default_city
+        # Where the listing lives under the agency. San Joaquin's landing
+        # page *is* the listing; Alameda's landing page is a splash screen
+        # linking to jobboard.asp, and reading the root there returns a
+        # populated-looking page with no jobs in it.
+        self.path = path
 
     @staticmethod
     def _text(fragment: str) -> str:
@@ -1785,7 +1800,7 @@ class JobAps:
         return self._text(m.group(1)) if m else ""
 
     def fetch_listings(self) -> list[Posting]:
-        body = _request(f"{self.BASE}/{self.agency}/")
+        body = _request(f"{self.BASE}/{self.agency}/{self.path}")
         out, seen = [], set()
         for m in self._ROW.finditer(body):
             href, title, num, rest = m.groups()
@@ -1810,11 +1825,22 @@ class JobAps:
 
     def fetch_detail(self, p: Posting) -> Posting:
         body = _request(p.url)
-        # The bulletin is the whole page; strip the chrome by taking the
-        # main content container when there is one and the body otherwise.
-        m = re.search(r'<div[^>]*id="bulletin"[^>]*>(.*?)</div>\s*</div>',
-                      body, re.S | re.I)
-        chunk = m.group(1) if m else body
+        # The bulletin sits in a JobBulletinBody container, and taking it
+        # is not tidying. Without it the description starts with the site's
+        # own navigation — "HRS Home. Update Contact Info. Logon. Job
+        # Portal Home..." — and the classifier reads from the front of what
+        # it is given, so a hedged verdict quoted a menu. There is no
+        # element with id="bulletin" on either agency; that earlier guess
+        # never matched and the fallback below was doing all the work.
+        i = body.find("JobBulletinBody")
+        if i >= 0:
+            # Past the end of the tag itself, or the attribute leaks into
+            # the text and the description opens with `JobBulletinBody">`.
+            i = body.find(">", i) + 1
+            end = body.find("ApplyPanelDiv", i)
+            chunk = body[i:end if end > i else i + 40000]
+        else:
+            chunk = body
         chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
                        " ", chunk)
         p.description = _html_to_text(chunk)
@@ -1894,6 +1920,232 @@ class Paylocity:
         return p
 
 
+# ── adapter 15: iCIMS (Sonoma Valley Hospital) ───────────────────────
+
+class ICIMS:
+    """
+    iCIMS is what the independent hospitals run, and it reaches Sonoma
+    Valley Hospital — a district hospital in the town of Sonoma that sits
+    inside every other source's blind spot: it belongs to no system, so no
+    system-level adapter reaches it, and it is not a county employer, so
+    neither NEOGOV nor JobAps carries it.
+
+    Two things about this platform are worth writing down.
+
+    The portal looks like an app and is not. `/jobs/search?ss=1` renders
+    the whole listing server-side, twenty cards to a page, and says where
+    the next page is in a `<link rel="next">`. Follow that rather than
+    guessing at `pr=N`: the parameter set differs between portals and a
+    guessed URL silently returns page one again, which reads as "the board
+    ended" and truncates the sweep.
+
+    The detail page carries a JSON-LD JobPosting — but only when asked for
+    with `in_iframe=1`. The plain URL serves a 268 KB marketing wrapper
+    with no structured data in it at all, so a scraper that reads the
+    obvious URL gets a description it has to mine out of navigation.
+
+    Do not classify from the listing card. It carries a `description` div,
+    and that div is a one-sentence teaser — the same shape that produced
+    40 false "no experience required" verdicts when Sutter was read
+    through Phenom.
+
+    The portal states no location on its cards, because this employer has
+    one site. `default_city` is what geo ranks, and it is the adapter's
+    job to be right about it: an iCIMS portal for a multi-site employer
+    needs its location parsed, not a default invented.
+    """
+
+    MAX_PAGES = 25      # 500 postings of headroom on a 20-per-page board
+
+    _CARD = re.compile(
+        r'<li class="iCIMS_JobCardItem".*?<a href="([^"]*?/jobs/(\d+)/[^"]*?)"'
+        r'[^>]*class="iCIMS_Anchor"[^>]*>(.*?)</a>', re.S)
+    _NEXT = re.compile(r'<link rel="next" href="([^"]+)"')
+    _LD = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+
+    def __init__(self, employer: str, host: str, default_city: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.default_city = default_city
+        self.setting = setting
+
+    @staticmethod
+    def _title(fragment: str) -> str:
+        # The anchor holds a screen-reader label ("Title") ahead of the
+        # <h3>. Strip tags first, then that label, or every title on the
+        # board reads "Title Registered Nurse".
+        t = html.unescape(re.sub(r"\s+", " ",
+                                 re.sub(r"<[^>]+>", " ", fragment))).strip()
+        return re.sub(r"^Title\s+", "", t)
+
+    def fetch_listings(self) -> list[Posting]:
+        url = (f"https://{self.host}/jobs/search?ss=1"
+               "&searchRelation=keyword_all&in_iframe=1")
+        out, seen = [], set()
+        for _ in range(self.MAX_PAGES):
+            body = _request(url)
+            cards = self._CARD.findall(body)
+            if not cards:
+                break
+            for href, jid, title in cards:
+                if jid in seen:
+                    continue
+                seen.add(jid)
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=jid,
+                    title=self._title(title),
+                    location=self.default_city,
+                    url=html.unescape(href),
+                    setting=self.setting,
+                    source_adapter=f"icims:{self.host.split('.')[0]}",
+                ))
+            m = self._NEXT.search(body)
+            if not m:
+                break
+            url = html.unescape(m.group(1))
+            if "in_iframe" not in url:
+                url += "&in_iframe=1"
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        m = self._LD.search(body)
+        if not m:
+            return p
+        try:
+            d = json.loads(m.group(1))
+        except json.JSONDecodeError:
+            return p
+        p.description = _html_to_text(d.get("description", ""))
+        p.posted_date = (d.get("datePosted") or "")[:10] or p.posted_date
+        p.schedule = d.get("employmentType") or p.schedule
+        return p
+
+
+# ── adapter 16: UKG Pro Recruiting / UltiPro (Telecare) ──────────────
+
+class UKGRecruiting:
+    """
+    UKG Pro Recruiting (the boards still hosted on recruiting.ultipro.com)
+    is what mid-sized healthcare employers use, and it reaches Telecare —
+    a behavioural-health operator running psychiatric health facilities,
+    crisis units and residential programs in Oakland, San Leandro, San
+    Jose, Stockton, Ceres and Santa Cruz. None of them belongs to a
+    hospital system, so nothing else here sees them.
+
+    The board's own front end POSTs to LoadSearchResults, and it answers
+    an unauthenticated caller. The payload matters: the full filter block
+    the browser sends is rejected with a 500 by this tenant, while the
+    three fields that actually mean anything are accepted. Send the small
+    one.
+
+    `Top` is honoured up to the board's total, so paging is a courtesy
+    rather than a requirement — but page anyway, and stop on `totalCount`
+    rather than on a short page, because a filtered board can return fewer
+    than `Top` and still have more.
+
+    The detail page embeds the whole opportunity as JSON, description
+    included. There is no separate JSON endpoint for it that answers
+    without a session, so the page is the API.
+    """
+
+    PER_PAGE = 100
+    MAX_PAGES = 20
+
+    def __init__(self, employer: str, board_url: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.board = board_url.rstrip("/")
+        self.setting = setting
+
+    _BUCKET_RANK = {"<30": 0, "30-60": 1, "60-90": 2, "90-120": 3}
+
+    @classmethod
+    def _closeness(cls, city: str) -> int:
+        verdict, bucket, _ = geo.classify(city)
+        if verdict is geo.Geo.IN:
+            return cls._BUCKET_RANK.get(bucket, 4)
+        return 5 if verdict is geo.Geo.UNKNOWN else 6
+
+    def fetch_listings(self) -> list[Posting]:
+        out, seen, skip = [], set(), 0
+        for _ in range(self.MAX_PAGES):
+            body = _request(f"{self.board}/JobBoardView/LoadSearchResults",
+                            data={"opportunitySearch": {
+                                "Top": self.PER_PAGE, "Skip": skip,
+                                "QueryString": "", "OrderBy": [],
+                                "Filters": []}})
+            d = json.loads(body)
+            batch = d.get("opportunities") or []
+            if not batch:
+                break
+            for j in batch:
+                oid = j.get("Id")
+                if not oid or oid in seen:
+                    continue
+                seen.add(oid)
+                # A program posting names exactly one site; a regional one
+                # names several. File it under the nearest, the way the
+                # Workday multi-site postings are filed, and say how many
+                # others there were rather than hiding them.
+                sites = []
+                for loc in j.get("Locations") or []:
+                    a = loc.get("Address") or {}
+                    city = ", ".join(x for x in (
+                        a.get("City"), (a.get("State") or {}).get("Code")) if x)
+                    if not city:
+                        continue
+                    c = loc.get("Coordinates") or {}
+                    sites.append((city, _f(c.get("Latitude")),
+                                  _f(c.get("Longitude"))))
+                lat = lon = None
+                where = ""
+                if sites:
+                    # The coordinates have to come from the same site as the
+                    # label. Taking the first location's while labelling the
+                    # nearest one puts a posting's distance hint hundreds of
+                    # miles from the place the row says it is.
+                    best, lat, lon = min(
+                        sites, key=lambda s: self._closeness(s[0]))
+                    others = len(sites) - 1
+                    where = f"{best} (+{others} more)" if others else best
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=str(j.get("RequisitionNumber") or oid),
+                    title=j.get("Title") or "",
+                    location=where,
+                    url=f"{self.board}/OpportunityDetail?opportunityId={oid}",
+                    posted_date=(j.get("PostedDate") or "")[:10] or None,
+                    department=j.get("JobCategoryName") or None,
+                    schedule="Full time" if j.get("FullTime") else None,
+                    setting=self.setting,
+                    latitude=lat,
+                    longitude=lon,
+                    source_adapter="ukg",
+                ))
+            skip += len(batch)
+            total = d.get("totalCount")
+            if total and skip >= total:
+                break
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        i = body.find('"Description":')
+        if i < 0:
+            return p
+        try:
+            raw, _ = json.JSONDecoder().raw_decode(
+                body[i + len('"Description":'):])
+        except ValueError:
+            return p
+        p.description = _html_to_text(raw)
+        return p
+
+
+
 ADAPTERS = [
     WorkdayCXS("John Muir Health", "jmh.wd5.myworkdayjobs.com",
                "jmh", "JohnMuirHealthCareers"),          # verified
@@ -1940,8 +2192,49 @@ ADAPTERS = [
     # that looks like it ("sjcounty") is San Juan County, Utah.
     JobAps(),                                             # verified — 30 nurse rows
 
+    # Alameda County's own board. The county hospitals are Alameda Health
+    # System, already read above, but the county itself employs public
+    # health and correctional-health nurses and posts them nowhere else.
+    # It is on JobAps, not NEOGOV — the plausible-looking NEOGOV slug
+    # "alamedaca" is the City of Alameda.
+    JobAps("Alameda County", agency="Alameda",
+           default_city="Oakland", path="jobboard.asp"),   # verified
+
+    # Sonoma Valley Hospital, Sonoma — a district hospital belonging to no
+    # system, which is why nothing reached it. The user asked about Sonoma
+    # specifically; Providence and Sutter cover Santa Rosa, this is the
+    # one independent inside the county.
+    ICIMS("Sonoma Valley Hospital", "careers-svh.icims.com",
+          default_city="Sonoma"),                          # verified
+
+    # Telecare — psychiatric health facilities and crisis programs in
+    # Oakland, San Leandro, San Jose, Stockton, Ceres and Santa Cruz.
+    # Behavioural health is a setting that hires new graduates and no
+    # other adapter here reads any of it.
+    UKGRecruiting("Telecare",
+                  "https://recruiting2.ultipro.com/TEL1006/JobBoard/"
+                  "2fcbb6f4-e717-17cb-9327-3dd87a55b08d",
+                  setting="Behavioral health"),            # verified
+
+    # Marshall Medical Center, Placerville — independent, at the far edge
+    # of the ring at 90-120 minutes.
+    WorkdayCXS("Marshall Medical Center",
+               "marshallmedical.wd1.myworkdayjobs.com",
+               "marshallmedical", "MMC"),                  # verified
+
     # Central Valley Specialty Hospital, Modesto — long-term acute care.
     # The only LTAC in range that no other adapter reaches.
+    # Sonoma Specialty Hospital, Sebastopol — the county's only long-term
+    # acute care hospital, 37 beds, and the fifth LTAC inside the ring
+    # rather than the four this repo believed it had. Found by asking
+    # which hospitals are in Sonoma County, not which systems were
+    # missing: it belongs to none, and its board is the Paylocity adapter
+    # that was already here.
+    Paylocity("Sonoma Specialty Hospital",
+              "https://recruiting.paylocity.com/recruiting/jobs/All/"
+              "f9f0eb86-623d-4599-9b60-261f34f2735f/Sonoma-Specialty-Hospital",
+              setting="Long-term acute care"),   # verified — 17 postings
+
     Paylocity("Central Valley Specialty Hospital",
               "https://recruiting.paylocity.com/recruiting/jobs/All/"
               "59573989-59eb-4885-ac33-ae95e3c92fb2/Central-Valley-Special",
