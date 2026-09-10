@@ -139,7 +139,7 @@ INCLUDE_TITLE = re.compile(
 # roles staffed from experienced nurses; "specialist" generalises the
 # "clinical nurse specialist" that was already here.
 EXCLUDE_TITLE = re.compile(
-    r"\b(LVN|LPN|licensed vocationa?l? nurse|licensed practical nurse"
+    r"\b(LVN|LPN|licensed voc(?:\.|ationa?l?)?\s+nurse|licensed practical nurse"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|informaticist|analyst"
@@ -1821,6 +1821,79 @@ class JobAps:
         return p
 
 
+# ── adapter 14: Paylocity (Central Valley Specialty Hospital) ────────
+
+class Paylocity:
+    """
+    Paylocity Recruiting, the ATS a lot of small independent employers
+    use. Here it reaches Central Valley Specialty Hospital in Modesto —
+    a long-term acute care hospital, in range at 60-90 minutes, and the
+    only LTAC in the ring that no other adapter touches.
+
+    LTAC matters to this user specifically and the coverage was thinner
+    than it looked. Of the four LTACs inside two hours, Kindred (San
+    Leandro) and Kentfield (Marin) are read by other adapters and both
+    routinely sit at zero open RN roles, and Vibra's are 90-120 minutes
+    out in Folsom. So on a normal day the list showed no LTAC at all
+    while a Modesto LTAC was hiring RNs and saying "We encourage new RNs
+    to apply" in the posting.
+
+    The board is one GET: the page embeds its whole job list as JSON
+    under "Jobs", with the city and state in a nested JobLocation object.
+
+    Do NOT classify from the listing. The Description carried there is a
+    110-character teaser, and a truncated description is what produced 40
+    false "no experience required" verdicts when Sutter was read through
+    its Phenom front end. The real text is on the detail page, inside the
+    job-preview-details container.
+    """
+
+    HOST = "https://recruiting.paylocity.com"
+    _JOBS = re.compile(r'"Jobs"\s*:\s*(\[.*?\])\s*[,}]', re.S)
+
+    def __init__(self, employer: str, board_url: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.board_url = board_url
+        self.setting = setting
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(self.board_url)
+        m = self._JOBS.search(body)
+        if not m:
+            raise RuntimeError("no embedded Jobs array on the Paylocity board")
+        out = []
+        for j in json.loads(m.group(1)):
+            jid = str(j.get("JobId") or "")
+            if not jid:
+                continue
+            loc = j.get("JobLocation") or {}
+            city, state = loc.get("City") or "", loc.get("State") or ""
+            out.append(Posting(
+                employer=self.employer,
+                req_id=jid,
+                title=j.get("JobTitle") or "",
+                # LocationName is "On Site" or "Main Office" on this board,
+                # which geo cannot rank. The nested address is the real one.
+                location=", ".join(x for x in (city, state) if x),
+                url=f"{self.HOST}/recruiting/jobs/Details/{jid}",
+                posted_date=(j.get("PublishedDate") or "")[:10] or None,
+                department=j.get("HiringDepartment") or None,
+                setting=self.setting,
+                source_adapter="paylocity",
+            ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        i = body.find("job-preview-details")
+        chunk = body[i:i + 40000] if i >= 0 else body
+        chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
+                       " ", chunk)
+        p.description = _html_to_text(chunk)
+        return p
+
+
 ADAPTERS = [
     WorkdayCXS("John Muir Health", "jmh.wd5.myworkdayjobs.com",
                "jmh", "JohnMuirHealthCareers"),          # verified
@@ -1866,6 +1939,13 @@ ADAPTERS = [
     # San Joaquin General Hospital, French Camp. Not on NEOGOV: the slug
     # that looks like it ("sjcounty") is San Juan County, Utah.
     JobAps(),                                             # verified — 30 nurse rows
+
+    # Central Valley Specialty Hospital, Modesto — long-term acute care.
+    # The only LTAC in range that no other adapter reaches.
+    Paylocity("Central Valley Specialty Hospital",
+              "https://recruiting.paylocity.com/recruiting/jobs/All/"
+              "59573989-59eb-4885-ac33-ae95e3c92fb2/Central-Valley-Special",
+              setting="Long-term acute care"),   # verified — 24 postings
 
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
 

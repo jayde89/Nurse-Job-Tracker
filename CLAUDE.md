@@ -52,6 +52,19 @@ never before — see the docstring there for why, and keep it that way.
 The user also chose to show no count of what was hidden, so the digest
 says nothing about it; the scan's stdout line still reports it honestly.
 
+**An employer whose name contains "Hospital" is not stating a requirement.**
+`ACUTE` lists `hospital` as a marker, so every sentence naming such an
+employer matched it. Central Valley Specialty Hospital — a long-term acute
+care hospital in Modesto whose posting says "We encourage new RNs to
+apply" and asks only for a licence, BLS and ACLS — was suppressed as
+`ACUTE_REQUIRED`, because its benefits paragraph ("wages determined based
+on ... qualifications and experience") contained both an `ACUTE` marker
+(its own name) and the word "experience". Requiring the clause to also say
+"experience" was not enough; benefits copy says "experience" too. Use
+`ACUTE_EXPERIENCE`, which requires the two to be about each other. This
+was systematic against LTAC, which is the one setting whose employers all
+have "acute" or "hospital" in their names.
+
 **Evidence must come from the field that actually said it, and must be the
 tightest clause that says it.** Three ways this broke on 2026-09-09, all
 found by reading labels against their own quotes:
@@ -219,6 +232,16 @@ sources didn't:
   parser on `data-job-id`, because keying on the outer `<li>` silently
   loses facility and location on the newer one, whose job-info fields are
   themselves nested `<li>` elements.
+- **Paylocity Recruiting** (`recruiting.paylocity.com`) is what small
+  independent employers use, and it reaches Central Valley Specialty
+  Hospital in Modesto. The board is one GET: the page embeds its whole job
+  list as JSON under `"Jobs"`, with the real city in a nested
+  `JobLocation` object — `LocationName` is "On Site" or "Main Office",
+  which geo cannot rank. Do not classify from the listing: the
+  `Description` there is a 110-character teaser, the same trap that
+  produced 40 false "no experience required" verdicts when Sutter was read
+  through Phenom. The full text is on `/recruiting/jobs/Details/{JobId}`
+  inside `job-preview-details`.
 - **JobAps** (`jobapscloud.com`) is the third CA-government platform after
   NEOGOV and SmartRecruiters. San Joaquin County is on it. Its landing
   page is the whole listing — no paging, no JSON. Strip unclosed trailing
@@ -243,6 +266,26 @@ Check the careers subdomain, not the marketing site. Check whether the
 listing endpoint reports its own total, and compare that to what you
 actually collect — three separate silent truncations were found that way
 (Workday's page cap, NEOGOV's unstable sort, El Camino's zeroed total).
+
+## Long-term acute care
+
+The user asked for LTAC specifically on 2026-09-09. There are four inside
+the ring and all four are now read:
+
+- **Kindred Hospital San Francisco Bay Area**, San Leandro (<30) —
+  ScionHealth. Routinely has zero open staff RN roles; a scan showing
+  nothing from it is usually correct, not broken.
+- **Kentfield Hospital**, Kentfield (30-60) — Vibra, via the same JIBE
+  board. Also frequently at zero.
+- **Vibra Hospital of Sacramento**, Folsom (90-120) — Vibra. Usually the
+  only LTAC with anything open, and it is at the far edge of the ring.
+- **Central Valley Specialty Hospital**, Modesto (60-90) — Paylocity,
+  added 2026-09-09. Was reached by nothing before.
+
+That distribution is why the list can look like it has no LTAC in it at
+all: the two nearest are usually empty, and the rest are 60-120 minutes
+out, so they sort to the bottom and fall outside an alert that leads with
+the nearest postings.
 
 ## Outstanding
 

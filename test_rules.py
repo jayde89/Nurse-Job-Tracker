@@ -1200,6 +1200,78 @@ for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
     check(f"a unit number is not a grade: {_t[:34]}",
           _bucket(_t) != "LEVEL_II_TITLE", True)
 
+# ── LTAC must not be suppressed by its own name ──────────────────────
+# ACUTE lists "hospital" as a marker, so every sentence naming an
+# employer whose name contains the word matched it. Central Valley
+# Specialty Hospital is a long-term acute care hospital in Modesto whose
+# posting says "We encourage new RNs to apply" and asks only for a
+# licence, BLS and ACLS — and it was hidden as ACUTE_REQUIRED because its
+# benefits paragraph ("wages determined based on ... qualifications and
+# experience") contained both an ACUTE marker and the word "experience".
+_BENEFITS = ("Compensation and Benefits: Central Valley Specialty Hospital "
+             "offers competitive compensation, with individual wages "
+             "determined based on a number of factors including, but not "
+             "limited to, an individual's qualifications and experience.")
+check("an employer's own name in benefits copy is not an acute requirement",
+      bool(C.ACUTE_EXPERIENCE.search(_BENEFITS)), False)
+check("the loose ACUTE pattern still matches it, which is why the tight "
+      "one exists", bool(C.ACUTE.search(_BENEFITS)), True)
+
+# The genuine gates must still fire.
+for _t in ("Two years of acute care hospital experience required.",
+           "Minimum 2 years experience in an acute care setting.",
+           "Requires recent acute care experience.",
+           "1 year hospital experience required.",
+           "Experience in a critical care unit is required."):
+    check(f"a real acute gate still matches: {_t[:40]}",
+          bool(C.ACUTE_EXPERIENCE.search(_t)), True)
+
+# End to end: an LTAC posting that welcomes new grads reaches the user.
+_LTAC = ("Central Valley Specialty Hospital, a leading post-acute care "
+         "facility, is seeking Registered Nurses. We encourage new RNs to "
+         "apply. License / Certification Qualifications: Valid California "
+         "state RN license. Basic Life Support (BLS) certification. " + _BENEFITS)
+_v = C.classify("Registered Nurse (R.N.)", _LTAC)
+check("an LTAC posting welcoming new RNs is a Level I role",
+      _v.bucket, "STAFF_NURSE_I")
+check("and it quotes the invitation, not the benefits paragraph",
+      "new RNs" in _v.evidence, True)
+
+
+# ── "we encourage new RNs to apply" is a new-grad invitation ─────────
+for _t in ("We encourage new RNs to apply", "New RNs are welcome to apply",
+           "new graduates are encouraged to apply", "We welcome new nurses"):
+    check(f"invitation recognised: {_t[:34]}", bool(C.NEW_GRAD.search(_t)), True)
+# An invitation verb is required in either word order, so a bare "new RN"
+# in onboarding prose is not read as one.
+for _t in ("Orientation is provided for the new RN",
+           "The new RN will report to the charge nurse",
+           "New equipment training required"):
+    check(f"not an invitation: {_t[:34]}", bool(C.NEW_GRAD.search(_t)), False)
+
+
+# ── Paylocity (Central Valley Specialty Hospital) ────────────────────
+_PAY = A.Paylocity("Central Valley Specialty Hospital",
+                   "https://example.invalid/board",
+                   setting="Long-term acute care")
+check("LVN written with an abbreviation is still an LVN role",
+      A.title_passes("LICENSED VOC. NURSE"), False)
+check("and the RN beside it still comes through",
+      A.title_passes("Registered Nurse (R.N.)"), True)
+# LocationName on this board is "On Site" or "Main Office", which geo
+# cannot rank; the real city is in the nested JobLocation.
+_body = ('{"Jobs":[{"JobId":3756510,"JobTitle":"Registered Nurse (R.N.)",'
+         '"LocationName":"On Site","PublishedDate":"2026-08-01T00:00:00",'
+         '"HiringDepartment":"Nursing","Description":"teaser only",'
+         '"JobLocation":{"Name":"On Site","City":"Modesto","State":"CA"}}]}')
+_m = A.Paylocity._JOBS.search(_body)
+check("the embedded Jobs array is found", _m is not None, True)
+import json as _json
+_j = _json.loads(_m.group(1))[0]
+check("the city comes from the nested JobLocation, not LocationName",
+      f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
+check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:
