@@ -167,8 +167,13 @@ cp state/seen.json $T/state/; (cd $T && python3 run_scan.py)
 `--quick` skips detail fetches and runs in about a minute, but classifies
 nothing, so it can't tell you whether a classifier change worked.
 
-A full run takes 8-10 minutes, most of it the deliberate one-second pause
-between requests. Keep that pause.
+A full run takes about 18 minutes with 26 sources (measured 2026-09-09),
+most of it the deliberate one-second pause between requests — roughly 400
+detail fetches plus the listing pages. Keep the pause. The workflow is
+killed at 60 minutes, so there is headroom, but it is no longer the
+half-hour it was: check this number again after adding a source with
+hundreds of in-range postings, and remember NEOGOV can spend 420s of its
+own budget on a bad day.
 
 ## Invariants
 
