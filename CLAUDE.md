@@ -82,6 +82,46 @@ found by reading labels against their own quotes:
   not match, so a signal that lived only in the *title* was evidenced by
   hospital marketing copy. Quote whichever field matched.
 
+**A verdict's label has to be supported by the sentence it quotes, and
+five ways that broke were found on 2026-09-09 by reading live verdicts
+after the adapters stopped flattening HTML.** Finer clauses are better
+evidence and they also expose every place the classifier was picking the
+wrong sentence:
+
+- A posting that writes both `EXPERIENCE` and `MINIMUM QUALIFICATIONS`
+  means the first. San Francisco puts the licence list and the
+  recruitment process under Qualifications and the actual gate under
+  Experience, and declared order took the wrong one.
+- Sentences about the application are not requirements. "Applicants may
+  be required to submit verification of qualifying education and
+  experience" carries a required-word and the word experience and asks
+  nothing of the nurse. `PROCESS_CLAUSE` skips these unless the clause
+  states both a duration and a required-word, so a real gate worded as an
+  instruction survives.
+- `GENERAL_EXPERIENCE` must rest on a clause that names experience. When
+  a generic QUALIFICATIONS heading swallows a whole page the surviving
+  clause was "Performs other related duties as assigned/required"; that
+  is `UNCLEAR`. A section the posting headed `EXPERIENCE` is exempt,
+  because John Muir puts the word in the heading and never in the clause.
+- Acute care offered as one setting among several is not an acute-care
+  gate — "in an acute hospital, primary care facility, home health
+  agency" is satisfied by clinic experience, which the user's criteria
+  call eligible. `_acute_only` guards every clause-based suppression.
+- **A Level I title is a signal, not a promise.** La Clínica posts
+  "Registered Nurse I/II" and then asks for "two to three years clinical
+  experience"; the title rule ran first and labelled it new-graduate.
+  It now yields to an unhedged duration in the body, the same way
+  `NO_EXPERIENCE` already does. Explicit new-grad language in the
+  posting's own words still beats everything.
+
+**A heading may end in a full stop, and that full stop is ours.**
+`_html_to_text` terminates a block that ends without punctuation, which
+is what a heading in its own `<p>` looks like, so "Minimum Job
+Requirements." stopped matching the moment the adapters started keeping
+statement boundaries — and La Clínica's RN I/II parsed to no requirements
+section at all. Distinctive labels accept `[:.]?`; the prose labels still
+require a colon, because "Experience." ending a sentence is a sentence.
+
 **The section splitter treats "experience" as a heading wherever it
 appears**, including mid-sentence. "Acute care experience: 2 years
 Required" therefore yields a section body of "2 years Required" with the
@@ -104,7 +144,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 296 cases, no dependencies, ~instant
+python3 test_rules.py     # 332 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -240,6 +280,16 @@ sources didn't:
   parser on `data-job-id`, because keying on the outer `<li>` silently
   loses facility and location on the newer one, whose job-info fields are
   themselves nested `<li>` elements.
+- **HRMDirect** (La Clínica de La Raza) serves its whole board in one GET
+  and needs two things right. Key rows on `data-req-id`, because the
+  title cell's anchor is never closed — `<a href=...>Registered Nurse
+  I/II</td>` — so keying on `<a>...</a>` swallows every row up to the
+  next closing tag and reports one posting where there are 155. And take
+  the detail URL from the row: the same requisition at two clinics has
+  two `req_loc` values, and the wrong one returns a page with no job text
+  in it, with no error. The board is cp1252; decoded as UTF-8 the
+  employer's own name comes out "La Cl\ufffdnica" and gets quoted back as
+  evidence, which is why `_request` takes an encoding.
 - **Paylocity Recruiting** (`recruiting.paylocity.com`) is what small
   independent employers use, and it reaches Central Valley Specialty
   Hospital in Modesto. The board is one GET: the page embeds its whole job
@@ -270,7 +320,8 @@ sources didn't:
   `alamedaca` is the City of Alameda, not the county. Verify every slug
   against a posting's own `addressLocality` before adding it.
 
-- **iCIMS** (Sonoma Valley Hospital) reads as an app and is not:
+- **iCIMS** (Sonoma Valley Hospital, Seton Medical Center) reads as an
+  app and is not:
   `/jobs/search?ss=1` renders the whole listing server-side, twenty cards
   to a page. Follow the portal's own `<link rel="next">` rather than
   guessing `pr=N` — a guessed parameter set silently re-serves page one,

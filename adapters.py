@@ -214,11 +214,15 @@ def _html_to_text(raw: str) -> str:
     return " ".join(out)
 
 
-def _request(url, data=None, headers=None, timeout=None, retries=None):
+def _request(url, data=None, headers=None, timeout=None, retries=None,
+             encoding="utf-8"):
     """
     One HTTP call with retries. `timeout` and `retries` are per-source
     overrides for hosts that need more patience than the defaults; see
-    NeoGov, which is the reason they exist.
+    NeoGov, which is the reason they exist. `encoding` is one too: La
+    Clínica's board serves cp1252, and decoding that as UTF-8 turns the
+    employer's own name into "La Cl\ufffdnica" — which then appears in a
+    verdict's evidence quote.
     """
     timeout = TIMEOUT_SEC if timeout is None else timeout
     retries = MAX_RETRIES if retries is None else retries
@@ -233,7 +237,7 @@ def _request(url, data=None, headers=None, timeout=None, retries=None):
         try:
             req = urllib.request.Request(url, data=data, headers=hdrs)
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                body = r.read().decode("utf-8", "replace")
+                body = r.read().decode(encoding, "replace")
             time.sleep(REQUEST_DELAY_SEC)
             return body
         except Exception as e:                      # noqa: BLE001
@@ -1974,17 +1978,34 @@ class ICIMS:
     40 false "no experience required" verdicts when Sutter was read
     through Phenom.
 
-    The portal states no location on its cards, because this employer has
-    one site. `default_city` is what geo ranks, and it is the adapter's
-    job to be right about it: an iCIMS portal for a multi-site employer
-    needs its location parsed, not a default invented.
+    Cards carry their own location when the employer has more than one
+    site — AHMC writes "US-CA-Daly City" and a Facility name beside it,
+    and its board is mostly southern California, so a default city would
+    have filed Anaheim postings in Daly City. `default_city` is the
+    fallback for a single-site portal like Sonoma Valley's, which prints
+    no location at all.
     """
+
+    # "US-CA-Daly City" is how iCIMS stores a location. Keep the city and
+    # the state and drop the country, so geo reads a place and the digest
+    # prints one.
+    _ICIMS_LOC = re.compile(r"^\s*US-([A-Z]{2})-(.+?)\s*$")
 
     MAX_PAGES = 25      # 500 postings of headroom on a 20-per-page board
 
-    _CARD = re.compile(
-        r'<li class="iCIMS_JobCardItem".*?<a href="([^"]*?/jobs/(\d+)/[^"]*?)"'
-        r'[^>]*class="iCIMS_Anchor"[^>]*>(.*?)</a>', re.S)
+    # Split on the card marker rather than matching to </li>. A card whose
+    # header fields are themselves list items would end at the first
+    # closing tag, and the fields lost that way are the location and the
+    # facility — which on a multi-site board means a posting silently
+    # falling back to the default city. This is the mistake CLAUDE.md
+    # records against Radancy's newer row template.
+    _CARD_MARK = '<li class="iCIMS_JobCardItem"'
+    _ANCHOR = re.compile(
+        r'<a href="([^"]*?/jobs/(\d+)/[^"]*?)"[^>]*class="iCIMS_Anchor"[^>]*>'
+        r'(.*?)</a>', re.S)
+    _FIELD = re.compile(
+        r'<dt class="iCIMS_JobHeaderField"[^>]*>(.*?)</dt>\s*'
+        r'<dd class="iCIMS_JobHeaderData"[^>]*>(.*?)</dd>', re.S)
     _NEXT = re.compile(r'<link rel="next" href="([^"]+)"')
     _LD = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 
@@ -1997,12 +2018,33 @@ class ICIMS:
 
     @staticmethod
     def _title(fragment: str) -> str:
-        # The anchor holds a screen-reader label ("Title") ahead of the
-        # <h3>. Strip tags first, then that label, or every title on the
-        # board reads "Title Registered Nurse".
+        # The anchor holds a screen-reader label ahead of the <h3>, and
+        # the label is not the same word on every portal: Sonoma Valley
+        # writes "Title" and AHMC writes "Requisition Title". Strip tags
+        # first, then whichever label is there, or every posting on the
+        # board reads "Requisition Title Staff Nurse II".
         t = html.unescape(re.sub(r"\s+", " ",
                                  re.sub(r"<[^>]+>", " ", fragment))).strip()
-        return re.sub(r"^Title\s+", "", t)
+        return re.sub(r"^(?:\w+\s+)?Title\s+", "", t)
+
+    def _fields(self, card: str) -> dict[str, str]:
+        """The card's own Requisition ID / Location / Facility / Department."""
+        out = {}
+        for label, value in self._FIELD.findall(card):
+            k = self._title(label).strip(" :").lower()
+            # The label is written twice on some fields, once for screen
+            # readers as "Location : Location". Take the last word.
+            k = k.split(":")[-1].strip()
+            if k:
+                out[k] = self._title(value)
+        return out
+
+    def _where(self, fields: dict[str, str]) -> str:
+        raw = fields.get("location") or ""
+        m = self._ICIMS_LOC.match(raw)
+        if m:
+            return f"{m.group(2)}, {m.group(1)}"
+        return raw or self.default_city
 
     def fetch_listings(self) -> list[Posting]:
         url = (f"https://{self.host}/jobs/search?ss=1"
@@ -2010,19 +2052,25 @@ class ICIMS:
         out, seen = [], set()
         for _ in range(self.MAX_PAGES):
             body = _request(url)
-            cards = self._CARD.findall(body)
+            cards = body.split(self._CARD_MARK)[1:]
             if not cards:
                 break
-            for href, jid, title in cards:
+            for card in cards:
+                a = self._ANCHOR.search(card)
+                if not a:
+                    continue
+                href, jid, title = a.groups()
                 if jid in seen:
                     continue
                 seen.add(jid)
+                fields = self._fields(card)
                 out.append(Posting(
                     employer=self.employer,
                     req_id=jid,
                     title=self._title(title),
-                    location=self.default_city,
+                    location=self._where(fields),
                     url=html.unescape(href),
+                    department=fields.get("facility") or fields.get("department"),
                     setting=self.setting,
                     source_adapter=f"icims:{self.host.split('.')[0]}",
                 ))
@@ -2045,7 +2093,12 @@ class ICIMS:
             return p
         p.description = _html_to_text(d.get("description", ""))
         p.posted_date = (d.get("datePosted") or "")[:10] or p.posted_date
-        p.schedule = d.get("employmentType") or p.schedule
+        # iCIMS writes employmentType "OTHER" when the employer left the
+        # field alone, and the digest prints the schedule verbatim under
+        # the title. A field the posting never filled in stays blank.
+        kind = (d.get("employmentType") or "").strip()
+        if kind and kind.upper() != "OTHER":
+            p.schedule = kind
         return p
 
 
@@ -2171,6 +2224,94 @@ class UKGRecruiting:
 
 
 
+# ── adapter 17: HRMDirect (La Clínica de La Raza) ────────────────────
+
+class HRMDirect:
+    """
+    HRMDirect is what community health centres use, and it reaches La
+    Clínica de La Raza — a federally qualified health centre with clinics
+    in Oakland, San Leandro, Union City, Concord, Pittsburg, Oakley and
+    Vallejo, hiring "Registered Nurse I/II" as we speak.
+
+    That title is the point. This scan was built around hospitals, and
+    the user's own criteria include experience that is *not* acute care;
+    a clinic RN post is where a new graduate without acute experience is
+    actually hired. Nothing here read a single community clinic before.
+
+    The whole board is one GET, 155 rows, no paging and no JSON. Rows are
+    keyed on `data-req-id` rather than on the row element, for the same
+    reason Radancy's are: the title cell's anchor is never closed —
+    HRMDirect writes `<a href=...>Registered Nurse I/II</td>` — so a
+    parser that keys on `<a>...</a>` swallows every row up to the next
+    closing tag and reports one posting where there are a hundred.
+
+    The detail URL needs the row's own `req_loc`, not just the req id: the
+    same requisition open at two clinics has two of them, and the wrong
+    one returns a page with no job text in it at all — no error, no
+    redirect, just a shell. Take the href the row gives you.
+
+    The board is cp1252. Decoded as UTF-8 the employer's own name comes
+    out "La Cl\ufffdnica", which would then be quoted back as evidence.
+    """
+
+    ENCODING = "cp1252"
+
+    def __init__(self, employer: str, host: str, setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.base = f"https://{host}/employment"
+        self.setting = setting
+
+    @staticmethod
+    def _text(fragment: str) -> str:
+        return html.unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment or ""))).strip()
+
+    def _cell(self, chunk: str, cls: str) -> str:
+        m = re.search(r'class="' + cls + r'[^"]*"[^>]*>(.*?)</td>', chunk, re.S)
+        return self._text(m.group(1)) if m else ""
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(f"{self.base}/job-openings.php?search=true&nohd=",
+                        encoding=self.ENCODING)
+        out, seen = [], set()
+        for chunk in body.split('data-req-id="')[1:]:
+            req = chunk.split('"', 1)[0]
+            if not req.isdigit() or req in seen:
+                continue
+            seen.add(req)
+            m = re.search(r'href="(job-opening\.php\?req=' + req + r'[^"]*)"',
+                          chunk)
+            if not m:
+                continue
+            href = html.unescape(m.group(1)).split("#")[0].replace("&&", "&")
+            city, state = self._cell(chunk, "cities"), self._cell(chunk, "state")
+            out.append(Posting(
+                employer=self.employer,
+                req_id=req,
+                title=self._cell(chunk, "posTitle"),
+                location=", ".join(x for x in (city, state) if x),
+                url=f"{self.base}/{href}",
+                department=self._cell(chunk, "custSort1") or None,
+                setting=self.setting,
+                source_adapter=f"hrmdirect:{self.host.split('.')[0]}",
+            ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url, encoding=self.ENCODING)
+        i = body.find('class="jobDesc')
+        if i < 0:
+            return p
+        i = body.find(">", i) + 1
+        end = body.find("openingsButton", i)
+        chunk = body[i:end if end > i else i + 30000]
+        chunk = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", chunk)
+        p.description = _html_to_text(chunk)
+        return p
+
+
+
 ADAPTERS = [
     WorkdayCXS("John Muir Health", "jmh.wd5.myworkdayjobs.com",
                "jmh", "JohnMuirHealthCareers"),          # verified
@@ -2249,6 +2390,26 @@ ADAPTERS = [
 
     # Central Valley Specialty Hospital, Modesto — long-term acute care.
     # The only LTAC in range that no other adapter reaches.
+    # Seton Medical Center, Daly City — thirty minutes from Oakland and
+    # read by nothing until now. It belongs to AHMC Healthcare, whose
+    # other California hospitals are all in the San Gabriel Valley and
+    # Riverside, 350 miles out; the board is AHMC-wide and everything of
+    # it that lands in range is Seton, which is why the employer is named
+    # for the hospital and the facility field names it again. Six of its
+    # twenty-two in-range postings were STAFF NURSE I on the day it was
+    # added — the user's first category, at his nearest unread hospital.
+    ICIMS("Seton Medical Center (AHMC)", "careers-ahmchealth.icims.com",
+          default_city="Daly City"),                    # verified — 431 postings
+
+    # La Clínica de La Raza — a community health centre with clinics in
+    # Oakland, San Leandro, Union City, Concord, Pittsburg, Oakley and
+    # Vallejo. The first clinic employer this scan has ever read, and the
+    # tier the user's criteria actually point at: a Registered Nurse I/II
+    # post in a clinic is where a new graduate without acute-care
+    # experience gets hired.
+    HRMDirect("La Clínica de La Raza", "laclinica.hrmdirect.com",
+              setting="Community clinic"),               # verified
+
     # Sonoma Specialty Hospital, Sebastopol — the county's only long-term
     # acute care hospital, 37 beds, and the fifth LTAC inside the ring
     # rather than the four this repo believed it had. Found by asking

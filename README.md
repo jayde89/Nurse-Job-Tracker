@@ -1,6 +1,6 @@
 # RN job scanner
 
-Scans twenty-one employer and public-agency career systems three times a day
+Scans twenty-three employer and public-agency career systems three times a day
 for staff RN openings within two hours of Oakland, reads each posting's
 actual requirements, and hides the ones that require acute-care experience.
 
@@ -272,12 +272,14 @@ may need correcting.
 | **Telecare** (behavioural health: Oakland, San Leandro, San Jose, Stockton, Ceres, Santa Cruz) | Working — UKG |
 | **Marshall Medical Center** (Placerville) | Working — Workday |
 | **Alameda County** (public health, correctional health) | Working — JobAps |
+| **Seton Medical Center**, Daly City (AHMC) | Working — iCIMS |
+| **La Clínica de La Raza** (Oakland, Concord, Vallejo, Union City, Pittsburg) | Working — HRMDirect |
 | USAJOBS / VA | Needs a key, untested |
 | CalCareers / CDCR | Blocked — DevExpress AJAX callbacks, needs a headless browser |
 | HCA (Good Samaritan + Regional Medical Center, San Jose) | Blocked — Cloudflare, needs a headless browser |
 | Washington Hospital, Fremont | Blocked — 403 to every non-browser request |
 | Dameron Hospital, Stockton | Blocked — Paycom board renders client-side |
-| UC Davis Medical Center, Sacramento | Not read — careers site answers 403 |
+| UC Davis Medical Center, Sacramento | Blocked — PeopleSoft/UCPath behind a login |
 
 `COVERAGE.md` is the full list: every RN employer inside two hours, whether
 this scan reads it, and if not, what is in the way. Read that before adding

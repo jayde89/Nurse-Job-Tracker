@@ -67,7 +67,7 @@ is why they are invisible as names. SF has no hole.*
 | Mills-Peninsula | Burlingame | 30-60 | Sutter (Workday) |
 | Sequoia Hospital | Redwood City | 30-60 | CommonSpirit (Radancy) — 25 listings |
 | San Mateo Medical Center | San Mateo | 30-60 | County of San Mateo (NEOGOV) |
-| **Seton Medical Center + Seton Coastside** | Daly City / Moss Beach | 30-60 | **gap** — AHMC Healthcare; no ATS found on ahmchealth.com |
+| **Seton Medical Center + Seton Coastside** | Daly City / Moss Beach | 30-60 | **added this pass** — AHMC Healthcare on iCIMS. Six STAFF NURSE I roles open on the day it was added |
 | Menlo Park VA | Menlo Park | 30-60 | USAJOBS, not running |
 
 ### Santa Clara
@@ -164,7 +164,7 @@ except for Dameron.
 | Mercy, Methodist, Woodland, Mercy Merced | — | 60-90 | CommonSpirit (Radancy) — 63 Sacramento, 14 Woodland, 22 Merced |
 | Sacramento County health services | Sacramento | 60-90 | NEOGOV |
 | **Marshall Medical Center** | Placerville | 90-120 | **added this pass** — Workday |
-| **UC Davis Medical Center** | Sacramento | 60-90 | **gap, and the biggest one** — careers.ucdavis.edu answers 403 to everything; the UC systemwide board carries no UCDMC rows |
+| **UC Davis Medical Center** | Sacramento | 60-90 | **blocked** — PeopleSoft/UCPath at careerspub.universityofcalifornia.edu/psp/ucdavis, which redirects every path to a cookie-gated login. The UC systemwide board carries no UCDMC rows and careers.ucdavis.edu answers 403 |
 
 ### Santa Cruz, Monterey, San Benito
 
@@ -190,9 +190,9 @@ nursing, clinic, behavioural-health or dialysis job, not a hospital one.
 |---|---|---|
 | Skilled nursing | PACS Group (112 CA facilities) | Ensign / Pennant, Windsor, Covenant Care, Generations, Aspen, Sun Mar and every other chain |
 | Behavioural health | **Telecare (added this pass)** — Oakland, San Leandro, San Jose, Stockton, Ceres, Santa Cruz | Crestwood Behavioral Health (Vallejo, Fremont, Pleasant Hill, Sacramento, Stockton), Aurora Santa Rosa (Signature Healthcare), Bay Area Community Services |
-| Dialysis | nothing | Satellite Healthcare (Phenom), DaVita, Fresenius, U.S. Renal Care |
+| Dialysis | nothing | Satellite Healthcare now points at careers.usrenalcare.com, which is iCIMS behind a vanity domain; the portal host answers but serves a 148-byte stub to `/jobs/search`, so the adapter that reads Sonoma Valley and Seton does not read this one yet. DaVita and Fresenius unexamined |
 | Hospice and home health | nothing | Suncrest, VITAS, Amedisys, Bayada |
-| Community clinics / FQHC | nothing | LifeLong Medical (Berkeley), La Clínica de La Raza (HRMDirect), Petaluma Health Center (Jobvite), Santa Rosa Community Health, West County Health Centers, Golden Valley Health Centers, Community Medical Centers Stockton (Paycom), Native American Health Center, Sonoma County Indian Health Project |
+| Community clinics / FQHC | **La Clínica de La Raza (added this pass)** — Oakland, San Leandro, Union City, Concord, Pittsburg, Oakley, Vallejo | LifeLong Medical (Berkeley), Petaluma Health Center (Jobvite), Santa Rosa Community Health, West County Health Centers, Golden Valley Health Centers, Community Medical Centers Stockton (Paycom, blocked), Native American Health Center, Sonoma County Indian Health Project |
 | Correctional health | Alameda County and the other county boards | CCHCS (blocked — CalCareers), Wellpath |
 | Federal | — | VA — the adapter exists and has never run; it needs `USAJOBS_KEY` and `USAJOBS_EMAIL` as repo secrets |
 
@@ -220,6 +220,23 @@ home, all of which hire new-graduate RNs, and two of them are inside the ring
 at Vacaville and Napa.
 
 ---
+
+## What the second pass changed
+
+Added: **Seton Medical Center** (Daly City, 30 minutes, iCIMS — six STAFF
+NURSE I roles open) and **La Clínica de La Raza** (HRMDirect — Registered
+Nurse I/II in Oakland and Concord). Seton was the nearest unread hospital
+in the ring; La Clínica is the first community clinic this scan has ever
+read, and clinic nursing is the tier the user's own criteria point at.
+
+Eight adapters were flattening HTML to spaces, which merged bulleted
+requirements into run-ons — the bug CLAUDE.md describes with Adventist,
+live in the largest source here. Re-reading the verdicts afterwards found
+five more places where a label rested on a quote that did not support it,
+including two that mattered on their own terms: a "Registered Nurse I/II"
+posting asking for two to three years was being labelled new-graduate
+from its title, and a San Francisco posting that accepts clinic
+experience was being suppressed as acute-required.
 
 ## What this pass changed
 

@@ -1272,6 +1272,87 @@ check("the city comes from the nested JobLocation, not LocationName",
       f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
 check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
 
+# ── a Level I title is a signal, not a promise ──────────────────────
+# La Clínica posts "Registered Nurse I/II" and then asks, in the body, for
+# "a valid RN license ... supplemented by two to three years clinical
+# experience". Answering that with "Level I / new grad" and quoting the
+# title is the false new-graduate call this codebase exists to prevent,
+# and a community clinic is exactly where a new graduate looks.
+_laclinica = ("Minimum Job Requirements. Knowledge and experience with "
+              "Electronic Health Record programs. Experience and Other "
+              "Certifications. Requires graduation from an accredited school "
+              "of nursing. Possession of a valid RN license in the state of "
+              "California supplemented by two to three years clinical "
+              "experience in the areas of adult medicine. BSN preferred but "
+              "not required.")
+_v = C.classify("Registered Nurse I/II", _laclinica)
+check("a Level I title does not outrank a stated duration",
+      _v.bucket, "UNCLEAR")
+check("and the quote is the requirement, not the title",
+      "two to three years clinical experience" in (_v.evidence or ""), True)
+check("the posting still reaches the user", _v.bucket in C.HIDE, False)
+# With nothing contradicting it, the title still decides.
+_v = C.classify("Registered Nurse I/II",
+                "Requires graduation from an accredited school of nursing "
+                "and a valid California RN license.")
+check("an uncontradicted Level I title is still a Level I role",
+      _v.bucket, "STAFF_NURSE_I")
+# The employer's own new-grad language still beats everything.
+_v = C.classify("Registered Nurse I/II",
+                "We encourage new RNs to apply. Two years of experience "
+                "preferred.")
+check("explicit new-grad language still wins", _v.bucket, "STAFF_NURSE_I")
+
+# The heading that made this reachable: _html_to_text puts a full stop
+# after a heading that sits in its own block and ends without punctuation,
+# and the label matcher used to require a colon or nothing.
+check("a heading ending in a full stop is still a heading",
+      "MINIMUM JOB REQUIREMENTS" in C.sections(_laclinica), True)
+check("and so is the one after it",
+      "EXPERIENCE AND OTHER CERTIFICATIONS" in C.sections(_laclinica), True)
+# A prose label still needs its colon: "Experience." ending a sentence is
+# a sentence, not a section.
+check("a bare prose label is not a heading",
+      "EXPERIENCE" in C.sections("She has five years of experience. "
+                                 "Apply today."), False)
+
+# A duration is quoted in the sentence it sits in, and a sentence about
+# experience is preferred over the first one on the page — La Clínica's
+# first is "40 years advocating for and creating a health home".
+_v = C.classify("Registered Nurse I",
+                "La Clínica has spent over 40 years advocating for our "
+                "communities. Requires two years of clinical experience.")
+check("the duration quote is about experience, not the employer's history",
+      "two years of clinical experience" in (_v.evidence or ""), True)
+
+
+# ── HRMDirect (La Clínica de La Raza) ───────────────────────────────
+# The title cell's anchor is never closed — HRMDirect writes
+# `<a href=...>Registered Nurse I/II</td>` — so a parser keyed on
+# <a>...</a> swallows every row up to the next closing tag and reports one
+# posting where there are 155. Key on data-req-id.
+_hrm = A.HRMDirect("La Clínica de La Raza", "laclinica.hrmdirect.com")
+_row = ('<tr class="reqitem ReqRowClick" data-req-id="3770812" '
+        'data-custom-req-id="3921">'
+        '<td class="custSort1 reqitem">Medical&nbsp;</td>'
+        '<td class="jobId reqitem">3921</td>'
+        '<td class="posTitle reqitem"><a href="job-opening.php?req=3770812'
+        '&amp;req_loc=1405368&amp;&amp;&amp;nohd#job">Registered Nurse I/II</td>'
+        '<td class="cities reqitem">Oakland </td>'
+        '<td class="state reqitem">CA</td></tr>')
+_chunk = _row.split('data-req-id="')[1]
+check("the title cell survives its unclosed anchor",
+      _hrm._cell(_chunk, "posTitle"), "Registered Nurse I/II")
+check("and the city comes from its own cell",
+      _hrm._cell(_chunk, "cities"), "Oakland")
+check("Oakland is in range", geo.classify("Oakland, CA")[0], geo.Geo.IN)
+check("a clinic RN I/II title passes the prefilter",
+      A.title_passes("Registered Nurse I/II"), True)
+# The board is cp1252; decoded as UTF-8 the employer's own name comes out
+# with a replacement character, which would then be quoted as evidence.
+check("the adapter declares its encoding", A.HRMDirect.ENCODING, "cp1252")
+
+
 # ── the evidence has to be the sentence the label rests on ──────────
 # Found by re-reading live verdicts after the adapters started keeping
 # statement boundaries. Every case here is a San Francisco or John Muir
@@ -1421,11 +1502,49 @@ _card = ('<ul class="container-fluid iCIMS_JobsTable">'
          '</div></li></ul>'
          '<link rel="next" href="https://careers-svh.icims.com/jobs/search'
          '?pr=1&amp;in_iframe=1" />')
-_found = A.ICIMS._CARD.findall(_card)
+_found = _card.split(A.ICIMS._CARD_MARK)[1:]
 check("an iCIMS job card is found", len(_found), 1)
-check("the job id comes from the URL", _found[0][1], "2401")
+_anchor = A.ICIMS._ANCHOR.search(_found[0])
+check("the job id comes from the URL", _anchor.group(2), "2401")
 check("the screen-reader label is not part of the title",
-      _IC._title(_found[0][2]), "Registered Nurse (Per Diem)")
+      _IC._title(_anchor.group(3)), "Registered Nurse (Per Diem)")
+# The label is not the same word on every portal: Sonoma Valley writes
+# "Title" and AHMC writes "Requisition Title".
+check("whichever label the portal uses is stripped",
+      _IC._title('<span class="sr-only field-label">Requisition Title</span>'
+                 '<h3> Staff Nurse II</h3>'), "Staff Nurse II")
+# AHMC is multi-site, so its cards carry their own location and facility.
+# A default city would have filed Anaheim postings in Daly City.
+_ahmc_card = ('<li class="iCIMS_JobCardItem"><div class="col-xs-12 title">'
+              '<a href="https://careers-ahmchealth.icims.com/jobs/28777/'
+              'staff-nurse/job?in_iframe=1" class="iCIMS_Anchor" title="x">'
+              '<span class="sr-only field-label">Requisition Title</span>'
+              '<h3> *STAFF NURSE II</h3></a></div>'
+              '<dl class="iCIMS_JobHeaderGroup">'
+              '<div class="iCIMS_JobHeaderTag">'
+              '<dt class="iCIMS_JobHeaderField">'
+              '<span class="sr-only field-label">Location : Location</span>'
+              '</dt><dd class="iCIMS_JobHeaderData"><span> US-CA-Daly City'
+              '</span></dd></div>'
+              '<div class="iCIMS_JobHeaderTag">'
+              '<dt class="iCIMS_JobHeaderField">Facility</dt>'
+              '<dd class="iCIMS_JobHeaderData"><span> Seton Medical Center'
+              '</span></dd></div></dl></li>')
+_fields = _IC._fields(_ahmc_card.split(A.ICIMS._CARD_MARK)[-1])
+check("the card's own location is read", _fields.get("location"),
+      "US-CA-Daly City")
+check("and turned into something geo can rank",
+      _IC._where(_fields), "Daly City, CA")
+check("Daly City is in range", geo.classify("Daly City, CA")[0], geo.Geo.IN)
+check("the facility comes off the card too", _fields.get("facility"),
+      "Seton Medical Center")
+# "Monterey Park" contains "Monterey", and whole-phrase matching is
+# longest-first, so an AHMC posting in the San Gabriel Valley was filed
+# 90 minutes from Oakland instead of 350 miles away.
+check("Monterey Park is out of range",
+      geo.classify("Monterey Park, CA")[0], geo.Geo.OUT)
+check("and Monterey itself is not",
+      geo.classify("Monterey, CA")[0], geo.Geo.IN)
 check("the next page is read from the portal's own rel=next",
       A.ICIMS._NEXT.search(_card).group(1),
       "https://careers-svh.icims.com/jobs/search?pr=1&amp;in_iframe=1")

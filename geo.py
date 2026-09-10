@@ -160,6 +160,23 @@ OUT_CITIES |= set(_csv("""
     san pedro, tarzana, brea
 """))
 
+# Added 2026-09-09 with AHMC, whose hospitals are mostly in the San
+# Gabriel Valley. Two of these are not merely new towns: "Monterey Park"
+# and "Marina del Rey" *contain* a city this table already calls in range,
+# and whole-phrase matching is longest-first, so without them a Monterey
+# Park posting matched "monterey" and was filed 90 minutes from Oakland
+# instead of 350 miles away. Check for that shape whenever a name is
+# added: the danger is a short in-range name sitting inside a long
+# out-of-range one.
+OUT_CITIES |= set(_csv("""
+    monterey park, marina del rey, san gabriel, south el monte, alhambra,
+    west covina, baldwin park, rosemead, arcadia, pico rivera, norwalk,
+    bellflower, lakewood, cerritos, la mirada, hacienda heights,
+    rowland heights, diamond bar, chino, chino hills, upland, claremont,
+    garden grove, santa ana, westminster, buena park, la habra, azusa,
+    glendora, covina, monrovia, duarte, sun valley, panorama city
+"""))
+
 # Some employers record a street address and no city at all — John Muir
 # posts its Tice Valley outpatient roles as bare "1914 Tice Valley Blvd",
 # and the detail endpoint has no city either, so there is nothing to parse

@@ -71,6 +71,15 @@ SECTION_LABELS = (
     # section at all and the evidence shown was the marketing overview.
     "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
     "REQUIRED SKILLS",
+    # La Clínica's headings. Its Registered Nurse I/II posting states
+    # "Possession of a valid RN license ... supplemented by two to three
+    # years clinical experience" under these, and with neither of them
+    # known the posting parsed to no requirements section at all — so the
+    # title rule decided it and a job asking for three years was labelled
+    # new-graduate. That is the most expensive verdict this file can get
+    # wrong, and a community clinic is exactly where a new graduate looks.
+    "MINIMUM JOB REQUIREMENTS", "JOB REQUIREMENTS",
+    "EXPERIENCE AND OTHER CERTIFICATIONS",
 )
 # Several labels are also ordinary English words, and a bare match on one
 # mid-sentence is not a section header. Vibra writes "Previous acute care
@@ -98,8 +107,18 @@ _DISTINCT_LABELS = sorted((s for s in SECTION_LABELS
 _PROSE_LABELS = sorted((s for s in SECTION_LABELS
                         if s.upper() in PROSE_LABELS), key=len, reverse=True)
 
+# A distinctive heading may be followed by a colon, a full stop or
+# neither. The full stop is not the posting's: _html_to_text puts one
+# there when a block element ends without punctuation, which is exactly
+# what a heading in its own <p> or <strong> looks like. Before this,
+# "Minimum Job Requirements." stopped being a heading the moment the
+# adapters started keeping statement boundaries, and La Clínica's
+# Registered Nurse I/II — which asks for "two to three years clinical
+# experience" under it — parsed to no requirements section at all and was
+# labelled new-graduate by its title. The prose labels still require a
+# colon, because "Experience." at the end of a sentence is a sentence.
 _LABEL_RE = re.compile(
-    r"(?i)\b(" + "|".join(re.escape(s) for s in _DISTINCT_LABELS) + r")\s*:?\s"
+    r"(?i)\b(" + "|".join(re.escape(s) for s in _DISTINCT_LABELS) + r")\s*[:.]?\s"
     r"|\b(" + "|".join(re.escape(s) for s in _PROSE_LABELS) + r")\s*:\s")
 
 
@@ -143,7 +162,8 @@ def experience_section(description: str) -> tuple[str, bool] | None:
     # recruitment process. The more specific heading is the better answer
     # whenever a posting writes both.
     keys = ("TYPICAL EXPERIENCE", "MINIMUM EXPERIENCE",
-            "REQUIRED EXPERIENCE", "EXPERIENCE",
+            "REQUIRED EXPERIENCE", "EXPERIENCE AND OTHER CERTIFICATIONS",
+            "EXPERIENCE", "MINIMUM JOB REQUIREMENTS", "JOB REQUIREMENTS",
             "AS TYPICALLY ACQUIRED IN", "MINIMUM QUALIFICATIONS",
             # Vibra states its experience requirement here and nowhere
             # else, so without this the posting reads as having no
@@ -239,12 +259,27 @@ def _has_unhedged_duration(text: str) -> str | None:
     labeled. Recovering the genuinely-preferred cases from UNCLEAR is the
     LLM stage's job, not this function's.
     """
+    # Detection stays blunt. Only the quote is chosen with care: the bare
+    # span is "40 years", and La Clínica's marketing paragraph — "40 years
+    # advocating for and creating a health home" — is where the first one
+    # on the page lives. A verdict evidenced by that supports nothing, so
+    # quote the sentence the duration sits in, and prefer a sentence that
+    # is about experience when the posting has one.
+    fallback = None
     for m in _HARD_DURATION.finditer(text or ""):
         span = m.group(0).strip()
         if _ONBOARDING.search(span):
             continue          # a deadline after you start, not a prerequisite
-        return span
-    return None
+        start = max(text.rfind(".", 0, m.start()),
+                    text.rfind(";", 0, m.start())) + 1
+        end = text.find(".", m.end())
+        sentence = text[start:end + 1 if end > 0 else len(text)].strip()
+        sentence = sentence or span
+        if re.search(r"(?i)\bexperien", sentence):
+            return sentence[:200]
+        if fallback is None:
+            fallback = sentence[:200]
+    return fallback
 
 
 def _hedged_experience_clause(text: str) -> str | None:
@@ -552,12 +587,33 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     # 2. Level I in the title — but only if no higher level is also present.
     #    "Clinical Nurse II" contains no Level-I match; "RN I/II" does, and
     #    should not count as Level I.
+    #    A Level I title is a strong signal and it is not a promise. La
+    #    Clínica posts "Registered Nurse I/II" and then asks, in the body,
+    #    for "a valid RN license ... supplemented by two to three years
+    #    clinical experience". Answering that with "Level I / new grad",
+    #    evidenced by the title, is the false new-graduate call this file
+    #    exists to prevent — and a community clinic is exactly where a new
+    #    graduate looks. So the title decides only when the posting does
+    #    not contradict it with a time requirement of its own. UNCLEAR
+    #    still reaches the user; it just stops promising something the
+    #    posting never said. Explicit new-grad language above is left
+    #    alone: that is the employer saying it in its own words.
     if TITLE_LEVEL_I_COMBINED.search(t):
+        hard = _has_unhedged_duration(desc)
+        if hard:
+            return Verdict("UNCLEAR", hard,
+                           "title offers a Level I rung, but the posting "
+                           "states a time requirement — read it yourself")
         return Verdict("STAFF_NURSE_I", t,
                        "title is a combined Level I/II role, which is hired "
                        "at the Level I rung")
     head = re.split(r"[-–—,(]", t)[0]
     if TITLE_LEVEL_I.search(t) and not TITLE_LEVEL_2PLUS.search(head):
+        hard = _has_unhedged_duration(desc)
+        if hard:
+            return Verdict("UNCLEAR", hard,
+                           "title is a Level I role, but the posting states a "
+                           "time requirement — read it yourself")
         return Verdict("STAFF_NURSE_I", t, "title is a Level I role")
 
     got = experience_section(desc)
