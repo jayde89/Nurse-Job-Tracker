@@ -1272,6 +1272,106 @@ check("the city comes from the nested JobLocation, not LocationName",
       f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
 check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
 
+# ── the evidence has to be the sentence the label rests on ──────────
+# Found by re-reading live verdicts after the adapters started keeping
+# statement boundaries. Every case here is a San Francisco or John Muir
+# posting whose quote did not support its own label.
+
+# 1. A posting that writes both EXPERIENCE and MINIMUM QUALIFICATIONS
+#    means the first one. Reading them in declared order quoted the
+#    recruitment process and threw the requirement away.
+_sf = ("Minimum Qualifications: as listed in the job ad. Applicants may be "
+       "required to submit verification of qualifying education and "
+       "experience at any point during the recruitment and selection "
+       "process. Experience: At least one (1) year of experience working "
+       "as a Registered Nurse.")
+_v = C.classify("Registered Nurse", _sf)
+check("the EXPERIENCE section outranks the QUALIFICATIONS section",
+      _v.evidence, "At least one (1) year of experience working as a "
+                   "Registered Nurse")
+check("and the verdict is general experience", _v.bucket, "GENERAL_EXPERIENCE")
+
+# 2. Sentences about the application are not requirements.
+check("an application-process sentence is not a requirement clause",
+      bool(C.PROCESS_CLAUSE.search(
+          "Applicants may be required to submit verification of qualifying "
+          "education and experience at any point during the recruitment "
+          "and selection process.")), True)
+check("neither is the salary-step instruction",
+      bool(C.PROCESS_CLAUSE.search(
+          "*As of March 29, 2023, in order to place you at the appropriate "
+          "salary step, please include your complete and verifiable "
+          "registered nursing employment history.")), True)
+# ...but a real gate worded as an instruction to applicants still counts,
+# which is why the skip needs both a duration and a required-word.
+_v = C.classify("Registered Nurse",
+                "Experience: Applicants must have at least two years of ICU "
+                "experience.")
+check("a real gate addressed to applicants is still a gate",
+      _v.bucket, "ACUTE_REQUIRED")
+
+# 3. "Requires nursing experience" must rest on a clause that says so.
+_v = C.classify("Per Diem Registered Nurse",
+                "Minimum Qualifications: as listed in the job ad. Under "
+                "general supervision, performs professional nursing duties. "
+                "Performs other related duties as assigned/required.")
+check("a generic section naming no experience is UNCLEAR, not experience",
+      _v.bucket, "UNCLEAR")
+# ...and a section the posting itself headed EXPERIENCE is exempt, because
+# John Muir states the requirement in the heading and not in the clause.
+_v = C.classify("RN - BHC Psychiatric Services",
+                "Education: Graduate of an Accredited School of Nursing - "
+                "Required. Experience: Nursing - Psychiatry - Required.")
+check("an EXPERIENCE-headed section still counts without the word",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and quotes its own clause", _v.evidence,
+      "Nursing - Psychiatry - Required")
+
+# 4. Acute care offered as one acceptable setting among several is not an
+#    acute-care gate. San Francisco's Public Health Nurse asks for a year
+#    "in an acute hospital, primary care facility, home health agency" —
+#    a nurse whose year was spent in a clinic qualifies, and the user's
+#    criteria name that experience as one that belongs on the list.
+_v = C.classify("Public Health Nurse",
+                "Experience: One (1) year of verifiable experience as a "
+                "Registered Nurse in an acute hospital, primary care "
+                "facility, home health agency or clinic.")
+check("acute as one option among several is not an acute-care gate",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and the posting reaches the user", _v.bucket in C.HIDE, False)
+_v = C.classify("Staff Nurse",
+                "Experience: One (1) year of acute care experience required.")
+check("acute on its own still suppresses", _v.bucket, "ACUTE_REQUIRED")
+
+# 5. The quote is the clause that carries the requirement, not whichever
+#    one came first once the bullets stopped running together.
+_v = C.classify("Registered Nurse",
+                "Experience: Required. BLS required. Two years of nursing "
+                "experience required.")
+check("the clause that states the requirement is the one quoted",
+      "Two years of nursing experience" in (_v.evidence or ""), True)
+
+
+# ── an adapter that flattens HTML destroys the evidence ─────────────
+# Workday's jobDescription is a bulleted requirements list. Stripping
+# every tag to a space merged John Muir's bullets into "Graduate of an
+# Accredited School of Nursing - Required Experience: 1 year - Nursing -
+# Acute Care - Required" — one quote spanning three requirements, with
+# "Required Experience" an artefact of the merge.
+_bullets = ("<p>Education:</p><ul><li>Graduate of an Accredited School of "
+            "Nursing - Required</li></ul><p>Experience:</p><ul>"
+            "<li>1 year - Nursing - Acute Care - Required</li>"
+            "<li>2000 hours Nursing - Emergency - Preferred</li></ul>")
+_flat = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", _bullets)).strip()
+check("a flat strip merges the bullets",
+      "Required Experience" in _flat, True)
+check("the block-aware helper does not",
+      "Required Experience" in A._html_to_text(_bullets), False)
+_v = C.classify("RN - Emergency", A._html_to_text(_bullets))
+check("so the evidence is one requirement, not three",
+      _v.evidence, "Experience: 1 year - Nursing - Acute Care - Required.")
+
+
 # ── sub-acute and post-acute are not acute ──────────────────────────
 # Sonoma Specialty Hospital's staff RN posting asks for "One-year
 # sub/post-acute care experience", and the word "acute" inside

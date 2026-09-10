@@ -362,8 +362,15 @@ class WorkdayCXS:
         # every detail fetch.
         path = "/job/" + p.url.split("/job/", 1)[1]
         d = json.loads(_request(f"{self.base}{path}")).get("jobPostingInfo", {})
-        p.description = re.sub(r"<[^>]+>", " ", d.get("jobDescription", ""))
-        p.description = re.sub(r"\s+", " ", p.description).strip()
+        # _html_to_text, not a flat tag strip. Workday's jobDescription is
+        # a bulleted requirements list, and stripping every tag to a space
+        # merges the bullets: John Muir's evidence read "Graduate of an
+        # Accredited School of Nursing - Required Experience: 1 year -
+        # Nursing - Acute Care - Required", in which "Required Experience"
+        # is an artefact of two bullets running together and the quote
+        # spans three separate requirements. This is the Adventist bug
+        # CLAUDE.md describes, in the largest source here.
+        p.description = _html_to_text(d.get("jobDescription", ""))
         p.posted_date = d.get("startDate") or p.posted_date
         p.schedule = d.get("timeType")
         p.url = d.get("externalUrl") or p.url
@@ -567,8 +574,7 @@ class PACS:
     def fetch_detail(self, p: Posting) -> Posting:
         path = p.url.split("/pacs", 2)[-1]
         d = json.loads(_request(f"{self.BASE}{path}")).get("jobPostingInfo", {})
-        p.description = re.sub(r"\s+", " ",
-                               re.sub(r"<[^>]+>", " ", d.get("jobDescription", ""))).strip()
+        p.description = _html_to_text(d.get("jobDescription", ""))
         p.posted_date = d.get("startDate") or p.posted_date
         p.url = d.get("externalUrl") or p.url
         return p
@@ -647,7 +653,7 @@ class ScionHealth:
     def fetch_detail(self, p: Posting) -> Posting:
         body = _request(p.url)
         body = re.sub(r"(?s)<(script|style).*?</\1>", " ", body)
-        p.description = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()[:9000]
+        p.description = _html_to_text(body)[:9000]
         return p
 
 
@@ -720,10 +726,11 @@ class HealthcareSource:
         return out
 
     def fetch_detail(self, p: Posting) -> Posting:
-        html = _request(p.url)
-        body = re.sub(r"(?s)<(script|style).*?</\1>", " ", html)
-        text = re.sub(r"<[^>]+>", " ", body)
-        p.description = re.sub(r"\s+", " ", text).strip()[:8000]
+        # `html` was the local name here, which shadowed the module and is
+        # why this one could not simply call _html_to_text.
+        body = _request(p.url)
+        body = re.sub(r"(?s)<(script|style).*?</\1>", " ", body)
+        p.description = _html_to_text(body)[:8000]
         return p
 
 
@@ -984,7 +991,7 @@ class NeoGov:
         # Unescape first: the field arrives with its markup escaped, so
         # stripping tags before unescaping strips nothing at all.
         raw = html.unescape(d.get("description", ""))
-        p.description = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", raw)).strip()
+        p.description = _html_to_text(raw)
         p.posted_date = d.get("datePosted") or p.posted_date
         p.schedule = d.get("employmentType") or p.schedule
         return p
@@ -1025,8 +1032,10 @@ class Jibe:
 
     @staticmethod
     def _clean(fragment: str) -> str:
-        return html.unescape(re.sub(r"\s+", " ",
-                                    re.sub(r"<[^>]+>", " ", fragment or ""))).strip()
+        # These fields carry real markup — <p>, <li>, <br> — and flattening
+        # every tag to a space runs the statements together. Keep the
+        # boundaries; the classifier's evidence is a clause, not a page.
+        return _html_to_text(fragment or "")
 
     @staticmethod
     def _f(v):
@@ -1115,9 +1124,12 @@ class SmartRecruiters:
 
     @staticmethod
     def _clean(fragment: str) -> str:
-        return re.sub(r"\s+", " ",
-                      re.sub(r"<[^>]+>", " ",
-                             html.unescape(fragment or ""))).strip()
+        # jobAd sections are real HTML — the qualifications section is an
+        # <ol> of numbered requirements — so the tags are the sentence
+        # boundaries. Nothing here arrives escaped, checked against a live
+        # posting, so unescaping first is not needed and _html_to_text
+        # unescapes at the end anyway.
+        return _html_to_text(fragment or "")
 
     def fetch_listings(self) -> list[Posting]:
         out: list[Posting] = []
@@ -1267,7 +1279,16 @@ class SmartHires:
                           html.unescape(re.sub(r"<[^>]+>", " ", raw or ""))).strip()
 
         labels = {k.strip().lower(): text(v) for k, v in self.RE_LABEL.findall(body)}
-        spans = {k: text(v) for k, v in self.RE_SPAN.findall(body)}
+        # St. Rose separates every line of its qualifications with <br> and
+        # nothing else, so a flat tag strip runs "-Current California RN
+        # License required." into "-Current BCLS required" into the line
+        # after it, and the evidence quote spans three requirements.
+        # _html_to_text turns those breaks into statement boundaries.
+        spans = {k: _html_to_text(v) for k, v in self.RE_SPAN.findall(body)}
+        # The shift is read off the front of resSpan, before the pay range,
+        # and it is a phrase rather than a statement: keep the flat form
+        # for it or it reads "Per-Diem. All Shifts".
+        flat_spans = {k: text(v) for k, v in self.RE_SPAN.findall(body)}
         paras = {k.strip().lower(): text(v) for k, v in self.RE_PARA.findall(body)}
 
         # Requirements first: the licence and experience gates live in
@@ -1303,7 +1324,7 @@ class SmartHires:
             parts.append(f"Degree required: {paras['degree required']}.")
         p.description = " ".join(x for x in parts if x)
 
-        front = self.RE_FRONT.match(spans.get("resSpan", "") or "")
+        front = self.RE_FRONT.match(flat_spans.get("resSpan", "") or "")
         if front:
             p.shift = front.group(1).strip(" .-|") or None
 
@@ -1729,7 +1750,11 @@ class Radancy:
         m = re.search(r'<div[^>]*class="[^"]*job-description[^"]*"[^>]*>(.*?)</div>',
                       body, re.S)
         if m:
-            p.description = self._text(m.group(1))
+            # Same helper as the JSON-LD path above. _text is the row
+            # parser's cell cleaner and flattens everything to spaces,
+            # which is wrong for a description on the fallback path just
+            # as it is on the primary one.
+            p.description = _html_to_text(m.group(1))
         return p
 
 

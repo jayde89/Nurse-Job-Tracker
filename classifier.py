@@ -136,16 +136,45 @@ def experience_section(description: str) -> tuple[str, bool] | None:
             k in sec for k in ("TYPICAL EXPERIENCE", "MINIMUM EXPERIENCE",
                                "REQUIRED EXPERIENCE")):
         return sec["PREFERRED EXPERIENCE"], True
-    for key in ("TYPICAL EXPERIENCE", "MINIMUM EXPERIENCE",
-                "REQUIRED EXPERIENCE", "AS TYPICALLY ACQUIRED IN",
-                "MINIMUM QUALIFICATIONS", "EXPERIENCE",
-                # Vibra states its experience requirement here and nowhere
-                # else, so without this the posting reads as having no
-                # requirements at all.
-                "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
-                "REQUIRED SKILLS"):
-        if key in sec:
-            return sec[key], False
+    # A section the posting labelled EXPERIENCE outranks one it labelled
+    # QUALIFICATIONS. Both of San Francisco's staff RN sections state a
+    # duration, so the substance test below cannot separate them, and the
+    # declared order decided it — in favour of the section holding the
+    # recruitment process. The more specific heading is the better answer
+    # whenever a posting writes both.
+    keys = ("TYPICAL EXPERIENCE", "MINIMUM EXPERIENCE",
+            "REQUIRED EXPERIENCE", "EXPERIENCE",
+            "AS TYPICALLY ACQUIRED IN", "MINIMUM QUALIFICATIONS",
+            # Vibra states its experience requirement here and nowhere
+            # else, so without this the posting reads as having no
+            # requirements at all.
+            "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
+            "REQUIRED SKILLS")
+    present = [sec[k] for k in keys if k in sec]
+
+    # When a posting has more than one of these, the order above is not
+    # enough. San Francisco writes both, and its MINIMUM QUALIFICATIONS
+    # section holds a licence list and the recruitment process ("Applicants
+    # may be required to submit verification of qualifying education and
+    # experience") while the requirement that actually gates the job —
+    # "One (1) year ... of verifiable experience as a Registered Nurse" —
+    # sits in the EXPERIENCE section below it. Reading them in declared
+    # order took the first and threw the second away, so a Public Health
+    # Nurse posting was labelled from the evidence "(Required)." and a
+    # staff RN posting from a sentence about submitting paperwork.
+    #
+    # So: prefer a section that states a duration *and* speaks of
+    # experience, then one that speaks of experience at all, then the
+    # declared order. This only chooses which sentence the verdict is read
+    # from; it does not change what any sentence means.
+    for body in present:
+        if DURATION.search(body) and re.search(r"(?i)\bexperien", body):
+            return body, False
+    for body in present:
+        if re.search(r"(?i)\bexperien", body):
+            return body, False
+    if present:
+        return present[0], False
 
     # Free-form postings have no headings to find. PACS writes pure
     # marketing copy and states its requirement in an ordinary sentence:
@@ -398,6 +427,48 @@ ACUTE_EXPERIENCE = re.compile(
     r"(?i)(?:(?:" + _ACUTE_WORD + r")[\w ,/()-]{0,40}\bexperience\b"
     r"|\bexperience\b[\w ,/()-]{0,40}(?:" + _ACUTE_WORD + r"))")
 
+# A clause that offers acute care as one acceptable setting among several
+# is not an acute-care gate. San Francisco's Public Health Nurse posting
+# asks for "One (1) year of verifiable experience as a Registered Nurse in
+# an acute hospital, primary care facility, home health agency, ..." — a
+# nurse whose year was spent in a clinic qualifies, and the user's criteria
+# name exactly that kind of experience as one that belongs on the list.
+# Reading the acute word alone would suppress the posting on evidence that
+# does not support suppression.
+NON_ACUTE_SETTING = re.compile(
+    r"(?i)\b(primary care|home health|clinic|ambulatory|outpatient|school"
+    r"|public health|skilled nursing|long[- ]term care|sub[- ]?acute"
+    r"|post[- ]?acute|community health|correctional|hospice|urgent care"
+    r"|physician(?:'s)? office|doctor(?:'s)? office)\b")
+
+
+def _acute_only(clause: str) -> bool:
+    """True when the clause demands acute care rather than allowing it."""
+    return not NON_ACUTE_SETTING.search(clause or "")
+
+
+# Sentences about the hiring process, not about the nurse. San Francisco
+# puts "Applicants may be required to submit verification of qualifying
+# education and experience at any point during the recruitment and
+# selection process" inside the section this file reads as requirements,
+# and it contains both a required-word and the word experience — so a per
+# diem posting whose only real gate is a licence was labelled "requires
+# nursing experience" and evidenced with a sentence about paperwork.
+# A clause matching this is a requirement only if it states both a
+# duration and a required-word — "Applicants must have at least two years
+# of ICU experience" is a real gate however it is worded, while "in order
+# to place you at the appropriate salary step, please include your
+# complete and verifiable registered nursing employment history" mentions
+# years and requires nothing.
+PROCESS_CLAUSE = re.compile(
+    r"(?i)(applicants? (?:may|must|will) be required to"
+    r"|submit(?:ted)? verification|verification of (?:qualifying )?"
+    r"(?:education|experience)|(?:education|experience) verification"
+    r"|how to verify|verifying (?:foreign|qualifying)"
+    r"|every application is reviewed|please (?:include|submit|attach|note)"
+    r"|in order to place you|salary step"
+    r"|recruitment and selection process|misrepresentation|falsif)")
+
 REQUIRED_WORD = re.compile(r"(?i)\b(required|must have|minimum of|at least)\b")
 PREFERRED_ONLY = re.compile(r"(?i)\b(preferred|desirable|a plus|nice to have)\b")
 
@@ -456,6 +527,7 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     #    anything else; it was previously slipping through as NO_EXPERIENCE.
     for line in re.split(r"(?<=[.;])\s+", desc):
         if re.search(r"(?i)-\s*required\b", line) and ACUTE.search(line) \
+                and _acute_only(line) \
                 and DURATION.search(line) and not PREFERRED_ONLY.search(line):
             return Verdict("ACUTE_REQUIRED", line[:200],
                            "states a required acute-care duration")
@@ -526,6 +598,9 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     for c in _clauses(exp):
         if PREFERRED_ONLY.search(c):
             continue                       # this clause is optional
+        if PROCESS_CLAUSE.search(c) and not (
+                DURATION.search(c) and REQUIRED_WORD.search(c)):
+            continue                       # about the application, not the job
         if DURATION.search(c) or REQUIRED_WORD.search(c):
             required_clauses.append(c)
 
@@ -546,7 +621,7 @@ def _classify_requirements(title: str, description: str) -> Verdict:
         # ACUTE and would otherwise suppress four postings whose one real
         # requirement sentence says "strongly preferred".
         for c in _clauses(exp):
-            if (ACUTE_EXPERIENCE.search(c)
+            if (ACUTE_EXPERIENCE.search(c) and _acute_only(c)
                     and not PREFERRED_ONLY.search(c)):
                 return Verdict("ACUTE_REQUIRED", c[:200],
                                "names acute-care experience in a requirements "
@@ -564,7 +639,7 @@ def _classify_requirements(title: str, description: str) -> Verdict:
 
     # Acute care only counts if it appears in a clause that is required.
     for c in required_clauses:
-        if ACUTE.search(c):
+        if ACUTE.search(c) and _acute_only(c):
             return Verdict("ACUTE_REQUIRED", c[:200],
                            "requires acute-care or hospital experience")
 
@@ -586,12 +661,54 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     for c in required_clauses:
         stem = c.strip()[:40]
         for full in _clauses(desc):
-            if stem and stem in full and ACUTE_EXPERIENCE.search(full):
+            if (stem and stem in full and ACUTE_EXPERIENCE.search(full)
+                    and _acute_only(full)):
                 return Verdict("ACUTE_REQUIRED", full[:200],
                                "requires acute-care experience; the section "
                                "split had separated it from its own clause")
 
-    return Verdict("GENERAL_EXPERIENCE", required_clauses[0][:200],
+    # Quote the clause that carries the requirement, not whichever one
+    # came first. Document order was fine while a whole bulleted list
+    # arrived as one run-on clause; once the adapters started keeping
+    # statement boundaries, the first required clause on a San Francisco
+    # posting became the bare heading "(Required)." and, on another, the
+    # recruitment boilerplate "Applicants may be required to submit
+    # verification of qualifying education and experience" — while the
+    # sentence that actually gates the job, "one (1) year of experience
+    # working as a Registered Nurse", sat further down. Evidence that does
+    # not support its own label is the thing this codebase treats as a
+    # bug, so prefer a clause that says what is required and for how long.
+    def _evidence_rank(c: str) -> int:
+        has_dur = bool(DURATION.search(c))
+        says_exp = bool(re.search(r"(?i)\bexperien", c))
+        if has_dur and says_exp:
+            return 0
+        if says_exp:
+            return 1
+        if has_dur:
+            return 2
+        return 3
+
+    best = min(required_clauses, key=_evidence_rank)
+
+    # "Requires nursing experience" has to rest on a clause that says so.
+    # When the section came from a generic QUALIFICATIONS heading — which
+    # on a San Francisco posting swallows the whole page, duties and
+    # application instructions included — the surviving required clause
+    # can be "Performs other related duties as assigned/required", which
+    # supports no verdict at all. Say so instead of inventing one. A
+    # section the posting itself headed EXPERIENCE is exempt: John Muir
+    # writes "Experience: Nursing - Psychiatry - Required" and never
+    # repeats the word inside the clause, and that is a real requirement.
+    if not any(re.search(r"(?i)\bexperien", c) for c in required_clauses):
+        generic = {sections(desc).get(k) for k in
+                   ("MINIMUM QUALIFICATIONS", "QUALIFICATIONS")} - {None}
+        if exp in generic:
+            return Verdict("UNCLEAR", best[:200],
+                           "the section read as requirements names no "
+                           "experience requirement — read it yourself")
+
+    return Verdict("GENERAL_EXPERIENCE", best[:200],
                    "requires nursing experience, but not acute care")
 
 
