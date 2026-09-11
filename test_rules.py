@@ -1,6 +1,6 @@
 """
 Regression tests for the title filter, the geo table, the classifier, the
-front-of-list detail line and the application ledger.
+front-of-list detail line, the application ledger and the board's marks.
 
 Every case here is a bug that actually shipped and cost real postings.
 Run before pushing a rule change:  python3 test_rules.py
@@ -9,13 +9,16 @@ No test framework on purpose — this runs anywhere Python does, including
 inside the Actions container, with nothing to install.
 """
 
+import re
 import sys
 
 import adapters as A
+import board as B
 import classifier as C
 import geo
 import highlights as H
 import run_scan as S
+import sync_board as SY
 
 
 CASES: list[tuple[str, bool, str]] = []          # (name, passed, detail)
@@ -410,6 +413,12 @@ check("an unrecognised status is treated as open",
       S.is_open("appleid"), True)
 
 
+def _sync_status(row, mark):
+    """What sync_board would leave in the Status column."""
+    SY.apply_marks([row], [{"key": row["Key"], "mark": mark}], verbose=False)
+    return row["Status"]
+
+
 def _ledger(*rows):
     return {r["Key"]: r for r in rows}
 
@@ -459,6 +468,49 @@ check("the scanner's date fills in when you did not",
       "2026-08-20")
 check("no date at all is blank, not invented",
       S.applied_on(_row("x", "applied")), "")
+
+
+# ── ticking a posting off the board (run_scan.py, board.py) ──────────
+# The board is the standing list: nothing leaves it because it stopped
+# being new, only because you marked it. So the mark has to actually
+# take a posting off every list, and it has to survive the spellings a
+# checkbox and a phone keyboard produce.
+check("a ticked-off posting is off the main lists",
+      [S.is_open(x) for x in ("not relevant", "not a fit", "dismissed",
+                              "not interested", "irrelevant")],
+      [False] * 5)
+check("separators in a status never matter",
+      [S.normalize_status(x) for x in ("not-relevant", "Not_Relevant",
+                                       " NOT  RELEVANT ")],
+      ["not relevant"] * 3)
+check("a ticked-off posting is not an application in flight",
+      S.is_active("not relevant"), False)
+check("a ticked-off posting is not one of your closed-out applications",
+      [r["Key"] for r in S.finished_applications(
+          _ledger(_row("n", "not relevant"), _row("d", "declined")))],
+      ["d"])
+check("ticked-off postings have their own pile",
+      [r["Key"] for r in S.dismissed_applications(
+          _ledger(_row("n", "not-relevant"), _row("u", "unapplied"),
+                  _row("a", "applied")))],
+      ["n"])
+
+# The board keys its marks by ledger Key, and the artifact store's ids
+# admit no spaces. A slug alone could fold two employers into one id and
+# silently merge their marks, which is the same class of bug as a wrong
+# label: quiet, and expensive.
+check("a mark id is legal in the store and unique per posting",
+      [B.doc_id("PACS Group::JR1") != B.doc_id("PACS  Group::JR1"),
+       B.doc_id("PACS Group::JR1") == B.doc_id("PACS Group::JR1"),
+       re.fullmatch(r"[A-Za-z0-9_.~:@+-]{1,200}",
+                    B.doc_id("St. Rose / Hayward::RN (nights) #7")) is not None],
+      [True, True, True])
+# A posting you have already decided about by hand outranks a tick made
+# in a page that may have been open for days.
+check("the ledger wins over a stale tick",
+      _sync_status(_row("x", "applied"), "not-relevant"), "applied")
+check("a tick moves a posting that is still open",
+      _sync_status(_row("x", "unapplied"), "not-relevant"), "not relevant")
 
 
 if __name__ == "__main__":

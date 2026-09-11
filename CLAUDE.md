@@ -5,6 +5,15 @@ hours of Oakland. It runs on GitHub Actions three times a day and commits
 its own results back. `README.md` is written for the person using it and
 explains what it does; this file is what an agent needs before changing it.
 
+The output the user reads is `board.html`, published as a Claude artifact:
+
+    https://claude.ai/code/artifact/6155f927-5fcc-4299-a1e7-fc82e164383d
+
+Republish it to that URL after a scan (`Artifact` with `url=` from any
+other conversation, or the same file path in the one that created it) —
+publishing without the URL makes a second board and strands the marks on
+the first.
+
 ## The thing that matters
 
 A false **"no experience required"** is the most expensive bug this
@@ -18,6 +27,14 @@ shape were found by reading labels against their own evidence — see the
 Bias toward showing too much. `UNCLEAR` reaches the user; only
 `ACUTE_REQUIRED` is suppressed. Never widen suppression to tidy the list.
 
+The second-most expensive bug is **showing a job once**. That one already
+shipped: the scan used to open a GitHub issue holding only postings that
+were both new and applicable, so a job not acted on the morning it appeared
+was never surfaced again. The board is the fix and its rule is absolute —
+**a posting leaves the board only because the user marked it**, never
+because it aged, never because a later scan had something fresher. Any change that
+makes the board show a subset of what is open is that bug returning.
+
 `highlights.py` puts a line of detail under each title in the digest —
 facility, setting, full-time or per diem, shift, pay — and it is under the
 same contract. **Every field on that line is a span the posting states.**
@@ -27,10 +44,40 @@ field not read from body text at all, because "skilled nursing experience
 preferred" in a hospital posting would otherwise relabel an ED job as a
 nursing home — it comes from the adapter, which knows what it is reading.
 
+## The board, and the loop that keeps it true
+
+`board.py` writes `board.html` from `applications.csv` — every row
+`is_open()` accepts, in three eligibility tiers. The page is published as
+an artifact with the `db` capability, and the **Applied** / **Not relevant**
+buttons write one document per posting into that store:
+
+    marks/<slug>-<hash>   {key, mark, at, title, employer, url}
+
+The document id is a slug of the ledger `Key`, because the store's id
+grammar has no room for a space. **Match on the `key` field, never on the
+id** — `board.doc_id()` could change, and a mark reattached to the wrong
+posting is the same class of quiet error as a wrong label.
+
+To fold marks back into the ledger:
+
+1. `Artifact` `action: "read_db"`, `db_op: "list"`, `collection: "marks"`,
+   with `out_dir` pointing at a scratch directory.
+2. `python3 sync_board.py <that directory>` — writes `Status` only, only
+   for rows that are still open, and rebuilds `board.html`.
+3. Republish `board.html` to the URL above.
+
+`sync_board.py` will not overwrite a status set by hand in the ledger. The
+ledger is newer than a page that may have been open for days, so the ledger
+wins, and the skipped mark is printed rather than swallowed.
+
+There is no email and no GitHub issue. Don't add one back: an alert can
+only carry what is new, which is exactly the failure the board exists to
+fix. `notify.py` was deleted, not disabled.
+
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 84 cases, no dependencies, ~instant
+python3 test_rules.py     # 92 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -40,9 +87,9 @@ narrowing what the user sees. Add a case for anything you fix.
 ## Don't run the scanner locally without meaning to
 
 `python3 run_scan.py` rewrites `applications.csv`, `DIGEST.md`,
-`digest.html` and `state/seen.json` — all four are committed, and the
-Action commits them too, so a casual local run creates a conflict with the
-next scheduled scan. To test changes, copy the repo to a temp directory and
+`digest.html`, `board.html` and `state/seen.json` — all five are committed,
+and the Action commits them too, so a casual local run creates a conflict
+with the next scheduled scan. To test changes, copy the repo to a temp directory and
 run there:
 
 ```bash
@@ -68,9 +115,11 @@ between requests. Keep that pause.
   blank when the edit is made on a phone.
 - **A job the user has marked never reappears as a job to apply to.**
   `is_open()` in `run_scan.py` is the single gate; the digest, the HTML and
-  the email alert all read through it, so they cannot disagree about what
+  the board all read through it, so they cannot disagree about what
   "already handled" means. An unrecognised status is treated as open on
   purpose — a typo should show a job again, never swallow one.
+  `normalize_status()` folds case, spacing and `-`/`_`, so the several
+  spellings of "not relevant" are one status.
 - **Applications in progress are rendered from the ledger, never from the
   scan's results.** A posting you applied to is among the likeliest to be
   taken down, and building that section from `shown` meant the application

@@ -28,6 +28,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
 import adapters
+import board
 import classifier as C
 import geo
 import highlights
@@ -51,13 +52,21 @@ LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Title",
 #             every list of jobs to apply to — you already did.
 #   ARCHIVED  done with. Off the main page, still in the ledger. "closed"
 #             is the scanner's own: the posting stopped appearing.
+#   DISMISSED you ticked it off as not for you. Off every list, kept in
+#             the ledger so it can never come back as a job to apply to.
 #   OPEN      still a candidate. This is the only state that belongs in
 #             "Worth applying to now".
 #
 # Anything unrecognised is treated as OPEN, so a typo in the CSV shows the
 # job to you again rather than silently swallowing it.
 ACTIVE_STATUS = {"applied", "pending", "interviewing", "offer"}
-ARCHIVED_STATUS = {"rejected", "declined", "withdrawn", "closed"}
+# The ones you tick off the board when a posting is not for you. Several
+# spellings, because this is now set from a checkbox and from a phone, and
+# "not a fit" should not be a different outcome from "not relevant".
+DISMISSED_STATUS = {"not relevant", "not a fit", "not interested",
+                    "irrelevant", "dismissed", "skip", "pass"}
+ARCHIVED_STATUS = {"rejected", "declined", "withdrawn",
+                   "closed"} | DISMISSED_STATUS
 
 # Most-advanced first, so an offer never sorts below a bare "applied".
 ACTIVE_ORDER = {"offer": 0, "interviewing": 1, "pending": 2, "applied": 3}
@@ -69,8 +78,14 @@ FINISHED_STATUS = {"rejected", "declined", "withdrawn"}
 
 
 def normalize_status(value) -> str:
-    """A blank Status is an unapplied one. Case and spacing never matter."""
-    return (value or "").strip().lower() or "unapplied"
+    """
+    A blank Status is an unapplied one. Case and spacing never matter, and
+    neither do the separators: `not-relevant`, `not_relevant` and
+    `Not Relevant` are one status, because they get typed on a phone and
+    written by the board's checkboxes.
+    """
+    s = " ".join((value or "").replace("-", " ").replace("_", " ").split())
+    return s.lower() or "unapplied"
 
 
 def is_active(value) -> bool:
@@ -114,6 +129,24 @@ def finished_applications(ledger) -> list:
     return rows
 
 
+def is_dismissed(value) -> bool:
+    """You ticked it off the board as not for you."""
+    return normalize_status(value) in DISMISSED_STATUS
+
+
+def dismissed_applications(ledger) -> list:
+    """
+    Postings you have ticked off. Kept, and kept visible in one place, for
+    the same reason nothing else here is deleted: so you can tell the
+    difference between a job you decided against and a job the scanner
+    never found. Newest decision first.
+    """
+    rows = [r for r in ledger.values() if is_dismissed(r.get("Status"))]
+    rows.sort(key=lambda r: (r.get("Last seen") or "", r.get("Employer") or ""),
+              reverse=True)
+    return rows
+
+
 def applied_on(row) -> str:
     """
     The date to show beside an application.
@@ -145,6 +178,7 @@ class Digest:
     watch: list         # needs experience you do not have yet
     active: list        # ledger rows: applications in flight
     finished: list      # ledger rows: rejected / declined / withdrawn
+    dismissed: list     # ledger rows: ticked off as not for you
     review: list
     hidden: int
     now: str
@@ -307,6 +341,7 @@ def build(rows, review, quick=False):
     d = Digest(shown=shown, top=top, new=new_open, watch=watch,
                active=active_applications(ledger),
                finished=finished_applications(ledger),
+               dismissed=dismissed_applications(ledger),
                review=review, hidden=hidden, now=now, quick=quick)
 
     with open("digest.html", "w") as f:
@@ -319,6 +354,16 @@ def build(rows, review, quick=False):
     # history. Read DIGEST.md on your phone; keep the HTML for desktop.
     with open("DIGEST.md", "w") as f:
         f.write(render_md(d))
+
+    # The board is the copy meant to be read in Claude, and it is the one
+    # you mark postings off in. Built from the same ledger as the digest,
+    # so the two cannot disagree about what is still open. Written last,
+    # and never allowed to take the scan down with it: a page you read is
+    # not worth losing a scan over.
+    try:
+        board.write(ledger, now)
+    except Exception as e:                                  # noqa: BLE001
+        print(f"board: failed ({type(e).__name__}: {e}) — scan results stand")
 
     for p in shown:
         seen.setdefault(p.key, now)
@@ -367,6 +412,16 @@ def render_md(d):
                 "|---|---|---|---|---|---|\n"
                 + "\n".join(app_row(r) for r in rows))
 
+    def ledger_line(r):
+        return (f"- **{normalize_status(r.get('Status'))}** — "
+                f"[{r.get('Title')}]({r.get('URL')}), {r.get('Employer')}"
+                + (f" ({applied_on(r)})" if applied_on(r) else ""))
+
+    dismissed_line = "\n".join(
+        f"- [{r.get('Title')}]({r.get('URL')}) — {r.get('Employer')}, "
+        f"{r.get('Location')}"
+        for r in d.dismissed[:40]) or "_Nothing ticked off yet._"
+
     finished_line = "\n".join(
         f"- **{normalize_status(r.get('Status'))}** — [{r.get('Title')}]"
         f"({r.get('URL')}), {r.get('Employer')}"
@@ -410,6 +465,13 @@ apply to today.
 
 {finished_line}
 
+## Not relevant — {len(d.dismissed)}
+
+Ticked off as not for you. Kept so you can see what you already decided
+about, and so none of them comes back as a new job.
+
+{dismissed_line}
+
 ## Location needs checking — {len(d.review)}
 
 {chr(10).join(f'- {p.title} — {p.employer}, {p.location}' for p in d.review[:20])
@@ -428,6 +490,7 @@ project. Read the quote before trusting the label.
 |---|---|
 | `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress** and off every list above |
 | `rejected`, `declined`, `withdrawn` | Moves to **Closed out** |
+| `not relevant` | Moves to **Not relevant** and never comes back as new |
 | `unapplied` | Comes back to the main lists |
 
 The scanner never writes Status, Applied On or Notes. **Since** shows your
@@ -568,6 +631,11 @@ coming, not to apply to today.</p>
 <h2>Closed out &mdash; {len(d.finished)}</h2>
 <ul>{''.join(acard(r) for r in d.finished[:20]) or '<li class="empty">Nothing closed out yet.</li>'}</ul>
 
+<h2>Not relevant &mdash; {len(d.dismissed)}</h2>
+<p class="note">Ticked off as not for you. Kept so none of them comes back
+as a new job.</p>
+<ul>{''.join(f'<li class="job"><h3><a href="{esc(r.get("URL"))}">{esc(r.get("Title"))}</a></h3><p class="where">{esc(r.get("Employer"))} &middot; {esc(r.get("Location"))}</p></li>' for r in d.dismissed[:40]) or '<li class="empty">Nothing ticked off yet.</li>'}</ul>
+
 <h2>Location needs checking &mdash; {len(review)}</h2>
 <ul>{''.join(f'<li class="job"><h3>{esc(p.title)}</h3><p class="where">{esc(p.employer)} &middot; {esc(p.location)}</p></li>' for p in review[:20]) or '<li class="empty">Every location resolved.</li>'}</ul>
 
@@ -576,6 +644,7 @@ coming, not to apply to today.</p>
 <code>offer</code> and the job moves to <strong>In progress</strong> and off
 every list above; <code>rejected</code>, <code>declined</code> or
 <code>withdrawn</code> moves it to <strong>Closed out</strong>;
+<code>not relevant</code> moves it to <strong>Not relevant</strong>;
 <code>unapplied</code> brings it back. The scanner never writes Status,
 Applied On or Notes. <em>Since</em> is your Applied On where you filled it
 in, otherwise the date this scanner first saw the row marked. A posting that

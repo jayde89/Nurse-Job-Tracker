@@ -12,7 +12,6 @@ on:
 
 permissions:
   contents: write           # needed to commit state/seen.json back
-  issues: write             # needed to open the alert issue (see below)
 
 jobs:
   scan:
@@ -42,6 +41,7 @@ jobs:
         with:
           name: digest
           path: |
+            board.html
             digest.html
             applications.csv
           retention-days: 30
@@ -52,33 +52,21 @@ jobs:
         run: |
           git config user.name  "rn-scan"
           git config user.email "rn-scan@users.noreply.github.com"
-          git add state/seen.json applications.csv digest.html DIGEST.md
+          git add state/seen.json applications.csv board.html digest.html DIGEST.md
           git diff --staged --quiet || git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
           git push
 
-      # Email without SMTP credentials. GitHub sends you a notification
-      # email whenever it assigns you an issue, so assigning one to the repo
-      # owner is a mail path that needs no app password, no secret, and no
-      # third-party action — and it reaches the GitHub mobile app too.
-      #
-      # It only fires when the scan found a posting that is BOTH new and in
-      # a bucket you could apply to today. Three scans a day of "here is the
-      # same list again" is how a job alert stops being read.
-      #
-      # continue-on-error because notification is not the point of the job:
-      # if this breaks, the scan results are still committed above.
-      - name: Email new applicable postings
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python3 notify.py
-          if [ -f state/alert.md ]; then
-            gh issue create \
-              --title "$(cat state/alert_title.txt)" \
-              --body-file state/alert.md \
-              --assignee "${{ github.repository_owner }}"
-          fi
+# The scan used to open a GitHub issue and assign it to the repo owner,
+# because GitHub emails you on assignment and that needed no SMTP secret.
+# It was removed, and the reason is worth keeping: an alert can only carry
+# what is NEW, or it repeats itself three times a day until it stops being
+# read. So it sent one or two postings at a time, and a job not acted on
+# the morning it appeared was never put in front of anyone again.
+#
+# board.html replaces it. It is the standing list — every open posting,
+# scan after scan, until it is marked — and it is read in Claude, where the
+# marking happens. Nothing here pushes it: the scan writes the file, and
+# publishing it is one step on the Claude side. See README, "The board".
 
 # Runtime is roughly 8-10 minutes, dominated by the 1-second politeness
 # delay between requests. That is ~30 minutes a DAY across three runs, so

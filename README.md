@@ -4,6 +4,10 @@ Scans sixteen employer and public-agency career systems three times a day
 for staff RN openings within two hours of Oakland, reads each posting's
 actual requirements, and hides the ones that require acute-care experience.
 
+What it gives you is a **standing list**, read in Claude: every open
+posting, every scan, staying there until you tick it **Applied** or **Not
+relevant**. Nothing drops off because it stopped being new.
+
 Runs on GitHub's servers. You never run anything after setup.
 
 ---
@@ -53,7 +57,8 @@ adapters.py
 classifier.py
 geo.py
 highlights.py
-notify.py
+board.py
+sync_board.py
 run_scan.py
 test_rules.py
 pacs_facilities.json
@@ -86,36 +91,38 @@ Select **rn-scan** in the left sidebar → **Run workflow** → **Run workflow**
 It takes 8–10 minutes, most of which is a one-second pause between requests
 so the scan stays polite. Green check means it worked.
 
-### 5. Bookmark the digest
+### 5. Open the board
 
-Open `DIGEST.md` in the repo. That page is your dashboard — GitHub renders
-it properly on a phone, inside a private repo, free. Bookmark it.
+`board.html` is the list you actually work from, and it is meant to be read
+in Claude rather than on GitHub. Ask Claude to publish it and you get a
+private page with every open posting on it, each title a link straight to
+the employer's application:
 
-`digest.html` is the same content, nicer looking, for desktop. Download and
-open it locally; GitHub won't render HTML from a repo.
+https://claude.ai/code/artifact/6155f927-5fcc-4299-a1e7-fc82e164383d
 
-### 6. Check that the email reaches you
+**Every open posting stays on that page until you mark it.** Not until it
+stops being new — until *you* tick **Applied** or **Not relevant** on it.
+That is the difference from what this used to do.
 
-The scan emails you when it finds a posting that is both new and one you
-could apply to today. It does this by opening an issue and assigning it to
-you; GitHub emails you on assignment, so there is no password to set up and
-nothing to configure. It also shows up in the GitHub mobile app.
+`DIGEST.md` is the same information rendered for GitHub, and `digest.html`
+is a desktop copy. Both still work; neither is where the ticking happens.
 
-Confirm two things once:
+### 6. Nothing to set up for email
 
-* **github.com/settings/notifications** → Email is ticked under
-  "Subscriptions", and "Notifications for assigned issues" is on.
-* The address GitHub has for you is one you actually read —
-  **github.com/settings/emails**.
+There isn't any. An earlier version opened a GitHub issue and assigned it
+to you, because GitHub emails you on assignment and that needed no SMTP
+password. It was removed, and the reason is the point of the board:
 
-You will not get an email on every scan, by design. Three a day of the same
-list is how an alert stops being read. Quiet means nothing new you can
-apply to; the standing list is always in `DIGEST.md`.
+An alert can only carry what is **new**, or it repeats itself three times a
+day until you stop reading it. So it arrived with one or two postings in it
+— whatever the last scan happened to turn up — and a job you did not act on
+that morning was never put in front of you again. It was still in the
+ledger, under a couple of hundred rows, which is not the same as being
+shown to you.
 
-If you would rather have the digest in your own inbox from your own
-address, that needs SMTP credentials in repo secrets — a Gmail App Password
-and a mail action in the workflow. The issue route was chosen because it
-needs neither.
+The board carries the standing list instead. It can afford to, because it
+is a page you open rather than a message you receive, and because nothing
+on it repeats: what you have ticked off is gone from it for good.
 
 ---
 
@@ -123,9 +130,15 @@ needs neither.
 
 Three scans a day, at 7am, 1pm and 7pm Pacific.
 
-**Read `DIGEST.md`.** The first section, *Worth applying to now*, is the one
+**Work the board.** The first section, *Worth applying to now*, is the one
 that matters: Level I roles and postings with no experience requirement.
-That is usually a couple of dozen out of a few hundred tracked.
+That is usually a couple of dozen out of a few hundred tracked. Below it
+are *Requirements unclear* — shown on purpose, because a job you cannot
+rule out is not a job to hide — and *Experience required*, folded away.
+
+Every title is a link to the employer's own application page. Search and a
+drive-time filter are at the top; the drive filter is the one to reach for
+first, since it is the only thing on the page you cannot change.
 
 Under each job title is a line of detail the posting itself states — the
 facility, the kind of nursing, full-time or per diem, the shift, the pay:
@@ -141,24 +154,40 @@ same rule applies to it as to the requirement quote: **everything on that
 line is stated by the posting.** A blank where the shift should be means
 the posting never said, not that it's flexible.
 
-The rest are in *Watching* on purpose. They require experience you don't
-have yet. They're there so you can see them coming, not so you apply to
-them. Postings that require acute-care experience are hidden entirely.
+Postings that require acute-care experience are hidden entirely. They are
+the one thing suppressed, and they are suppressed because a false "no
+experience required" costs you an application you were never eligible for.
 
-**When you apply**, open `applications.csv`, find the row, change **Status**
-from `unapplied` to `applied`. Commit. On the next scan the job moves to
-*In progress* and **disappears from every list of jobs to apply to** — you
-already did.
+**Ticking a posting off.** Each one has two buttons.
 
-You can do this from your phone: tap the file, tap the pencil icon, edit,
-commit. It's slightly fiddly but it keeps everything in one place with full
-history.
+* **Not relevant** — wrong shift, wrong setting, too far, already know the
+  place. It leaves the list and goes into a *Not relevant* fold at the
+  bottom with a **Put it back** button, in case you were too quick.
+* **Applied** — moves it to *In progress* at the top, where it stays
+  whatever happens to the posting afterwards.
+
+Nothing else takes a posting off the board. It will still be there next
+week, and the week after, until you tick it. That is deliberate: the thing
+this tool was getting wrong was showing you a job once.
+
+Your ticks are saved to the page itself, so they survive a republish and
+they are there on your phone and your laptop both. They are not yet in the
+ledger — **ask Claude to fold the board's marks into `applications.csv`**
+and it reads them back and runs `sync_board.py`. The ledger stays the
+record; the board is where you decide.
+
+You can still set **Status** in `applications.csv` by hand, from a phone or
+a desktop, and it wins over the board:
 
 | Set Status to | What happens |
 |---|---|
 | `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress**, off every list above |
 | `rejected`, `declined`, `withdrawn` | Moves to **Closed out** |
+| `not relevant` | Moves to **Not relevant**, and never comes back as a new job |
 | `unapplied` | Comes back to the main lists |
+
+A row you have already decided about by hand is never overwritten by a
+tick — the board may have been open for days, and the ledger is newer.
 
 Capitals and stray spaces don't matter. A value it doesn't recognise is
 treated as `unapplied` and the job stays on the main list — a typo should
@@ -298,6 +327,14 @@ the log line names the source.
 
 **Actions fails red.** Open the run, read the step that failed. Most often
 it's step 3 above — write permissions not enabled.
+
+**The board is showing an old scan.** It is a page, not a feed — it shows
+whatever was last published to it. Ask Claude to refresh it; the date under
+the title is the scan the page was built from.
+
+**A posting you ticked off is back on the board.** Its mark did not reach
+`applications.csv`, so the next publish rebuilt the page without it. Ask
+Claude to fold the marks in, then refresh.
 
 **A job appears in the wrong drive-time bucket.** Add the city to `geo.py`,
 in `IN_CITIES` or `OUT_CITIES`. Whole city names only, never split on spaces

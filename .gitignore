@@ -5,6 +5,7 @@ __pycache__/
 postings.jsonl
 needs_review.jsonl
 
-# Written by notify.py each run, consumed by the workflow, never committed.
+# notify.py's alert files. It is gone; these stay listed so an old
+# checkout that still has one does not commit it.
 state/alert.md
 state/alert_title.txt
