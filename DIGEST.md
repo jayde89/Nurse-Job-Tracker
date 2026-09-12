@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-12 18:00 UTC. 130 shown._
-_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, City of Oakland, County of Monterey, County of San Mateo, County of Santa Clara, County of Sonoma, Marin County, Napa County, Sacramento County
+_Scanned 2026-09-12 23:07 UTC. 131 shown._
+_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: County of Monterey, County of San Mateo, County of Santa Clara, County of Sonoma, Sacramento County
 
 **42 worth your attention** — Level I or no experience required,
-and not already in your pile. 88 more need experience you do not
+and not already in your pile. 89 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -66,7 +66,7 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 88
+## Watching — 89
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -101,6 +101,7 @@ apply to today.
 | <30 | [Trauma Performance Improvement Nurse, *Sign-On Bonus Eligible*](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/1537) | UCSF Health | Oakland, CA | Requirements unclear | 12 months prior to the proposed rehire date |
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
 | 30-60 | [RN - BHC Psychiatric Services - Inpatient - Per Diem - 8 Hour - Variable](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---BHC-Psychiatric-Services---Inpatient---Per-Diem---8-Hour---Variable_JR0017829)<br>Per diem · Days / Day · $76.30–$103.85/hr | John Muir Health | Concord | Experience required, not acute | Nursing - Psychiatry - Required |
+| 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [Nurse (RN)-Clinical Practice and Operations, Network Administration, (Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Novato-CA/Nurse--RN--Clinical-Practice-and-Operations--Network-Administration---Novato---Full-Time--Days_JR102081)<br>Full-time · Days | MarinHealth | Novato, CA | Experience required, not acute | Minimum of 3 years in a clinical nursing role; |
 | 30-60 | [Registered Nurse First Assistant,RNFA (Per Diem, Days)](https://erou.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/5033)<br>Per diem · Days | NorthBay Health | Fairfield, CA | Experience required, not acute | Experience and Skills: Two (2) years’ experience as an RN in the operating room. |
