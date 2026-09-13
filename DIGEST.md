@@ -1,19 +1,23 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-13 08:33 UTC. 131 shown._
-_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Oakland, County of Monterey, County of San Mateo, County of Santa Clara, County of Sonoma, Sacramento County
+_Scanned 2026-09-13 18:12 UTC. 144 shown._
+_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: County of Sonoma
 
-**42 worth your attention** — Level I or no experience required,
-and not already in your pile. 89 more need experience you do not
+**46 worth your attention** — Level I or no experience required,
+and not already in your pile. 98 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 42
+## Worth applying to now — 46
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN Cardiac Telemetry](https://www.commonspirit.careers/job/redwood-city/rn-cardiac-telemetry/35300/100189998176)<br>Cardiac Telemetry · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Level I / new grad | ...linical nursing experience., upon hire and. The experience requirement is waived for new Grad Nurses selected for a New Grad Orientation program. a |
 | 30-60 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sunnyvale-Gardens-Post-Acute/Registered-Nurse--RN-_JR181766)<br>Sunnyvale Gardens Post Acute · Skilled nursing · Full-time · PM / NOC · $50.00–$58.00/hr | PACS Group | Sunnyvale | Level I / new grad | ...skilled nursing, post-acute, rehabilitation, or long-term care experience preferred. New graduates are welcome to apply. Strong clinical judgment,  |
+| 60-90 | [Clinical Nurse III - Operating Room](https://www.governmentjobs.com/careers/santaclara/jobs/5476924/clinical-nurse-iii-operating-room)<br>County-Wide Recruitment | County of Santa Clara | San Jose | Level I / new grad | ...mental health hospitals and clinics providing psychiatric and nursing interventions New Graduate Nurses do not meet the requirements for a Clinical |
+| 60-90 | [Public Health Nurse Level I/II](https://www.governmentjobs.com/careers/sacramento/jobs/980990/public-health-nurse-level-i-ii)<br>DHHS - Health & Human Services · On-call / Per diem | Sacramento County | Sacramento | Level I / new grad | Public Health Nurse Level I/II |
+| 60-90 | [Registered Nurse D/CF (Level I/II)](https://www.governmentjobs.com/careers/sacramento/jobs/454059/registered-nurse-d-cf-level-i-ii)<br>County Wide · $64.88–$78.87/hr | Sacramento County | Sacramento | Level I / new grad | Registered Nurse D/CF (Level I/II) |
+| 60-90 | [Registered Nurse Level I/II](https://www.governmentjobs.com/careers/sacramento/jobs/2579173/registered-nurse-level-i-ii)<br>Health Services · On-call · $47.87–$58.18/hr | Sacramento County | Sacramento | Level I / new grad | Registered Nurse Level I/II |
 | 60-90 | [Registered Nurse (RN) - Operating Room](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603015071)<br>Full-time | Tenet Health | Modesto, CA | Level I / new grad | ...ent California RN license. Current BLS. ACLS within nine months (within one year for new graduates). PALS within one year. TCAR required within 12  |
 | 60-90 | [Registered Nurse (RN) - SICU CVICU](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603015823)<br>Full-time · Nights | Tenet Health | Modesto, CA | Level I / new grad | ...ificates/Credentials: Current: CA RN license, BLS, ACLS (within 6 months of hire for new grads only), TCAR required within 12 months of hire/transf |
 | 60-90 | [Registered Nurse (RN) - Neuro ICU](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603020221)<br>Full-time | Tenet Health | Modesto, CA | Level I / new grad | ...Current: California RN license, BLS, ACLS certification (within 6 months of hire for new grads only), PALS certification (within 6 months), TCAR re |
@@ -66,13 +70,15 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 89
+## Watching — 98
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| 30-60 | [Ambulatory Care Nurse (Bilingual Spanish/English Preferred) - Open & Promotional](https://www.governmentjobs.com/careers/sanmateo/jobs/3398393/ambulatory-care-nurse-bilingual-spanish-english-preferred-open-promotional)<br>San Mateo Medical Center · $59.49–$70.31/hr | County of San Mateo | San Mateo | Requirements unclear | one year of health care work experience preferred, ideally as a Registered Nurse (RN) |
+| 30-60 | [Medical Surgical Nurse (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/4226169/medical-surgical-nurse-open-promotional)<br>San Mateo Medical Center · $66.49–$78.58/hr | County of San Mateo | San Mateo | Requirements unclear | 1 year is also preferred |
 | 30-60 | [Certified Nurse Midwife, ObGyn/UroGyn, (Larkspur), Part-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Certified-Nurse-Midwife--ObGyn-UroGyn_JR102157)<br>Part-time · Days · $80.00–$92.50/hr | MarinHealth | Greenbrae, CA | Requirements unclear | 3 years of experience as a Certified Nurse Midwife, preferred |
 | 30-60 | [Certified Nurse Midwife, ObGyn, (Greenbrae), Per Diem, Variable Shifts](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Certified-Nurse-Midwife--ObGyn---Greenbrae---Per-Diem--Variable-Shifts_JR101950)<br>Per diem · Variable · $80.00–$92.50/hr | MarinHealth | Greenbrae, CA | Requirements unclear | 3 years of experience as a Certified Nurse Midwife, preferred |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR181056)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred) Knowledge of long-term care regulations a |
@@ -88,6 +94,9 @@ apply to today.
 | 60-90 | [Registered Nurse (RN) NOC Shift](https://pacs.wd108.myworkdayjobs.com/pacs/job/Arden-Park-Post-Acute/Registered-Nurse--RN--NOC-Shift_JR180581)<br>Arden Park Post Acute · Skilled nursing · Full-time · NOC · $48–$55/hr | PACS Group | Sacramento | Requirements unclear | Registered Nurse (RN) - NOC Shift Arden Park Post Acute 📍 Sacramento, CA 🌙 NOC / Overnight Shift 💲 $48.00 - $55.00 per hour 🏥 Skilled Nursing & Rehabi |
 | 60-90 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/Napa-Valley-Care-Center/Registered-Nurse--RN-_JR179616)<br>Napa Valley Care Center · Skilled nursing · Full-time / Part-time / Per diem · $45.00–$50.00/hr | PACS Group | Napa | Requirements unclear | Minimum of 2 years of nursing experience , preferably in a Skilled Nursing Facility (SNF), Post-Ac |
 | 60-90 | [RN NOC Shift](https://pacs.wd108.myworkdayjobs.com/pacs/job/Ridgeway-Post-Acute/RN-NOC-Shift_JR174570)<br>Ridgeway Post Acute · Skilled nursing · Full-time · NOC · $45–$50/hr | PACS Group | Petaluma | Requirements unclear | 1 year of prior experience preferred Prior experience in a Skilled Nursing Facility pr |
+| 60-90 | [Psychiatric Nurse](https://www.governmentjobs.com/careers/sacramento/jobs/981663/psychiatric-nurse)<br>DHHS - Health & Human Services · On-call / Per diem · $1.00/hr | Sacramento County | Sacramento | Requirements unclear | six (6) months |
+| 60-90 | [Senior Public Health Nurse](https://www.governmentjobs.com/careers/sacramento/jobs/3737132/senior-public-health-nurse)<br>County Wide | Sacramento County | Sacramento | Requirements unclear | One year of experience as a Public Health Nurse in Sacramento County service |
+| 60-90 | [Supervising Public Health Nurse](https://www.governmentjobs.com/careers/sacramento/jobs/600083/supervising-public-health-nurse)<br>DHHS - Health & Human Services | Sacramento County | Sacramento | Requirements unclear | One year of experience as a Senior Public Health Nurse in Sacramento County service |
 | 60-90 | [Registered Nurse (RN) - Interventional Radiology](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603007577)<br>Full-time | Tenet Health | Modesto, CA | Requirements unclear | 3 Years of experience |
 | 90-120 | [RN](https://www.commonspirit.careers/job/merced/rn/35300/100465449600)<br>Emergency Services · Per diem | CommonSpirit / Dignity Health | Merced, CA | Requirements unclear | 18 months |
 | 90-120 | [On-Call Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/The-Pines-at-Placerville-Healthcare-Center/On-Call-Registered-Nurse--RN-_JR179701-1)<br>The Pines at Placerville Healthcare Center · Skilled nursing · On-call / Per diem | PACS Group | Placerville | Requirements unclear | 2+ years of nursing experience , preferably in skilled nursing or long-term care |
@@ -100,6 +109,7 @@ apply to today.
 | <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015109716-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Requirements unclear | one (1) year of experience working as a Registered Nurse |
 | <30 | [Trauma Performance Improvement Nurse, *Sign-On Bonus Eligible*](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/1537) | UCSF Health | Oakland, CA | Requirements unclear | 12 months prior to the proposed rehire date |
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
+| 30-60 | [Critical Care Nurse - Intensive Care Unit (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/4456634/critical-care-nurse-intensive-care-unit-open-promotional)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Experience required, not acute | A resume will not be accepted as a substitute for the required employment application and supplemental questionnaire. |
 | 30-60 | [RN - BHC Psychiatric Services - Inpatient - Per Diem - 8 Hour - Variable](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---BHC-Psychiatric-Services---Inpatient---Per-Diem---8-Hour---Variable_JR0017829)<br>Per diem · Days / Day · $76.30–$103.85/hr | John Muir Health | Concord | Experience required, not acute | Nursing - Psychiatry - Required |
 | 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
@@ -129,6 +139,7 @@ apply to today.
 | 60-90 | [RN - Labor and Delivery - Per Diem Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/454403)<br>Per diem | Providence | Napa, CA | Experience required, not acute | 1 year of Nursing experience. |
 | 60-90 | [RN - Emergency Services - Per Diem Variable](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/453446)<br>Per diem · Variable | Providence | Napa, CA | Experience required, not acute | 1 year of Nursing experience. |
 | 60-90 | [RN - Emergency Services - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/456920)<br>Full-time · Night | Providence | Napa, CA | Experience required, not acute | 1 year of nursing experience. |
+| 60-90 | [Supervising Registered Nurse D/CF](https://www.governmentjobs.com/careers/sacramento/jobs/448883/supervising-registered-nurse-d-cf)<br>DHHS - Health & Human Services | Sacramento County | Sacramento | Experience required, not acute | And Either : One (1) year of experience in Sacramento County service as a Registered Nurse or any class requiring registered nurse license. |
 | 60-90 | [Staff Nurse V - ADM - Inpatient - Float Pool](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0826&R2=RH1106&R3=A2)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Experience required, not acute | Candidates are required to read the Online Exam Guide for Test Takers prior to taking an online written exam. |
 | 60-90 | [Staff Nurse V - ADM - Inpt - NICU](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0626&R2=RH1106&R3=A2)<br>S J General Hospital · Full-time · $2550/yr | San Joaquin County | French Camp | Experience required, not acute | Candidates are required to read the Online Exam Guide for Test Takers prior to taking an online written exam. |
 | 60-90 | [Staff Nurse V - ADM -Inpatient - Case Management](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0826&R2=RH1106&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Experience required, not acute | Eligible lists are effective for nine months, but may be extended by the Human Resources Director for a period which shall not exceed a total of three |
@@ -136,6 +147,8 @@ apply to today.
 | 90-120 | [RN, Float Pool (Leadership)](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/62418) | Adventist Health | Roseville, CA | Experience required, not acute | Five years' clinical |
 | 90-120 | [Labor and Delivery RN](https://www.commonspirit.careers/job/folsom/labor-and-delivery-rn/35300/96567713088)<br>Family Birth Center · Full-time | CommonSpirit / Dignity Health | Folsom, CA | Experience required, not acute | 1 year of Labor and Delivery experience. |
 | 90-120 | [RN](https://www.commonspirit.careers/job/merced/rn/35300/100401908464)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Merced, CA | Experience required, not acute | 15K Sign On Bonus for Eligible/Qualified/Experienced External Candidates with minimum 2yrs ED RN Experience. |
+| 90-120 | [Senior Clinic Nurse](https://www.governmentjobs.com/careers/montereycounty/jobs/5318045/senior-clinic-nurse)<br>Health | County of Monterey | Salinas | Experience required, not acute | Five years of experience as a registered nurse in a clinic setting, including experience and/or training in lead work or supervision. |
+| 90-120 | [SUPERVISING PUBLIC HEALTH NURSE](https://www.governmentjobs.com/careers/montereycounty/jobs/4612576/supervising-public-health-nurse)<br>Health · Full-time | County of Monterey | Salinas | Experience required, not acute | Two years of progressively responsible professional public health program experience which include lead-worker level responsibilities, and which provi |
 | 90-120 | [RN - Part Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Roseville-Care-Center/RN---Part-Time_JR181686)<br>Roseville Care Center · Skilled nursing · Part-time | PACS Group | Roseville | Experience required, not acute | License & Certifications Current, active, and unencumbered California RN license required. |
 | 90-120 | [RN- Part Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN--Part-Time_JR181632)<br>Santa Rosa Post Acute · Skilled nursing · Part-time · $48–$57/hr | PACS Group | Santa Rosa | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
 | 90-120 | [Part time RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595)<br>Whitney Oaks Care Center · Skilled nursing · Part-time | PACS Group | Carmichael | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
@@ -167,25 +180,11 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 17
+## Location needs checking — 3
 
 - RN - On Call All Shifts — PACS Group, Valley Pointe Nursing  Rehabilitation Center
 - Registered Nurse — PACS Group, Peninsula Post Acute
 - RN (part time) - Jurupa Hills Post Acute — PACS Group, Jurupa Hills Post Acute
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
-- Infusion RN — CommonSpirit / Dignity Health, Westminster, Colorado
 
 ---
 
