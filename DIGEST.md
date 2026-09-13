@@ -1,14 +1,14 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-13 18:12 UTC. 144 shown._
+_Scanned 2026-09-13 23:08 UTC. 143 shown._
 _Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: County of Sonoma
 
-**46 worth your attention** — Level I or no experience required,
+**45 worth your attention** — Level I or no experience required,
 and not already in your pile. 98 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 46
+## Worth applying to now — 45
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
@@ -23,7 +23,6 @@ Nothing sent yet.
 | 60-90 | [Registered Nurse (RN) - Neuro ICU](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603020221)<br>Full-time | Tenet Health | Modesto, CA | Level I / new grad | ...Current: California RN license, BLS, ACLS certification (within 6 months of hire for new grads only), PALS certification (within 6 months), TCAR re |
 | 90-120 | [RN Resident / Full Time Regular / Dayshift / Surgical ICU 1](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/69219)<br>Full-time · Day | Adventist Health | Saint Helena, CA | Level I / new grad | RN Resident / Full Time Regular / Dayshift / Surgical ICU 1 |
 | 90-120 | [RN](https://www.commonspirit.careers/job/merced/rn/35300/100465449760)<br>Labor And Delivery Services · Per diem | CommonSpirit / Dignity Health | Merced, CA | Level I / new grad | ...and delivery experience will have six (6) months from hire to obtain certification. New Grad or RN with no prior L&D experience will have twenty-fo |
-| 60-90 | [RN - Medical ICU, Full-time, Night Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/71871)<br>Full-time · Night | Adventist Health | Lodi, CA | No experience required | Acute care facility experience: Preferred. |
 | 60-90 | [Registered Nurse (RN), CVOR/Surgery, Full Time](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/L58315-2)<br>Full-time | Adventist Health | Lodi, CA | No experience required | Acute care facility experience: Preferred. |
 | 60-90 | [RN - Cath Lab, Full-Time, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/L57701-2)<br>Full-time · Variable | Adventist Health | Lodi, CA | No experience required | Acute care facility experience: Preferred. |
 | 60-90 | [RN Cath Lab, Per Diem Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/60306)<br>Per diem · Variable | Adventist Health | Lodi, CA | No experience required | Acute care facility experience: Preferred. |
@@ -180,11 +179,25 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 3
+## Location needs checking — 17
 
 - RN - On Call All Shifts — PACS Group, Valley Pointe Nursing  Rehabilitation Center
 - Registered Nurse — PACS Group, Peninsula Post Acute
 - RN (part time) - Jurupa Hills Post Acute — PACS Group, Jurupa Hills Post Acute
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
+- New Grad RN — CommonSpirit / Dignity Health, Lexington, Kentucky
 
 ---
 
