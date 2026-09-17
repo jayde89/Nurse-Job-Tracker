@@ -1,17 +1,20 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-17 08:54 UTC. 137 shown._
-_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: County of Sonoma, Sacramento County
+_Scanned 2026-09-17 19:14 UTC. 141 shown._
+_Sources: 18/20 ok_ — failed: US Dept of Veterans Affairs — not read this scan: County of Monterey, County of Sonoma, Sacramento County
 
-**45 worth your attention** — Level I or no experience required,
-and not already in your pile. 91 more need experience you do not
+**48 worth your attention** — Level I or no experience required,
+and not already in your pile. 89 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 45
+## Worth applying to now — 48
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141036)<br>Part-time · Nights · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141033)<br>Part-time · Evenings · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141017-1)<br>Part-time · Days · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
 | 30-60 | [Registered Nurse (RN)](https://pacs.wd108.myworkdayjobs.com/pacs/job/Sunnyvale-Gardens-Post-Acute/Registered-Nurse--RN-_JR181766)<br>Sunnyvale Gardens Post Acute · Skilled nursing · Full-time · PM / NOC · $50.00–$58.00/hr | PACS Group | Sunnyvale | Level I / new grad | ...skilled nursing, post-acute, rehabilitation, or long-term care experience preferred. New graduates are welcome to apply. Strong clinical judgment,  |
 | 60-90 | [Clinical Nurse III - Operating Room](https://www.governmentjobs.com/careers/santaclara/jobs/5476924/clinical-nurse-iii-operating-room)<br>County-Wide Recruitment | County of Santa Clara | San Jose | Level I / new grad | ...mental health hospitals and clinics providing psychiatric and nursing interventions New Graduate Nurses do not meet the requirements for a Clinical |
 | 60-90 | [Registered Nurse (RN) - Operating Room](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603015071)<br>Full-time | Tenet Health | Modesto, CA | Level I / new grad | ...ent California RN license. Current BLS. ACLS within nine months (within one year for new graduates). PALS within one year. TCAR required within 12  |
@@ -65,13 +68,19 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 1
+## New since last scan — 7
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 90-120 | [RN - NICU - Full Time Evening](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/459067)<br>Full-time · Evening | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141036)<br>Part-time · Nights · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141033)<br>Part-time · Evenings · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
+| 90-120 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Surgical-Acute_R-141017-1)<br>Part-time · Days · $76.04–$101.21/hr | Sutter Health | Auburn | Level I / new grad | ...ills. **One year acute care experience in medical telemetry preferred. Will consider new graduate RN.** Job Description : EDUCATION: Other: Graduat |
+| 60-90 | [Registered Nurse, CVSICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse--CVSICU_R-141279)<br>Full-time · Nights · $82.48–$115.46/hr | Sutter Health | Sacramento | Experience required, not acute | 2 years of recent relevant experience. |
+| <30 | [Registered Nurse- Neurology Clinic](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8914)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required qualifications: Two (2) or more years of recent Ambulatory RN experience back-office setting. |
+| <30 | [Registered Nurse - Pediatric Otolaryngology](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9184) | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: Minimum two (2) years of recent Registered Nurse clinical experience. |
+| <30 | [Registered Nurse - Peds CTCU](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9247) | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: A minimum of two (2) years of recent RN experience in a Pediatric Transitional Care Unit. |
 
-## Watching — 91
+## Watching — 89
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -140,17 +149,15 @@ apply to today.
 | 60-90 | [RN, Senior Care Staff Nurse](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/RN--Senior-Care-Staff-Nurse_R-138799)<br>Full-time · Day / Evening · $68.62–$96.06/hr | Sutter Health | Sacramento | Experience required, not acute | 2 years recent relevant experience |
 | 60-90 | [Registered Nurse, Emergency - Limited Term](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency---Limited-Term_R-138280-1)<br>Full-time · Varied · $76.40–$101.18/hr | Sutter Health | Davis | Experience required, not acute | 2 years of recent relevant experience. |
 | 60-90 | [Registered Nurse (RN) - POCU](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603017873)<br>Full-time | Tenet Health | Modesto, CA | Experience required, not acute | Minimum Experience/Skills: Prefer two years Pre-op/Post-op experience. |
-| 60-90 | [Registered Nurse (RN) - Telemetry](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603021347)<br>Full-time · Nights | Tenet Health | Manteca, CA | Experience required, not acute | 1 YEAR (Clinical I). |
 | 90-120 | [RN, Float Pool (Leadership)](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/62418) | Adventist Health | Roseville, CA | Experience required, not acute | Five years' clinical |
 | 90-120 | [Labor and Delivery RN](https://www.commonspirit.careers/job/folsom/labor-and-delivery-rn/35300/96567713088)<br>Family Birth Center · Full-time | CommonSpirit / Dignity Health | Folsom, CA | Experience required, not acute | 1 year of Labor and Delivery experience. |
-| 90-120 | [Senior Clinic Nurse](https://www.governmentjobs.com/careers/montereycounty/jobs/5318045/senior-clinic-nurse)<br>Health | County of Monterey | Salinas | Experience required, not acute | Five years of experience as a registered nurse in a clinic setting, including experience and/or training in lead work or supervision. |
-| 90-120 | [SUPERVISING PUBLIC HEALTH NURSE](https://www.governmentjobs.com/careers/montereycounty/jobs/4612576/supervising-public-health-nurse)<br>Health · Full-time | County of Monterey | Salinas | Experience required, not acute | Two years of progressively responsible professional public health program experience which include lead-worker level responsibilities, and which provi |
 | 90-120 | [RN - Part Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Roseville-Care-Center/RN---Part-Time_JR181686)<br>Roseville Care Center · Skilled nursing · Part-time | PACS Group | Roseville | Experience required, not acute | License & Certifications Current, active, and unencumbered California RN license required. |
 | 90-120 | [RN- Part Time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Santa-Rosa-Post-Acute/RN--Part-Time_JR181632)<br>Santa Rosa Post Acute · Skilled nursing · Part-time · $48–$57/hr | PACS Group | Santa Rosa | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
 | 90-120 | [Part time RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Whitney-Oaks-Care-Center/Part-time-RN_JR173595)<br>Whitney Oaks Care Center · Skilled nursing · Part-time | PACS Group | Carmichael | Experience required, not acute | 2 years or more experience preferably in a long-term care facility. |
+| 90-120 | [RN - Outpatient Surgery (Pre/Post Op)- Part Time Day](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/444698)<br>Part-time · Day | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [RN - Labor & Delivery - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/456917)<br>Full-time · Night | Providence | Santa Rosa, CA | Experience required, not acute | Provider NRP - American Academy of Pediatrics upon hire: 1 year of Nursing experience. |
 | 90-120 | [RN - Emergency - Part Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/457175)<br>Part-time · Night | Providence | Santa Rosa, CA | Experience required, not acute | 1 year of Nursing experience. |
-| 90-120 | [RN - ICU - Full Time Evening](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/457254)<br>Full-time | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
+| 90-120 | [RN - NICU - Full Time Evening](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/459067)<br>Full-time · Evening | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [RN - Gastroenterology - Full Time Day](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/454489)<br>Full-time · Day | Providence | Santa Rosa, CA | Experience required, not acute | 1 year of Nursing experience. |
 | 90-120 | [Cardiac Rehabilitation Nurse - PD](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Cardiac-Rehabilitation-Nurse---PD_SVH-102867)<br>Per diem · Day · $89.37–$103.45/hr | Salinas Valley Health | Salinas, CA | Experience required, not acute | Minimum of two (2) years experience related to the care of the cardiac patient. |
 | 90-120 | [Registered Nurse (RN) - L&D](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603018695)<br>Full-time · Days | Tenet Health | Turlock, CA | Experience required, not acute | Minimum of one year of L&D experience required. |
@@ -176,12 +183,12 @@ _Nothing closed out yet._
 
 ## Location needs checking — 8
 
+- Advice Nurse, Mental Health Work From Home — Sutter Health, Salt Lake City (+3 more)
 - Ambulatory Services Nurse II — Sutter Health, 1801 Colorado Avenue Suite 140
 - Advice Nurse, Behavioral Health, Work From Home — Sutter Health, Salt Lake City (+4 more)
 - RN  part time - Arlington Gardens — PACS Group, Arlington Gardens Care Center
 - Registered Nurse - Part Time — PACS Group, Peninsula Post Acute
 - RN — PACS Group, Tice Valley Post Acute
-- RN (part time) - Oak Glen — PACS Group, Oak Glen Post Acute
 - RN - Sundance Creek — PACS Group, Sundance Creek Post Acute
 - RN (part time) - Jurupa Hills Post Acute — PACS Group, Jurupa Hills Post Acute
 
