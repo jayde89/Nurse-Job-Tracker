@@ -124,6 +124,70 @@ def sections(description: str) -> dict[str, str]:
     return out
 
 
+# Application-process boilerplate: the paragraph about how credentials get
+# checked, which every civil-service posting carries and which says nothing
+# about what the job needs. San Francisco's runs:
+#
+#   "Verification of Education and Experience: Every application is
+#    reviewed to ensure that you meet the minimum qualifications as listed
+#    in the job ad. ... Applicants may be required to submit verification of
+#    qualifying education and experience at any point during the recruitment
+#    and selection process."
+#
+# Three separate things in there are load-bearing to the parser and none of
+# them mean what it thought: "Experience:" ends a noun phrase and became a
+# section heading, "minimum qualifications" matched a colon-optional label
+# mid-sentence, and "required" made the verification sentence look like a
+# hard requirement. SFDPH's new-graduate training programme came out
+# GENERAL_EXPERIENCE evidenced by "Applicants may be required to submit
+# verification of qualifying education and experience..." and spent a day in
+# the watch list.
+#
+# Same principle as _ONBOARDING below: a clause about the hiring process is
+# not a clause about the candidate. Kept deliberately narrow — every phrase
+# here is about handling an application, never about nursing.
+_PROCESS_BOILERPLATE = re.compile(
+    r"(?i)(verification of (education|experience|qualifying)"
+    r"|submit verification|verify (your )?(education|experience)"
+    r"|education (and|or) experience verification"
+    r"|application is reviewed|reviewing applications"
+    r"|as listed in the job ad|employment applications"
+    r"|recruitment and selection process|selection procedures?"
+    r"|eligible list|falsif|attempted deception"
+    r"|official transcript|degree equivalency|foreign education"
+    r"|how to verify)")
+
+
+def strip_process_boilerplate(text: str) -> str:
+    """
+    Drop the sentences that describe the hiring process, keep the rest.
+
+    Sentence-at-a-time on purpose. A posting can state a real requirement
+    and then explain how it will be checked, and only the second sentence
+    should go.
+    """
+    kept = [s for s in re.split(r"(?<=[.;!?])\s+", text or "")
+            if s.strip() and not _PROCESS_BOILERPLATE.search(s)]
+    return " ".join(kept).strip()
+
+
+def _substantive(text: str) -> str:
+    """
+    What a candidate section still says once the process talk is removed —
+    empty if it never said anything about experience at all.
+
+    Returning "" here is what stops the fix turning one wrong label into
+    the other, more expensive one. Skipping those clauses later in
+    classify() would leave no required clauses and fall through to
+    NO_EXPERIENCE, quoting the same boilerplate to claim the job needs no
+    experience — a false "no experience required" is the bug this file
+    exists to prevent. A section that only discussed paperwork has told us
+    nothing, so it must not count as a section at all.
+    """
+    body = strip_process_boilerplate(text)
+    return body if re.search(r"(?i)\b(experience|years?|months?)\b", body) else ""
+
+
 def experience_section(description: str) -> tuple[str, bool] | None:
     """
     Returns (section_text, is_preferred_section) or None.
@@ -145,7 +209,13 @@ def experience_section(description: str) -> tuple[str, bool] | None:
                 "ADDITIONAL QUALIFICATIONS/SKILLS", "ADDITIONAL QUALIFICATIONS",
                 "REQUIRED SKILLS"):
         if key in sec:
-            return sec[key], False
+            body = _substantive(sec[key])
+            if body:
+                return body, False
+            # The heading was real but everything under it was paperwork.
+            # Keep looking rather than reporting a requirement that is not
+            # there.
+            continue
 
     # Free-form postings have no headings to find. PACS writes pure
     # marketing copy and states its requirement in an ordinary sentence:
@@ -156,7 +226,8 @@ def experience_section(description: str) -> tuple[str, bool] | None:
     # truncated clause is what made thirteen PACS postings unreadable.
     txt = clean(description)
     said = [s for s in re.split(r"(?<=[.;!?])\s+", txt)
-            if re.search(r"(?i)\bexperience\b", s)]
+            if re.search(r"(?i)\bexperience\b", s)
+            and not _PROCESS_BOILERPLATE.search(s)]
     if said:
         return " ".join(said)[:600], False
     return None
@@ -381,6 +452,31 @@ NEW_GRAD = re.compile(
     r"|graduate nurse program|no experience (is )?required"
     r"|new graduate rn)\b")
 
+# An employer saying, in its own words, that experience is not a gate —
+# without using any of the phrases above. SFDPH's training programme opens:
+#
+#   "The purpose of the 2320 Registered Nurse Training Programs is to
+#    prepare registered nurses at any stage of their careers to provide
+#    safe and competent nursing care to all patients."
+#
+# "at any stage of their careers" is the whole answer to the only question
+# this classifier asks, and nothing in NEW_GRAD came close to it. The
+# posting then says each specialty's nurses "will learn how to" do the
+# work, which is a training programme describing itself.
+#
+# Every alternative here is an explicit statement about who may apply, not
+# an inference from a job title. "Training programme" on its own is NOT in
+# this list: a programme can just as easily be one a nurse is hired to
+# teach, and the title is not evidence of eligibility.
+ALL_EXPERIENCE_LEVELS = re.compile(
+    r"(?i)\b(at any (stage|point) (of|in) (their|your|his or her) careers?"
+    r"|nurses at (all|any) (stages?|levels?)"
+    r"|all (levels of experience|experience levels)"
+    r"|regardless of (prior |previous )?experience"
+    r"|(both )?new and experienced (nurses|rns|registered nurses|graduates)"
+    r"|experienced and new (nurses|rns|registered nurses|graduates)"
+    r"|no (prior|previous) experience (is )?(required|necessary|needed))\b")
+
 
 def _snippet(text: str, pattern: re.Pattern, width: int = 170) -> str:
     m = pattern.search(text or "")
@@ -422,6 +518,14 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     if NEW_GRAD.search(t):
         return Verdict("STAFF_NURSE_I", t,
                        "title names a residency or new-graduate role")
+
+    # 1b. The employer stating in its own words that any experience level
+    #     may apply. Read from the body only, never the title, so the quote
+    #     is the sentence that actually says it.
+    if ALL_EXPERIENCE_LEVELS.search(desc):
+        return Verdict("STAFF_NURSE_I", _snippet(desc, ALL_EXPERIENCE_LEVELS),
+                       "posting states it is open to nurses at any "
+                       "experience level")
 
     # 2. Level I in the title — but only if no higher level is also present.
     #    "Clinical Nurse II" contains no Level-I match; "RN I/II" does, and
@@ -470,6 +574,8 @@ def _classify_requirements(title: str, description: str) -> Verdict:
     #    "preferred".
     required_clauses = []
     for c in _clauses(exp):
+        if _PROCESS_BOILERPLATE.search(c):
+            continue      # about how the application is checked, not about you
         if PREFERRED_ONLY.search(c):
             continue                       # this clause is optional
         if DURATION.search(c) or REQUIRED_WORD.search(c):
