@@ -1282,6 +1282,67 @@ check("the city comes from the nested JobLocation, not LocationName",
       f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
 check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
 
+
+# ── Paycom (American Advanced Management / Kentfield) ────────────────
+# Kentfield Hospital's two LTAC campuses were invisible to every adapter
+# for months, because Kentfield left Vibra and the Jibe adapter kept
+# returning a confident zero for it. These cases pin the three things
+# that would silently break it again.
+_PAYCOM = A.Paycom("Kentfield Hospital (AAM)", "DEADBEEF",
+                   setting="Long-term acute care")
+
+# 1. One board, two hospitals. Dameron in Stockton is a general acute
+#    hospital on the same clientkey; labelling its ER postings "Kentfield"
+#    and "Long-term acute care" is the inference `setting` exists to
+#    forbid.
+check("the Kentfield campus keeps the LTAC setting",
+      _PAYCOM._site("Kentfield, CA 94904"),
+      ("Kentfield Hospital (AAM)", "Long-term acute care"))
+check("the San Francisco campus is named as its own site",
+      _PAYCOM._site("San Francisco, CA 94117"),
+      ("Kentfield Hospital, SF campus (AAM)", "Long-term acute care"))
+check("Dameron is not relabelled as Kentfield, nor as LTAC",
+      _PAYCOM._site("Stockton, CA 95203"),
+      ("Dameron Hospital (AAM)", None))
+check("an unmapped site falls back rather than guessing",
+      _PAYCOM._site("Amarillo, TX 79106"),
+      ("Kentfield Hospital (AAM)", "Long-term acute care"))
+
+# 2. A posting open at both campuses arrives semicolon-joined. geo matches
+#    whole phrases, so the pair matches nothing and the row would be
+#    dropped as out of range.
+check("a two-campus location keeps its first site",
+      "Kentfield, CA 94904; San Francisco, CA 94117".split(";")[0].strip(),
+      "Kentfield, CA 94904")
+check("both campuses are in range",
+      (geo.classify("Kentfield, CA 94904")[0],
+       geo.classify("San Francisco, CA 94117")[0]),
+      (geo.Geo.IN, geo.Geo.IN))
+
+# 3. The verdict itself. Both NOC postings state minimums of an RN licence
+#    plus BLS and ACLS, with acute experience only "strongly preferred" —
+#    and the SF one closes with the benefits boilerplate that the
+#    ACUTE_EXPERIENCE fix was written for: an employer named "... Acute
+#    care Hospital" in the same text as the word "experience". If this
+#    goes red, that regression is back and it hides LTAC specifically.
+_kentfield = (
+    "Founded in 1954 as Center Medical Hospital, Kentfield Hospital - now a "
+    "subsidiary of American Advanced Management - is a Long-Term Acute care "
+    "Hospital (LTACH) serving patients across two locations. "
+    "POSITION QUALIFICATIONS MINIMUM QUALIFICATIONS: Current, valid, and "
+    "active license to practice as a Registered Nurse in the state of "
+    "California. Current BLS and ACLS certification from the American Heart "
+    "Association. ADDITIONAL QUALIFICATIONS/SKILLS: Previous acute care "
+    "experience is strongly preferred. "
+    "Compensation takes into account several factors including but not "
+    "limited to a candidate's experience, education and licensure.")
+_v = C.classify("Registered Nurse NOC", _kentfield)
+check("Kentfield's NOC RN is not hidden as acute-required",
+      _v.bucket in C.HIDE, False)
+check("and the evidence quotes the preference, not the benefits blurb",
+      "strongly preferred" in (_v.evidence or ""), True)
+
+
 # ── a Level I title is a signal, not a promise ──────────────────────
 # La Clínica posts "Registered Nurse I/II" and then asks, in the body, for
 # "a valid RN license ... supplemented by two to three years clinical

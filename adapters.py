@@ -2311,6 +2311,198 @@ class HRMDirect:
         return p
 
 
+# ── adapter 18: Paycom (American Advanced Management) ────────────────
+
+class Paycom:
+    """
+    Paycom reaches American Advanced Management, and through it **Kentfield
+    Hospital** — a long-term acute care hospital with campuses in Marin
+    (30-60 min) and San Francisco 94117 (under 30). Both were invisible to
+    every adapter in this file, and the reason is a change of owner: the
+    Jibe adapter reads Vibra's board, Kentfield used to be Vibra's, and it
+    is not any more. Jibe returns zero Kentfield rows and that reads as
+    "no openings" rather than as "wrong company".
+
+    So the LTAC coverage this repo believed it had was overstated at the
+    near end of the ring: Kindred San Leandro routinely sits at zero staff
+    RN roles, and the two campuses that were actually hiring staff RNs at
+    $55.50-$73.39/hr were the two nothing could see.
+
+    **Check the owner, not just the board.** A hospital that moves ATS
+    leaves its old adapter returning a clean, empty, entirely wrong answer.
+
+    ## The board is not the HTML
+
+    `GET /v4/ats/web.php/jobs?clientkey=...` returns 197 KB containing no
+    jobs — `<title>Loading...</title>` and an Angular bundle. The listing
+    is one POST:
+
+        POST https://portal-applicant-tracking.us-cent.paycomonline.net
+             /api/ats/job-posting-previews/search
+        {"skip":0,"take":100,"filtersForQuery":{...}}
+
+    It needs an `Authorization` JWT, and **that token is printed in the
+    shell HTML** — no login, no handshake. Fetch the page, regex the JWT,
+    send it. The token is short-lived, so read it per run rather than
+    pinning one; a 401 means the token expired, not that the board closed.
+
+    `filtersForQuery` must be sent **complete**. Omitting a key is a 401,
+    not a validation error, which reads like an auth problem and sends you
+    looking in the wrong place. Copy the shape in `_FILTERS` whole.
+
+    Paging is skip/take and `jobPostingPreviewsCount` states the real
+    total, so collect until you have it — the same "compare what you got
+    against what the source claims" check that caught three silent
+    truncations elsewhere in this file.
+
+    **The `keyword=` URL parameter is ignored.** Every search returns all
+    195 postings. Filter in Python; do not trust a server-side narrowing
+    that isn't happening.
+
+    ## Never classify from the listing
+
+    The preview `description` is a ~150-character teaser cut mid-word.
+    That shape produced 40 false "no experience required" verdicts when
+    Sutter was read through Phenom. The detail call
+
+        GET /api/ats/job-postings/{jobId}
+
+    returns `description` **and a separate `qualifications` field**, which
+    is where every requirement sentence lives. Concatenate both: the
+    qualifications alone lack the context, and the description alone is
+    all marketing. It also hands over `salaryRange`, `jobShift` and
+    `positionType` as clean fields, so `highlights` reads them rather than
+    mining prose.
+
+    One live shape to keep in mind: the San Francisco posting ends with
+    "Compensation takes into account ... a candidate's experience" — the
+    exact benefits-boilerplate-plus-employer-name trap that the
+    `ACUTE_EXPERIENCE` fix was written for. Both campuses state minimums
+    of an RN licence plus BLS and ACLS, with acute experience only
+    "strongly preferred", so they must classify as applicable. There is a
+    test for it in `test_rules.py`; if it goes red, that regression is
+    back and it hides LTAC specifically.
+    """
+
+    API = ("https://portal-applicant-tracking.us-cent.paycomonline.net"
+           "/api/ats")
+    HOST = "https://www.paycomonline.net"
+    _JWT = re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+                      r"\.[A-Za-z0-9_-]{10,}")
+    PAGE = 100
+
+    # Send this whole. A missing key returns 401, not a 400.
+    _FILTERS = {"distanceFrom": 0, "workEnvironments": [], "positionTypes": [],
+                "educationLevels": [], "categories": [], "travelTypes": [],
+                "shiftTypes": [], "otherFilters": [], "keywordSearchText": "",
+                "location": "", "sortOption": ""}
+
+    # One board, two hospitals, and they are not the same kind of place.
+    # AAM posts Kentfield's two LTAC campuses and Dameron Hospital in
+    # Stockton — a general acute hospital, in range at 60-90 minutes —
+    # under a single clientkey. Naming the whole board "Kentfield" and
+    # stamping every row "Long-term acute care" put Dameron's ER and OR
+    # postings under the wrong hospital and the wrong setting, which is
+    # exactly the inference `setting` exists to forbid.
+    #
+    # The adapter may still say what it knows, because it knows it from
+    # the site and not from the body text: this map is keyed on the
+    # posting's own location. Anything unmapped gets the board's default
+    # and no setting, rather than a guess.
+    BY_SITE = {
+        "94904": ("Kentfield Hospital (AAM)", "Long-term acute care"),
+        "94117": ("Kentfield Hospital, SF campus (AAM)",
+                  "Long-term acute care"),
+        "95203": ("Dameron Hospital (AAM)", None),
+    }
+
+    def __init__(self, employer: str, clientkey: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.clientkey = clientkey
+        self.setting = setting
+        self.board_url = (f"{self.HOST}/v4/ats/web.php/jobs"
+                          f"?clientkey={clientkey}")
+        self._token: str | None = None
+
+    def _site(self, location: str) -> tuple[str, str | None]:
+        for zip_code, pair in self.BY_SITE.items():
+            if zip_code in location:
+                return pair
+        return self.employer, self.setting
+
+    def _auth(self) -> dict:
+        if self._token is None:
+            shell = _request(self.board_url)
+            m = self._JWT.search(shell)
+            if not m:
+                raise RuntimeError(
+                    "no portal JWT in the Paycom shell page — the board "
+                    "markup changed, or the clientkey is wrong")
+            self._token = m.group(0)
+        return {
+            "Authorization": self._token,
+            "Locale": "en-US",
+            "Accept": "application/json, text/plain, */*",
+            "Origin": self.HOST,
+            "Portal-Host-Referrer":
+                f"{self.HOST}/v4/ats/web.php/portal/{self.clientkey}"
+                f"/career-page",
+        }
+
+    def fetch_listings(self) -> list[Posting]:
+        out, total = [], None
+        while total is None or len(out) < total:
+            payload = {"skip": len(out), "take": self.PAGE,
+                       "filtersForQuery": dict(self._FILTERS)}
+            page = json.loads(_request(
+                f"{self.API}/job-posting-previews/search",
+                data=payload, headers=self._auth()))
+            rows = page.get("jobPostingPreviews") or []
+            if total is None:
+                total = page.get("jobPostingPreviewsCount") or len(rows)
+            if not rows:
+                break                       # source ran out before its count
+            for j in rows:
+                jid = str(j.get("jobId") or "")
+                if not jid:
+                    continue
+                # "Kentfield, CA 94904; San Francisco, CA 94117" is a real
+                # value here. Keep the first: geo matches whole phrases and
+                # a semicolon-joined pair matches nothing.
+                location = (j.get("locations") or "").split(";")[0].strip()
+                employer, setting = self._site(location)
+                out.append(Posting(
+                    employer=employer,
+                    req_id=jid,
+                    title=j.get("jobTitle") or "",
+                    location=location,
+                    url=(f"{self.HOST}/v4/ats/web.php/portal/"
+                         f"{self.clientkey}/jobs/{jid}"),
+                    posted_date=(j.get("postedOn") or "")[:10] or None,
+                    schedule=j.get("positionType") or None,
+                    setting=setting,
+                    source_adapter="paycom",
+                ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        d = json.loads(_request(f"{self.API}/job-postings/{p.req_id}",
+                                headers=self._auth())).get("jobPosting") or {}
+        # Both halves, in the order the posting presents them. The
+        # requirement sentences are in `qualifications`; the description
+        # alone would classify every one of these as UNCLEAR.
+        p.description = _html_to_text(
+            (d.get("description") or "") + "\n"
+            + (d.get("qualifications") or ""))
+        # Stated fields, so highlights never has to mine them from prose.
+        if d.get("salaryRange"):
+            p.description += f" Pay Range: {d['salaryRange']}."
+        p.shift = d.get("jobShift") or p.shift
+        p.schedule = d.get("positionType") or p.schedule
+        p.department = d.get("jobCategory") or p.department
+        return p
+
 
 ADAPTERS = [
     WorkdayCXS("John Muir Health", "jmh.wd5.myworkdayjobs.com",
@@ -2425,6 +2617,16 @@ ADAPTERS = [
               "https://recruiting.paylocity.com/recruiting/jobs/All/"
               "59573989-59eb-4885-ac33-ae95e3c92fb2/Central-Valley-Special",
               setting="Long-term acute care"),   # verified — 24 postings
+
+    # Kentfield Hospital, via its owner American Advanced Management.
+    # The nearest LTAC to Oakland — the San Francisco campus is under 30
+    # minutes — and read by nothing until now, because Kentfield left
+    # Vibra and the Jibe adapter above kept reporting a confident zero.
+    # The board is AAM-wide (195 postings, mostly Stockton, TX, AZ, UT);
+    # what lands in range is Kentfield's two campuses, 41 postings.
+    Paycom("Kentfield Hospital (AAM)",
+           "6E98B18765E97222DA6D2EA19DFDE450",
+           setting="Long-term acute care"),   # verified — 195 postings
 
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
 
