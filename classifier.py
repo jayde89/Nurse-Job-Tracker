@@ -38,12 +38,22 @@ import html
 import re
 from dataclasses import dataclass
 
-SHOW = {"STAFF_NURSE_I", "NO_EXPERIENCE", "GENERAL_EXPERIENCE", "UNCLEAR"}
-HIDE = {"ACUTE_REQUIRED", "LEVEL_II_TITLE"}
+SHOW = {"STAFF_NURSE_I", "NO_EXPERIENCE", "GENERAL_EXPERIENCE", "UNCLEAR",
+        "ACUTE_REQUIRED", "LEVEL_II_TITLE"}
+HIDE = set()
 
 # Rank for sorting the digest — lower is more interesting to you.
-RANK = {"STAFF_NURSE_I": 0, "NO_EXPERIENCE": 1, "UNCLEAR": 2,
-        "GENERAL_EXPERIENCE": 3, "ACUTE_REQUIRED": 4}
+#
+# 2026-09-19: the user is no longer a new graduate. She is a BSN RN working
+# at San Francisco Post Acute since June 2026 and is hunting for an ACUTE
+# CARE hospital role. The old ranking optimised for the opposite person, so
+# the two buckets that now matter most — a posting that requires acute
+# experience, and a graded Level II title — are ranked first rather than
+# suppressed. Nothing is hidden any more: she has experience to argue with,
+# so a requirement she doesn't perfectly meet is a judgement call for her to
+# make, not one for the scanner to make silently.
+RANK = {"ACUTE_REQUIRED": 0, "LEVEL_II_TITLE": 1, "GENERAL_EXPERIENCE": 2,
+        "UNCLEAR": 3, "STAFF_NURSE_I": 4, "NO_EXPERIENCE": 5}
 
 
 @dataclass
@@ -561,9 +571,15 @@ def classify(title: str, description: str) -> Verdict:
         job you can take whatever the title says on it.
       - ACUTE_REQUIRED survives it too, and keeps the requirement sentence
         as its evidence, which a title-only verdict cannot give you.
+
+    2026-09-19: this used to test ``v.bucket in HIDE``. That set is now
+    empty (nothing is suppressed any more), which silently stopped the
+    acute verdict from surviving the grade — precisely the short-circuit
+    described above. The condition names the buckets it means instead, so
+    it no longer depends on what happens to be suppressed.
     """
     v = _classify_requirements(title, description)
-    if v.bucket == "STAFF_NURSE_I" or v.bucket in HIDE:
+    if v.bucket in ("STAFF_NURSE_I", "ACUTE_REQUIRED"):
         return v
     if TITLE_LEVEL_II_GRADED.search(title or ""):
         return Verdict("LEVEL_II_TITLE", title or "",
