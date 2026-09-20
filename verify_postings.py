@@ -153,6 +153,12 @@ def dead_source(rows, act):
     An adapter that returns zero looks identical to an employer with no
     openings. Kentfield was invisible for weeks because the Jibe adapter
     confidently returned nothing after the hospital changed owner.
+
+    A source that needs a credential nobody has entered is a different
+    thing: it is a known gap, not a silent one, so it reports as a
+    warning. It must still report — an unconfigured source that goes
+    unmentioned is how the VA's four in-range hospitals stay invisible
+    indefinitely.
     """
     state = os.path.join(os.path.dirname(LEDGER), "state", "sources.json")
     if not os.path.exists(state):
@@ -165,11 +171,37 @@ def dead_source(rows, act):
     out = []
     for key, v in src.items():
         if v.get("status") == "failed" or not v.get("listings"):
+            err = str(v.get("error") or "")
+            if _NEEDS_CREDENTIAL.search(err):
+                continue        # reported by needs_credential below
             out.append({"Title": key, "Employer": v.get("employer", ""),
                         "_detail": f"status={v.get('status')} "
                                    f"listings={v.get('listings')} "
-                                   f"error={str(v.get('error'))[:80]}"})
+                                   f"error={err[:80]}"})
     return out
+
+
+# An adapter whose only problem is a missing key or token. Distinguished
+# from a broken one so the error list stays actionable.
+_NEEDS_CREDENTIAL = re.compile(
+    r"not set|no api key|missing key|missing token|unauthori[sz]ed|401",
+    re.I)
+
+
+@check("a source is unconfigured and cannot run", severity="warn")
+def needs_credential(rows, act):
+    state = os.path.join(os.path.dirname(LEDGER), "state", "sources.json")
+    if not os.path.exists(state):
+        return []
+    try:
+        with open(state) as f:
+            src = json.load(f)
+    except Exception:
+        return []
+    return [{"Title": k, "Employer": v.get("employer", ""),
+             "_detail": str(v.get("error") or "")[:110]}
+            for k, v in src.items()
+            if _NEEDS_CREDENTIAL.search(str(v.get("error") or ""))]
 
 
 @check("a registered adapter has never been recorded by a scan")
@@ -197,6 +229,50 @@ def unrecorded_adapter(rows, act):
         if emp not in known:
             out.append({"Title": emp, "Employer": type(a).__name__,
                         "_detail": "registered but never in state/sources.json"})
+    return out
+
+
+@check("an agency has been unread by consecutive scans", severity="warn")
+def persistently_missed(rows, act):
+    """
+    `degraded` is reported per scan, which makes a permanent gap look
+    like a transient. NEOGOV iterated a fixed dict, so the same tail was
+    starved by the wall-clock budget every single run: Santa Clara Valley
+    Medical Center was not unreachable-sometimes, it was never read, and
+    three scans a day of "degraded" said nothing about which.
+
+    A missed agency whose newest ledger row is over a month old is not a
+    blip — either it is being starved, or it genuinely has nothing, and
+    both are worth knowing.
+    """
+    state = os.path.join(os.path.dirname(LEDGER), "state", "sources.json")
+    if not os.path.exists(state):
+        return []
+    try:
+        with open(state) as f:
+            src = json.load(f)
+    except Exception:
+        return []
+    missed = set()
+    for v in src.values():
+        missed |= set(v.get("missed") or [])
+    if not missed:
+        return []
+    newest = collections.defaultdict(str)
+    for r in rows:
+        e = r.get("Employer") or ""
+        p = (r.get("Posted") or "")[:10]
+        if p > newest[e]:
+            newest[e] = p
+    import datetime
+    cutoff = (datetime.date.today() - datetime.timedelta(days=30)).isoformat()
+    out = []
+    for m in sorted(missed):
+        seen = newest.get(m, "")
+        if not seen or seen < cutoff:
+            out.append({"Title": m, "Employer": "(NEOGOV agency)",
+                        "_detail": f"not read this scan; newest ledger row "
+                                   f"{seen or 'none'}"})
     return out
 
 
