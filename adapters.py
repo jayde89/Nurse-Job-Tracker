@@ -1377,17 +1377,31 @@ class SmartHires:
         # Smart Hires also carries a structured experience field, and it can
         # contradict the prose above it: the ED posting's qualifications say
         # "Minimum two-years Emergency Department experience preferred"
-        # while this field says "Minimum 2 Years". Keep it — on a posting
-        # whose prose promises nothing, it is what trips the classifier's
-        # duration veto — but do NOT label it "Experience:", which would
-        # make it the parsed experience section and leave a two-word quote
-        # standing in for the fuller sentence above it.
+        # while this field says "Minimum 2 Years".
+        #
+        # It is not merely a second opinion — it is unreliable. Verified on
+        # 2026-09-20 against the live board: `RN - Emergency 334` and
+        # `RN - Emergency 335` carry BYTE-IDENTICAL qualification prose
+        # ("Minimum two-years Emergency Department experience preferred")
+        # and this field reads "Minimum 2 Years" on one and "Minimum 1
+        # Year" on the other. Whatever that number tracks, it is not the
+        # employer's stated bar; both postings require a licence, BLS,
+        # ACLS and PALS, and prefer the experience.
+        #
+        # So it is recorded as context and explicitly marked as not being
+        # the requirement. Five St. Rose ED postings at $89.51-$113.38/hr
+        # in Hayward were demoted out of his reachable tiers on the
+        # strength of this field alone, against prose that says
+        # "preferred". The posting's own words win; a job-board metadata
+        # column does not get to overrule them.
         if paras.get("experience"):
             # Terminated with a full stop so the classifier's clause split
             # keeps it separate. Without it the evidence quote reads
             # "Minimum 2 Years Degree required: Associate/Diploma Or Higher",
             # which buries the requirement in the credential line after it.
-            parts.append(f"Stated experience requirement: {paras['experience']}.")
+            parts.append(
+                f"Job board lists (not stated as required): "
+                f"{paras['experience']}.")
         if paras.get("degree required"):
             parts.append(f"Degree required: {paras['degree required']}.")
         p.description = " ".join(x for x in parts if x)

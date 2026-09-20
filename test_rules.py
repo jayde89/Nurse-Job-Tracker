@@ -511,14 +511,33 @@ check("St. Rose Surgery posting reads as unclear, not general experience",
                  "experience in an acute care operating room preferred. "
                  "FULL-TIME (1.0) AM SHIFT APPROXIMATE PAY RANGE: $60.64").bucket,
       "UNCLEAR")
-# The structured field can contradict the prose above it. It is appended
-# under a name that is deliberately NOT "Experience:", so it still trips
-# the duration veto without becoming the parsed experience section and
-# shrinking the evidence to two words.
-check("the structured experience field still reaches the duration veto",
-      C.classify("RN - Emergency 334",
-                 "Current and valid CA Registered Nurse license required. "
-                 "Stated experience requirement: Minimum 2 Years.").bucket
+# The structured Smart Hires "experience" field is unreliable, not merely
+# a second opinion. Verified against the live board on 2026-09-20:
+# `RN - Emergency 334` and `RN - Emergency 335` carry byte-identical
+# qualification prose ("Minimum two-years Emergency Department experience
+# preferred") while the field reads "Minimum 2 Years" on one and
+# "Minimum 1 Year" on the other. Five ED postings at $89.51-$113.38/hr
+# were demoted out of his reachable tiers on the strength of that number,
+# against prose that says "preferred".
+_ed_prose = ("Required Qualification: Licensing * Current and valid CA "
+             "Registered Nurse license required. * Current Basic Life "
+             "Support (BLS) required. * Current Advance Cardiac Life "
+             "Support (ACLS) required. Qualifications * Minimum two-years "
+             "Emergency Department experience preferred.")
+check("identical ED prose classifies the same whatever the metadata says",
+      C.classify("RN - Emergency 334", _ed_prose + " Job board lists "
+                 "(not stated as required): Minimum 2 Years.").bucket,
+      C.classify("RN - Emergency 335", _ed_prose + " Job board lists "
+                 "(not stated as required): Minimum 1 Year.").bucket)
+check("preferred ED experience is not read as a hard acute bar",
+      C.classify("RN - Emergency 335", _ed_prose + " Job board lists "
+                 "(not stated as required): Minimum 1 Year.").bucket
+      != "ACUTE_REQUIRED", True)
+# ...but a posting whose prose genuinely demands years must still say so.
+check("prose that genuinely requires years is still caught",
+      C.classify("RN - Emergency 999",
+                 "Required Qualification: Minimum two years of Emergency "
+                 "Department experience is required.").bucket
       != "NO_EXPERIENCE", True)
 
 
