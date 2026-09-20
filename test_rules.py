@@ -1786,6 +1786,127 @@ check("adding names did not break the longest-first ordering",
       geo.classify("Sutter Creek, CA")[0], geo.Geo.OUT)
 
 
+
+# ---------------------------------------------------------------------------
+# mobile_page.tier_for — the reading order of the phone page.
+#
+# This judgement used to live in a throwaway script, get guessed at from
+# the Bucket column, and be wrong: the guess promoted a Nurse Midwife and
+# an RN Float Pool (Leadership) role into "apply now" while hiding nine ED
+# jobs. It now reads the posting's own requirement sentence, which is why
+# every case below quotes real evidence text from the ledger.
+# ---------------------------------------------------------------------------
+import mobile_page as MP
+
+# required_months: the number that decides reachable-vs-not.
+check("plain years", MP.required_months("must have 1+ years ICU experience"), 12)
+check("year range takes the low end",
+      MP.required_months("2-3 years acute care required"), 24)
+check("spelled-out months", MP.required_months("six (6) months of RN experience"), 6)
+check("spelled-out years", MP.required_months("Five years of nursing"), 60)
+check("no requirement stated", MP.required_months("No prior experience required"), None)
+# "Preferred" is not a bar, and that distinction is the premise of the
+# whole search — most jobs she can actually get say "preferred".
+check("preferred is not required",
+      MP.required_months("VERIFIED: 'prefer' two years pre/post-op - preferred, not required"),
+      None)
+check("preferred alongside a hard minimum still counts",
+      MP.required_months("Minimum 1 year required; 3 years preferred"), 12)
+# A deadline the employer gives HER is not experience she must already
+# have. This sentence hid a job whose only real bar was a certificate.
+check("months-from-hire is a deadline, not a requirement",
+      MP.required_months("Nurses without labor and delivery experience will have "
+                         "six (6) months from hire to obtain certification."), None)
+
+# Sub-acute and post-acute are the floor she works on now. The word
+# "acute" inside "sub-acute" was reading as experience she lacks.
+check("her own setting is not a specialty bar",
+      MP._specialty_experience("Experience Required: One-year sub/post-acute care experience."),
+      False)
+check("OR experience is a specialty bar",
+      MP._specialty_experience("Minimum of recent six (6) months of OR RN experience required;"),
+      True)
+
+# Tier assignment.
+check("verified no-bar posting is top tier",
+      MP.tier_for("No experience required",
+                  evidence="RN license + BLS + ACLS only. No experience required."),
+      "A_open")
+check("acute requirement in a Level I title is not a new-grad job",
+      MP.tier_for("Level I / new grad", title="RN - Neuro ICU",
+                  evidence="must have 1+ years ICU experience"),
+      "E_acute_req")
+check("a true new-grad posting stays a new-grad posting",
+      MP.tier_for("Level I / new grad", title="RN - Med Surg",
+                  evidence="open to new grads"),
+      "A_open")
+check("multi-year general requirement is not reachable soon",
+      MP.tier_for("Experience required, not acute", title="RN",
+                  evidence="Minimum 5 years experience as a Registered Nurse"),
+      "F_tenure")
+# A reachable requirement outranks the unit in the title: six ED jobs she
+# can hold in May 2027 were being buried for the word "Emergency".
+check("reachable requirement beats the unit in the title",
+      MP.tier_for("Experience required, not acute", title="RN - Emergency 338",
+                  evidence="needs 12 months general nursing"),
+      "B_soon")
+# A promoted grade is a requirement the body text cannot undo.
+check("Clinical Nurse III is not a new-grad job however the body reads",
+      MP.tier_for("Level I / new grad", title="Clinical Nurse III - Operating Room",
+                  evidence="New Graduate Nurses do rotate through this department"),
+      "E_acute_req")
+check("Staff Nurse II is a promoted grade", bool(MP._SENIOR_GRADE.search("Staff Nurse II, Neuro ICU")), True)
+# A unit number is not a grade - these titles must stay reachable.
+check("a unit number is not a grade", bool(MP._SENIOR_GRADE.search("RN - CATH LAB 31")), False)
+check("ED unit number is not a grade", bool(MP._SENIOR_GRADE.search("Registered Nurse - Emergency 338")), False)
+check("Staff Nurse I is entry grade", bool(MP._SENIOR_GRADE.search("Staff Nurse I")), False)
+# "Level I/II" posts hire AT Level I - she is eligible, so it must not
+# read as senior.
+check("a I/II range is open at the bottom",
+      bool(MP._SENIOR_GRADE.search("Public Health Nurse Level I/II")), False)
+# An entry post on a specialty floor is a real chance, but it should not
+# outrank a job with no bar at all.
+check("entry grade on a specialty floor ranks below a fully open post",
+      MP.tier_for("Level I / new grad", title="Registered Nurse (RN) - Neuro ICU",
+                  evidence="California RN license, BLS, ACLS within 6 months of hire for new grads"),
+      "A_spec_entry")
+check("LTAC is NOT demoted - it is the acute experience she is hunting",
+      MP.tier_for("No experience required", setting="Long-term acute care hospital",
+                  evidence="No experience required"),
+      "A_open")
+check("a facility NAME containing 'Post Acute' is not a setting",
+      MP.tier_for("Level I / new grad", title="RN",
+                  setting="", evidence="New graduates are welcome to apply"),
+      "A_open")
+check("SNF is demoted however open the posting is",
+      MP.tier_for("No experience required", setting="Skilled nursing",
+                  evidence="No experience required"),
+      "B_bridge")
+check("acute-required stays out of the actionable tiers",
+      MP.tier_for("Acute care required", evidence="2 years acute care required"),
+      "E_acute_req")
+
+# The eligible set is what the page counts as "you can apply to today".
+for _t in ("A_open", "A_newgrad", "A_pref", "A_spec_entry", "C_unclear",
+           "B_soon", "B_bridge"):
+    check(f"{_t} is actionable", _t in MP.ELIGIBLE, True)
+for _t in ("D_specialty", "E_acute_req", "F_tenure"):
+    check(f"{_t} is not actionable", _t in MP.ELIGIBLE, False)
+
+# The page itself must not break in ways that are invisible.
+_page = MP.render_page([{
+    "key": "E::1", "title": "<script>alert(1)</script>", "employer": "X",
+    "location": "SF", "drive": "<30", "details": "", "evidence": "none",
+    "url": "https://example.invalid", "tier": "A_open"}], "now")
+check("job titles are escaped in the page",
+      "&lt;script&gt;alert(1)" in _page, True)
+check("mark key is unchanged (changing it wipes her saved marks)",
+      "rnjobs.marks.v2" in _page, True)
+check("page is installable to the home screen",
+      "apple-mobile-web-app-capable" in _page, True)
+
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:
