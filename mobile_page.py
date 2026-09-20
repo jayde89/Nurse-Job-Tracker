@@ -337,6 +337,7 @@ main{padding:12px 16px;max-width:880px;margin:0 auto}
 .c.hid{display:none}
 .c.done{opacity:.42}
 .h a{font-weight:640;color:#0b5fbe;text-decoration:none;font-size:15.5px}
+.ref{font-size:11px;color:#6b7c8f;font-weight:400}
 .v{background:#0a7;color:#fff;font-size:10px;padding:2px 6px;
   border-radius:4px;margin-left:7px;vertical-align:2px;letter-spacing:.4px}
 .m{color:#526270;font-size:13px;margin-top:4px}
@@ -404,18 +405,24 @@ ap();
 
 def _card(j: dict) -> str:
     elig = "1" if j["tier"] in ELIGIBLE else "0"
-    blob = f"{j['title']} {j['employer']} {j['location']}".lower()
+    blob = f"{j['title']} {j['employer']} {j['location']} {j.get('key','')}".lower()
     badge = '<span class="v">VERIFIED</span>' if j["tier"] == "A_open" else ""
     det = f'<div class="det">{esc(j["details"])}</div>' if j.get("details") else ""
     # A posting that states no requirement says so. The evidence ships with
     # the verdict, always — if the quote does not support the label, the
     # rule is wrong, and she can see that at a glance.
     why = j.get("evidence") or "This posting states no requirement."
+    # Big employers post the same title six times for six different units,
+    # and the cards are then indistinguishable: she cannot tell which one
+    # she already opened. The posting number is the only thing that
+    # differs, so it goes on the card.
+    ref = j["key"].rsplit("::", 1)[-1] if "::" in j.get("key", "") else ""
+    ref_html = f' <span class="ref">#{esc(ref)}</span>' if ref else ""
     return (
         f'<div class="c" data-g="{esc(j["tier"])}" data-d="{esc(j["drive"])}"'
         f' data-k="{esc(j["key"])}" data-elig="{elig}" data-s="{esc(blob)}">'
         f'<div class="h"><a href="{esc(j["url"])}" target="_blank"'
-        f' rel="noopener">{esc(j["title"])}</a>{badge}</div>'
+        f' rel="noopener">{esc(j["title"])}</a>{badge}{ref_html}</div>'
         f'<div class="m">{esc(j["employer"])} &middot; {esc(j["location"])}'
         + (f' &middot; <b>{esc(j["drive"])} min</b>' if j.get("drive") else "")
         + f'</div>{det}<div class="w">{esc(why)}</div>'

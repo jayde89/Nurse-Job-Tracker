@@ -1898,6 +1898,16 @@ _page = MP.render_page([{
     "key": "E::1", "title": "<script>alert(1)</script>", "employer": "X",
     "location": "SF", "drive": "<30", "details": "", "evidence": "none",
     "url": "https://example.invalid", "tier": "A_open"}], "now")
+# Six identical "STAFF NURSE I" cards from one employer are six real
+# postings; without the number she cannot tell which she already opened.
+_dup = MP.render_page([
+    {"key":"Seton::27189","title":"STAFF NURSE I","employer":"Seton","location":"Daly City",
+     "drive":"30-60","details":"","evidence":"new grad","url":"https://x.invalid","tier":"A_newgrad"},
+    {"key":"Seton::27190","title":"STAFF NURSE I","employer":"Seton","location":"Daly City",
+     "drive":"30-60","details":"","evidence":"new grad","url":"https://y.invalid","tier":"A_newgrad"}], "now")
+check("duplicate titles are told apart by posting number",
+      "#27189" in _dup and "#27190" in _dup, True)
+check("a posting number is searchable", 'data-s="staff nurse i seton daly city seton::27189"' in _dup, True)
 check("job titles are escaped in the page",
       "&lt;script&gt;alert(1)" in _page, True)
 check("mark key is unchanged (changing it wipes her saved marks)",
