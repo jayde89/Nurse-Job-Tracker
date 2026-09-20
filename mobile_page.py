@@ -459,6 +459,18 @@ function th(b){H=!H;b.classList.toggle('on',H);ap()}
 function tl(b){L=!L;b.classList.toggle('on',L);
   b.textContent=L?'Hide not-yet-eligible':'Show not-yet-eligible';ap()}
 function rs(){if(confirm('Clear all Applied/Pass marks?')){M={};sv();ap()}}
+// Marks live in this device's localStorage, which means the ledger never
+// learns what he ticked. This hands them back: download rn-marks.json,
+// then `python3 sync_marks.py rn-marks.json` folds them into
+// applications.csv (only touching rows still open).
+function ex(){
+  const n=Object.keys(M).length;
+  if(!n){alert('No marks to export yet.');return}
+  const b=new Blob([JSON.stringify(M,null,1)],{type:'application/json'});
+  const u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='rn-marks.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(u),1000);
+}
 function ap(){
   const q=(document.getElementById('q').value||'').toLowerCase();
   let shown=0;
@@ -598,6 +610,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
         '<button onclick="tl(this)">Show not-yet-eligible</button>',
         '<input id="q" placeholder="search title, employer, city" '
         'oninput="ap()">',
+        '<button onclick="ex()">Export marks</button>',
         '<button onclick="rs()">Reset</button>',
         '</div></header><main>',
     ]
@@ -633,6 +646,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
     out.append('<div class="empty" id="empty" style="display:none">'
                'Nothing matches those filters.</div></main>')
     out.append(f'<footer>{len(jobs)} postings &middot; '
-               f'Applied/Pass marks are saved on this device only</footer>')
+               f'Applied/Pass marks are saved on this device &mdash; '
+               f'use Export marks to fold them into the ledger</footer>')
     out.append(f'<script>{_JS}</script></body></html>')
     return "".join(out)

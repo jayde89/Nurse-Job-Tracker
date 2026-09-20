@@ -2412,6 +2412,43 @@ check("card reasons use second person", "your rate" in _r_txt, True)
 
 
 
+# ── marks round trip (sync_marks.py) ─────────────────────────────────
+# Marks live in this device's localStorage, so the ledger never learned
+# what he ticked: the scan would keep offering a job he applied to a
+# week ago. Export marks downloads rn-marks.json; sync_marks.py folds it
+# back in. Ported from the closed PR #13's sync_board.py, whose safety
+# rules were right.
+import sync_marks as SM
+
+check("the page's one-letter marks map to ledger vocabulary",
+      (SM.STATUS_OF.get("a"), SM.STATUS_OF.get("p")),
+      ("applied", "not relevant"))
+# A row he set by hand beats a tick in a page that may have been open for
+# days. Only a row still open may be moved.
+check("a deliberate status is never open to being overwritten",
+      any(s in SM.OPEN_STATUS for s in ("interview", "rejected", "applied")),
+      False)
+check("an untouched row is open",
+      ("" in SM.OPEN_STATUS and "unapplied" in SM.OPEN_STATUS), True)
+
+# The export button has to exist, be wired to ex(), and name the file
+# sync_marks.py reads.
+_mk_page = MP.render_page([{
+    "key": "Kentfield Hospital (AAM)::294969", "title": "Registered Nurse, NOC",
+    "employer": "Kentfield Hospital (AAM)", "location": "Kentfield",
+    "url": "https://example.com/j", "tier": "A_pref",
+    "setting": "Long-term acute care", "drive": "30-60",
+    "pay": "$55.50 - $73.39 Hourly", "posted": "2026-09-19",
+    "evidence": "Previous acute care experience is strongly preferred.",
+    "age_days": 1, "status": "unapplied"}], "now")
+check("the page offers a way to get marks off the device",
+      'onclick="ex()"' in _mk_page, True)
+check("the export names the file sync_marks.py reads",
+      "rn-marks.json" in _mk_page, True)
+check("the footer no longer claims marks are device-only",
+      "device only" in _mk_page, False)
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:
