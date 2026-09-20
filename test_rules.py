@@ -1886,6 +1886,98 @@ check("acute-required stays out of the actionable tiers",
       MP.tier_for("Acute care required", evidence="2 years acute care required"),
       "E_acute_req")
 
+# ---------------------------------------------------------------------------
+# A stated bar outranks the setting demotion.
+#
+# tier_for checked the lateral-setting branch FIRST, so a skilled-nursing
+# posting was filed as a reachable bridge job before anyone read its
+# requirement sentence. Four PACS Group postings demanding "minimum 2
+# years of nursing experience" sat in the actionable list; he has months.
+# Ranking must never be allowed to answer the eligibility question.
+# ---------------------------------------------------------------------------
+check("an SNF posting demanding 2 years is not actionable",
+      MP.tier_for("No experience required", setting="Skilled nursing",
+                  evidence="Minimum of 2 years of nursing experience"),
+      "F_tenure")
+check("the real PACS sentence is caught",
+      MP.tier_for("No experience required", setting="Skilled nursing",
+                  evidence="Minimum of 2 years of nursing experience , preferably "
+                           "in a Skilled Nursing Facility (SNF), Post Acute"),
+      "F_tenure")
+# ...without breaking the demotion it sits next to.
+check("an SNF posting with no bar is still demoted, not rejected",
+      MP.tier_for("No experience required", setting="Skilled nursing",
+                  evidence="No experience required."),
+      "B_bridge")
+# His own floor is experience he HAS, at any size.
+check("an SNF wanting a year of sub-acute is experience he already has",
+      MP.tier_for("No experience required", setting="Skilled nursing",
+                  evidence="One year sub-acute experience preferred."),
+      "B_bridge")
+# The bridge role the entire search exists to find must survive all of it.
+check("LTAC is never demoted by the setting check",
+      MP.tier_for("No experience required", setting="Long-term acute care",
+                  evidence="No prior experience required."),
+      "A_open")
+# The two rejections are different doors and the page names them apart.
+check("a general multi-year bar reads as tenure, not acute experience",
+      MP.tier_for("Level I / new grad", evidence="minimum 3 years nursing experience"),
+      "F_tenure")
+check("a specialty bar is an acute-experience wall at any size",
+      MP.tier_for("Level I / new grad", evidence="1 year of ICU experience required"),
+      "E_acute_req")
+check("the acute-care bucket is trusted even when the sentence omits 'experience'",
+      MP.tier_for("Acute care required", evidence="2 years acute care required"),
+      "E_acute_req")
+
+# ---------------------------------------------------------------------------
+# Things that look like experience bars and are not.
+# ---------------------------------------------------------------------------
+
+# An age is not experience. "Must be at least 18 years of age" parsed as
+# 216 months of nursing and buried a real job.
+check("an age requirement is not an experience requirement",
+      MP.required_months("Must be at least 18 years of age."), None)
+check("an age requirement does not reject the posting",
+      MP.tier_for("Level I / new grad", evidence="Must be at least 18 years of age.")
+      in MP.ELIGIBLE, True)
+
+# A section heading is not the requirement sentence.
+check("a 'Required:' heading does not override a 'preferred' sentence",
+      MP._states_a_hard_requirement(
+          "Experience Required: Minimum 2 years of dialysis experience preferred."),
+      False)
+check("a genuine bar under a heading still counts",
+      MP._states_a_hard_requirement("Experience Required: 2 years ICU is required."),
+      True)
+
+# "Minimum ... preferred" is a preferred floor; "minimum ... preferably in
+# a SETTING" still requires the years.
+check("a minimum softened by 'experience preferred' is not a bar",
+      MP._states_a_hard_requirement("Minimum 1 year experience preferred but not required"),
+      False)
+check("a minimum whose preference is about the SETTING is still a bar",
+      MP._states_a_hard_requirement(
+          "Minimum 2 years of nursing experience , preferably in a Skilled Nursing Facility"),
+      True)
+check("a bare minimum is a bar",
+      MP._states_a_hard_requirement("Minimum 2 years of nursing experience"), True)
+
+# Employers misspell their own job titles. "Senior Nurse Anesthestist, PD"
+# is a live posting that passed the APRN filter because the pattern
+# required the correct spelling of "anesthetist".
+check("a misspelled CRNA title is still rejected",
+      A.title_passes("Senior Nurse Anesthestist, PD"), False)
+check("nurse anesthesia in any form is rejected",
+      A.title_passes("Nurse Anesthesia Resident"), False)
+check("an ordinary RN title is untouched by the anesthesia rule",
+      A.title_passes("Registered Nurse (RN) - ICU"), True)
+
+check("'must have' is never softened",
+      MP._states_a_hard_requirement("Must have 2 years acute experience"), True)
+
+
+
 # The eligible set is what the page counts as "you can apply to today".
 for _t in ("A_open", "A_newgrad", "A_pref", "A_spec_entry", "C_unclear",
            "B_soon", "B_bridge"):

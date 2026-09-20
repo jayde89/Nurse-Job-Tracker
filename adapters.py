@@ -155,7 +155,12 @@ EXCLUDE_TITLE = re.compile(
     # five midwife postings sat in his live list because "nurse midwife"
     # reached the include side through its own word "nurse". A BSN RN
     # cannot hold any of them, so they are noise he has to read past.
-    r"|CRNA|nurse anesthetist|clinical nurse specialist"
+    # "Anesthestist" is not a typo in this codebase — it is how the
+    # employer spelled it in a live posting that then passed the filter.
+    # A CRNA is a master's-level APRN role, exactly the category he asked
+    # to never see, so the pattern tolerates the misspelling rather than
+    # trusting employers to spell their own job titles.
+    r"|CRNA|nurse anesthe[a-z]*|clinical nurse specialist"
     r"|midwife|\bCNM\b"
     # RNFA is an RN, but only after a perioperative program and CNOR-track
     # certification. The posting names the credential; he does not hold it.

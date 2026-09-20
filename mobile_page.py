@@ -144,6 +144,12 @@ _NOT_A_REQUIREMENT = re.compile(
     r"[^.]*?\b(?:from|within|after|of)\s+(?:date of\s+)?hire[^.]*(?:\.|$)"
     r"|[^.]*?\bto obtain\b[^.]*(?:\.|$)"
     r"|[^.]*?\bprobation(?:ary)?\b[^.]*(?:\.|$)"
+    # An age is not experience. "Must be at least 18 years of age" parsed
+    # as 216 months of nursing and hid a real job; the phrase reads as the
+    # largest requirement in the posting when it is not a requirement he
+    # can fail to meet.
+    r"|[^.]*?\byears?\s+of\s+age\b[^.]*(?:\.|$)"
+    r"|[^.]*?\bage\s+of\s+\d+[^.]*(?:\.|$)"
     r"|[^.]*?\beligible lists?\b[^.]*(?:\.|$)", re.I)
 
 
@@ -161,10 +167,41 @@ _PREFERRED_ONLY = re.compile(r"prefer", re.I)
 _NEGATED = re.compile(r"\bnot\s+(?:strictly\s+|necessarily\s+)?"
                       r"(?:required|necessary|mandatory)\b", re.I)
 _HARD_REQUIRED = re.compile(r"\brequire|\bmust have|\bminimum\b", re.I)
+# "Minimum" is weaker evidence than a trailing "preferred". A sentence
+# like "Minimum 2 years of dialysis experience preferred." states a
+# preferred floor, not a bar — the word that governs is the last one.
+# "Required" and "must have" are not softened this way; only "minimum".
+#
+# But "preferably" often qualifies the SETTING, not the years: "Minimum 2
+# years of nursing experience, preferably in a Skilled Nursing Facility"
+# requires the two years and merely prefers where they were earned. Only
+# a preference attached to the experience itself softens the minimum.
+_SOFT_MINIMUM = re.compile(
+    r"\bminimum\b[^.]*\bexperience\s+(?:is\s+)?prefer(?:red)?\b"
+    r"|\bminimum\b[^.]*\bprefer(?:red)?\s+(?:but|though|however)\b", re.I)
 
 
 def _states_a_hard_requirement(text: str) -> bool:
-    return bool(_HARD_REQUIRED.search(_NEGATED.sub(" ", text or "")))
+    t = _NEGATED.sub(" ", _drop_headings(text or ""))
+    # Drop a "minimum ... preferred" clause before looking for a bar, so
+    # the soft "minimum" inside it cannot stand in for one. A genuine
+    # "required" or "must have" elsewhere in the text still counts.
+    t = _SOFT_MINIMUM.sub(" ", t)
+    return bool(_HARD_REQUIRED.search(t))
+
+
+# A section heading is not the requirement sentence. Postings label a
+# block "Experience Required:" and then list things under it as
+# preferred — "Experience Required: Minimum 2 years of dialysis
+# experience preferred." The heading made that read as a hard bar and
+# rejected a job whose own sentence says otherwise. Preferred is never a
+# bar; that rule is the premise of this whole search and a colon should
+# not defeat it.
+_HEADING = re.compile(r"\b[A-Za-z][A-Za-z /&-]{0,40}required\s*:", re.I)
+
+
+def _drop_headings(text: str) -> str:
+    return _HEADING.sub(" ", text or "")
 
 
 # He reaches one year of RN experience in May 2027. A posting wanting
@@ -261,6 +298,39 @@ def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
     title = title or ""
     ev = evidence or ""
 
+    months = required_months(ev)
+    # Experience he cannot accrue on a subacute floor. "Six months of OR
+    # RN experience" is a smaller number than a year and still a closed
+    # door, so the size of the requirement is irrelevant once it names a
+    # unit he does not work in.
+    specialist = _specialty_experience(ev)
+
+    # A stated bar he cannot clear outranks the setting demotion.
+    #
+    # This check used to sit BELOW the lateral-setting branch, which meant
+    # a skilled-nursing posting was filed as a reachable bridge job before
+    # anyone read its requirement sentence. Four PACS Group postings
+    # demanding "minimum 2 years of nursing experience" were offered as
+    # actionable; he has months. Demoting for setting is about ranking,
+    # and it must never be allowed to answer the eligibility question.
+    #
+    # The reason still matters, though: "wants multiple years" and "wants
+    # acute experience" are different doors, and the page names them
+    # separately. Only the specialty case is an acute-experience wall.
+    # A specialty demand is a closed door at ANY size — "1 year of ICU"
+    # is not something he can accrue on a subacute floor, and unlike a
+    # general year it does not come true by waiting. Checked before the
+    # size test, which only governs general experience.
+    #
+    # The bucket counts as a specialty signal in its own right: "2 years
+    # acute care required" never says the word "experience", so the regex
+    # misses it, but the classifier already read the posting and filed it
+    # under an acute-care bar. Trust that rather than re-deriving it.
+    if specialist or bucket == "Acute care required":
+        return "E_acute_req"
+    if months and months > _REACHABLE_MONTHS:
+        return "F_tenure"
+
     # SNF outranks the bucket. A skilled-nursing posting with no
     # experience bar is still a lateral move from the job he has, and the
     # entire point of the search is acute-care experience. It stays in the
@@ -273,13 +343,6 @@ def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
     # must not confuse "post acute" with "long-term ACUTE care".
     if _LATERAL_SETTING.search(setting) and not _LTAC.search(setting):
         return "B_bridge"
-
-    months = required_months(ev)
-    # Experience he cannot accrue on a subacute floor. "Six months of OR
-    # RN experience" is a smaller number than a year and still a closed
-    # door, so the size of the requirement is irrelevant once it names a
-    # unit he does not work in.
-    specialist = _specialty_experience(ev)
 
     if bucket == "No experience required":
         if _NO_BAR.search(ev):
