@@ -42,6 +42,7 @@ import classifier as C
 import geo
 import highlights
 import mobile_page
+import ranking
 
 STATE_DIR = "state"
 SEEN_PATH = os.path.join(STATE_DIR, "seen.json")
@@ -78,6 +79,17 @@ ACTIVE_ORDER = {"offer": 0, "interviewing": 1, "pending": 2, "applied": 3}
 # it means the posting vanished while you had not applied, which is not
 # something you did and does not belong in a list of your outcomes.
 FINISHED_STATUS = {"rejected", "declined", "withdrawn"}
+
+
+def _age_days(posted: str):
+    """Days since the posting went up, or None when it does not say."""
+    # Note the import style at the top of this file: `datetime` here is
+    # the class, not the module, so .date.fromisoformat does not exist.
+    try:
+        d = datetime.fromisoformat((posted or "")[:10]).date()
+    except Exception:
+        return None
+    return (datetime.now(timezone.utc).date() - d).days
 
 
 def normalize_status(value) -> str:
@@ -479,10 +491,16 @@ def build(rows, review, quick=False):
         "location": p.location,
         "drive": p.drive_time_bucket or "",
         "details": getattr(p, "details", ""),
+        "setting": getattr(p, "setting", "") or "",
         "evidence": (p.evidence or "")[:300],
         "url": p.url,
         "tier": ledger[p.key]["Tier"],
+        "age_days": _age_days(ledger[p.key].get("Posted", "")),
     } for p in open_shown]
+    # Ranking runs over the same rows the page renders, so the score and
+    # the card can never disagree. It only reorders jobs she is already
+    # eligible for; it never decides what she may apply to.
+    ranking.rank(mobile_rows)
     with open("index.html", "w") as f:
         f.write(mobile_page.render_page(mobile_rows, now[:16].replace("T", " ")))
 
