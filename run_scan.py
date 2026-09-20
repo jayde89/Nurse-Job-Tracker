@@ -143,8 +143,11 @@ def still_listed(row, now) -> bool:
     """Was this posting in the scan that just ran?"""
     return (row.get("Last seen") or "") == now
 
-# The two buckets a new grad can act on today.
-ENTRY_LEVEL = ("STAFF_NURSE_I", "NO_EXPERIENCE")
+# The buckets that are the day's action list. 2026-09-19: these were
+# ("STAFF_NURSE_I", "NO_EXPERIENCE") — the two a new grad could act on.
+# The user is now an experienced RN targeting acute care, so the action
+# list is the acute and graded-II roles she is actually hunting.
+ENTRY_LEVEL = ("ACUTE_REQUIRED", "LEVEL_II_TITLE")
 
 
 @dataclass
