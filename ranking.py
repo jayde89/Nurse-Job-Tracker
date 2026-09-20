@@ -240,6 +240,18 @@ def score(job: dict) -> tuple:
 
     # Freshness: a posting he sees on day one is worth more than the same
     # posting three weeks later, when the req may already be filled.
+    #
+    # Continuous recruitments are the exception and they are not rare.
+    # County agencies post an open-until-filled req once and leave it up
+    # for years: Sacramento's "Registered Nurse D/CF (Level I/II)" has an
+    # opening date of 2012-04-25 and is live today at $64.88-$82.58/hr,
+    # Level I/II, closing date "Continuous". Verified on the live page,
+    # not inferred. A staleness penalty read that as fourteen years old
+    # and buried one of the better-paying entry-grade jobs in the list.
+    #
+    # So the penalty applies to a window where age still means something
+    # and stops. Beyond ~six months the date is telling us about the
+    # employer's posting habits, not about whether the job is open.
     age = job.get("age_days")
     if isinstance(age, (int, float)):
         if age <= 3:
@@ -247,9 +259,11 @@ def score(job: dict) -> tuple:
             reasons.append("posted this week")
         elif age <= 10:
             pts += 2.0
-        elif age > 45:
+        elif 45 < age <= 180:
             pts -= 3.0
             reasons.append("posted over 6 weeks ago")
+        elif age > 180:
+            reasons.append("long-running posting — check it is still open")
 
     return round(pts, 2), reasons
 

@@ -2229,6 +2229,23 @@ check("the job he qualifies for is the one pinned",
 _r = RK.rank([dict(_pref_far)])
 check("rank attaches a band to every job", _r[0]["band"], "now")
 
+# Continuous recruitments: county agencies leave an open-until-filled
+# req up for years. Sacramento's "Registered Nurse D/CF (Level I/II)"
+# opened 2012-04-25 and is live at $64.88-$82.58/hr. A staleness penalty
+# read that as fourteen years stale and buried it.
+_cont = {"title": "Registered Nurse Level I/II", "details": "$64.88/hr",
+         "drive": "60-90", "tier": "A_newgrad", "setting": "", "age_days": 5261}
+_stale = dict(_cont, age_days=90)
+check("a years-old continuous posting is not penalised for age",
+      RK.score(_cont)[0] > RK.score(_stale)[0], True)
+check("a genuinely stale posting is still penalised",
+      "posted over 6 weeks ago" in RK.score(_stale)[1], True)
+check("a long-running posting says so rather than scoring as fresh",
+      any("long-running" in r for r in RK.score(_cont)[1]), True)
+check("a fresh posting still wins over a long-running one",
+      RK.score(dict(_cont, age_days=1))[0] > RK.score(_cont)[0], True)
+
+
 # An "evidence" line that only repeats the job title is not evidence, and
 # it occupies the most valuable space on the card. Several Level II
 # postings quote their own title back as the requirement.
