@@ -90,10 +90,20 @@ check("graded Level II title is hidden",
                  "specific acute care experience within the last two (2) "
                  "years Preferred.").bucket,
       "LEVEL_II_TITLE")
-check("a hidden Level II role does not reach you",
+check("a Level II role now reaches you",
       C.should_show(C.classify("Staff Nurse II, ICU/CPU",
                                "EDUCATION: Graduate of nursing school.")),
-      False)
+      True)
+# 2026-09-19: nothing is suppressed any more. The user is an experienced RN
+# hunting acute care, so both formerly-hidden buckets must reach her, and
+# they lead the digest rather than trailing it.
+check("an acute-required role now reaches you",
+      C.should_show(C.classify("Staff Nurse, ICU",
+                               "TYPICAL EXPERIENCE: 2 years acute care "
+                               "hospital experience required.")),
+      True)
+check("acute outranks every non-acute bucket in the digest",
+      min(C.RANK, key=C.RANK.get), "ACUTE_REQUIRED")
 # The grade is read off the nurse noun, never a bare numeral. These three
 # carry no grade at all and were staff postings.
 for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
