@@ -139,7 +139,7 @@ INCLUDE_TITLE = re.compile(
 # roles staffed from experienced nurses; "specialist" generalises the
 # "clinical nurse specialist" that was already here.
 EXCLUDE_TITLE = re.compile(
-    r"\b(LVN|LPN|licensed vocationa?l? nurse|licensed practical nurse"
+    r"\b(LVN|LPN|licensed voc(?:\.|ationa?l?)?\s+nurse|licensed practical nurse"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|informaticist|analyst"
@@ -214,11 +214,15 @@ def _html_to_text(raw: str) -> str:
     return " ".join(out)
 
 
-def _request(url, data=None, headers=None, timeout=None, retries=None):
+def _request(url, data=None, headers=None, timeout=None, retries=None,
+             encoding="utf-8"):
     """
     One HTTP call with retries. `timeout` and `retries` are per-source
     overrides for hosts that need more patience than the defaults; see
-    NeoGov, which is the reason they exist.
+    NeoGov, which is the reason they exist. `encoding` is one too: La
+    Clínica's board serves cp1252, and decoding that as UTF-8 turns the
+    employer's own name into "La Cl\ufffdnica" — which then appears in a
+    verdict's evidence quote.
     """
     timeout = TIMEOUT_SEC if timeout is None else timeout
     retries = MAX_RETRIES if retries is None else retries
@@ -233,7 +237,7 @@ def _request(url, data=None, headers=None, timeout=None, retries=None):
         try:
             req = urllib.request.Request(url, data=data, headers=hdrs)
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                body = r.read().decode("utf-8", "replace")
+                body = r.read().decode(encoding, "replace")
             time.sleep(REQUEST_DELAY_SEC)
             return body
         except Exception as e:                      # noqa: BLE001
@@ -362,8 +366,15 @@ class WorkdayCXS:
         # every detail fetch.
         path = "/job/" + p.url.split("/job/", 1)[1]
         d = json.loads(_request(f"{self.base}{path}")).get("jobPostingInfo", {})
-        p.description = re.sub(r"<[^>]+>", " ", d.get("jobDescription", ""))
-        p.description = re.sub(r"\s+", " ", p.description).strip()
+        # _html_to_text, not a flat tag strip. Workday's jobDescription is
+        # a bulleted requirements list, and stripping every tag to a space
+        # merges the bullets: John Muir's evidence read "Graduate of an
+        # Accredited School of Nursing - Required Experience: 1 year -
+        # Nursing - Acute Care - Required", in which "Required Experience"
+        # is an artefact of two bullets running together and the quote
+        # spans three separate requirements. This is the Adventist bug
+        # CLAUDE.md describes, in the largest source here.
+        p.description = _html_to_text(d.get("jobDescription", ""))
         p.posted_date = d.get("startDate") or p.posted_date
         p.schedule = d.get("timeType")
         p.url = d.get("externalUrl") or p.url
@@ -567,8 +578,7 @@ class PACS:
     def fetch_detail(self, p: Posting) -> Posting:
         path = p.url.split("/pacs", 2)[-1]
         d = json.loads(_request(f"{self.BASE}{path}")).get("jobPostingInfo", {})
-        p.description = re.sub(r"\s+", " ",
-                               re.sub(r"<[^>]+>", " ", d.get("jobDescription", ""))).strip()
+        p.description = _html_to_text(d.get("jobDescription", ""))
         p.posted_date = d.get("startDate") or p.posted_date
         p.url = d.get("externalUrl") or p.url
         return p
@@ -647,7 +657,7 @@ class ScionHealth:
     def fetch_detail(self, p: Posting) -> Posting:
         body = _request(p.url)
         body = re.sub(r"(?s)<(script|style).*?</\1>", " ", body)
-        p.description = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).strip()[:9000]
+        p.description = _html_to_text(body)[:9000]
         return p
 
 
@@ -720,10 +730,11 @@ class HealthcareSource:
         return out
 
     def fetch_detail(self, p: Posting) -> Posting:
-        html = _request(p.url)
-        body = re.sub(r"(?s)<(script|style).*?</\1>", " ", html)
-        text = re.sub(r"<[^>]+>", " ", body)
-        p.description = re.sub(r"\s+", " ", text).strip()[:8000]
+        # `html` was the local name here, which shadowed the module and is
+        # why this one could not simply call _html_to_text.
+        body = _request(p.url)
+        body = re.sub(r"(?s)<(script|style).*?</\1>", " ", body)
+        p.description = _html_to_text(body)[:8000]
         return p
 
 
@@ -984,7 +995,7 @@ class NeoGov:
         # Unescape first: the field arrives with its markup escaped, so
         # stripping tags before unescaping strips nothing at all.
         raw = html.unescape(d.get("description", ""))
-        p.description = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", raw)).strip()
+        p.description = _html_to_text(raw)
         p.posted_date = d.get("datePosted") or p.posted_date
         p.schedule = d.get("employmentType") or p.schedule
         return p
@@ -1025,8 +1036,10 @@ class Jibe:
 
     @staticmethod
     def _clean(fragment: str) -> str:
-        return html.unescape(re.sub(r"\s+", " ",
-                                    re.sub(r"<[^>]+>", " ", fragment or ""))).strip()
+        # These fields carry real markup — <p>, <li>, <br> — and flattening
+        # every tag to a space runs the statements together. Keep the
+        # boundaries; the classifier's evidence is a clause, not a page.
+        return _html_to_text(fragment or "")
 
     @staticmethod
     def _f(v):
@@ -1115,9 +1128,12 @@ class SmartRecruiters:
 
     @staticmethod
     def _clean(fragment: str) -> str:
-        return re.sub(r"\s+", " ",
-                      re.sub(r"<[^>]+>", " ",
-                             html.unescape(fragment or ""))).strip()
+        # jobAd sections are real HTML — the qualifications section is an
+        # <ol> of numbered requirements — so the tags are the sentence
+        # boundaries. Nothing here arrives escaped, checked against a live
+        # posting, so unescaping first is not needed and _html_to_text
+        # unescapes at the end anyway.
+        return _html_to_text(fragment or "")
 
     def fetch_listings(self) -> list[Posting]:
         out: list[Posting] = []
@@ -1267,7 +1283,16 @@ class SmartHires:
                           html.unescape(re.sub(r"<[^>]+>", " ", raw or ""))).strip()
 
         labels = {k.strip().lower(): text(v) for k, v in self.RE_LABEL.findall(body)}
-        spans = {k: text(v) for k, v in self.RE_SPAN.findall(body)}
+        # St. Rose separates every line of its qualifications with <br> and
+        # nothing else, so a flat tag strip runs "-Current California RN
+        # License required." into "-Current BCLS required" into the line
+        # after it, and the evidence quote spans three requirements.
+        # _html_to_text turns those breaks into statement boundaries.
+        spans = {k: _html_to_text(v) for k, v in self.RE_SPAN.findall(body)}
+        # The shift is read off the front of resSpan, before the pay range,
+        # and it is a phrase rather than a statement: keep the flat form
+        # for it or it reads "Per-Diem. All Shifts".
+        flat_spans = {k: text(v) for k, v in self.RE_SPAN.findall(body)}
         paras = {k.strip().lower(): text(v) for k, v in self.RE_PARA.findall(body)}
 
         # Requirements first: the licence and experience gates live in
@@ -1303,7 +1328,7 @@ class SmartHires:
             parts.append(f"Degree required: {paras['degree required']}.")
         p.description = " ".join(x for x in parts if x)
 
-        front = self.RE_FRONT.match(spans.get("resSpan", "") or "")
+        front = self.RE_FRONT.match(flat_spans.get("resSpan", "") or "")
         if front:
             p.shift = front.group(1).strip(" .-|") or None
 
@@ -1729,7 +1754,11 @@ class Radancy:
         m = re.search(r'<div[^>]*class="[^"]*job-description[^"]*"[^>]*>(.*?)</div>',
                       body, re.S)
         if m:
-            p.description = self._text(m.group(1))
+            # Same helper as the JSON-LD path above. _text is the row
+            # parser's cell cleaner and flattens everything to spaces,
+            # which is wrong for a description on the fallback path just
+            # as it is on the primary one.
+            p.description = _html_to_text(m.group(1))
         return p
 
 
@@ -1754,19 +1783,34 @@ class JobAps:
     """
 
     BASE = "https://www.jobapscloud.com"
+    # Key on the anchors inside the header cell, never on the cell's own
+    # class. San Joaquin writes `<th class="JobTitle">` on its main table
+    # and a bare `<th scope="row">` on the promotional and departmental
+    # tables below it, and requiring the class read 88 of that agency's 98
+    # rows — the missing ten being every job posted to a departmental
+    # list, which is a place a Staff Nurse posting can land. Alameda
+    # County writes the bare form for its whole board, so the strict
+    # pattern read none of it at all.
     _ROW = re.compile(
-        r'<th[^>]*class="JobTitle"[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*'
-        r'class="JobTitle"[^>]*>(.*?)</a>\s*<a[^>]*class="JobNum"[^>]*>'
+        r'<th[^>]*>\s*<a[^>]+href="([^"]+)"[^>]*'
+        r'class="JobTitle"[^>]*>(.*?)</a>\s*<a[^>]*class="JobNum[^"]*"[^>]*>'
         r'(.*?)</a>(.*?)</tr>', re.S | re.I)
 
     def __init__(self, employer="San Joaquin County", agency="SJQ",
-                 default_city="Stockton"):
+                 default_city="Stockton", path=""):
         self.employer = employer
         self.agency = agency
         # Used only when a row prints no city of its own. The county seat
         # is Stockton; San Joaquin General is in French Camp and says so,
-        # which is why the row's own value always wins.
+        # which is why the row's own value always wins. Alameda's board
+        # prints no location column at all, so for that agency this is the
+        # only city there is.
         self.default_city = default_city
+        # Where the listing lives under the agency. San Joaquin's landing
+        # page *is* the listing; Alameda's landing page is a splash screen
+        # linking to jobboard.asp, and reading the root there returns a
+        # populated-looking page with no jobs in it.
+        self.path = path
 
     @staticmethod
     def _text(fragment: str) -> str:
@@ -1785,7 +1829,7 @@ class JobAps:
         return self._text(m.group(1)) if m else ""
 
     def fetch_listings(self) -> list[Posting]:
-        body = _request(f"{self.BASE}/{self.agency}/")
+        body = _request(f"{self.BASE}/{self.agency}/{self.path}")
         out, seen = [], set()
         for m in self._ROW.finditer(body):
             href, title, num, rest = m.groups()
@@ -1810,15 +1854,462 @@ class JobAps:
 
     def fetch_detail(self, p: Posting) -> Posting:
         body = _request(p.url)
-        # The bulletin is the whole page; strip the chrome by taking the
-        # main content container when there is one and the body otherwise.
-        m = re.search(r'<div[^>]*id="bulletin"[^>]*>(.*?)</div>\s*</div>',
-                      body, re.S | re.I)
-        chunk = m.group(1) if m else body
+        # The bulletin sits in a JobBulletinBody container, and taking it
+        # is not tidying. Without it the description starts with the site's
+        # own navigation — "HRS Home. Update Contact Info. Logon. Job
+        # Portal Home..." — and the classifier reads from the front of what
+        # it is given, so a hedged verdict quoted a menu. There is no
+        # element with id="bulletin" on either agency; that earlier guess
+        # never matched and the fallback below was doing all the work.
+        i = body.find("JobBulletinBody")
+        if i >= 0:
+            # Past the end of the tag itself, or the attribute leaks into
+            # the text and the description opens with `JobBulletinBody">`.
+            i = body.find(">", i) + 1
+            end = body.find("ApplyPanelDiv", i)
+            chunk = body[i:end if end > i else i + 40000]
+        else:
+            chunk = body
         chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
                        " ", chunk)
         p.description = _html_to_text(chunk)
         return p
+
+
+# ── adapter 14: Paylocity (Central Valley Specialty Hospital) ────────
+
+class Paylocity:
+    """
+    Paylocity Recruiting, the ATS a lot of small independent employers
+    use. Here it reaches Central Valley Specialty Hospital in Modesto —
+    a long-term acute care hospital, in range at 60-90 minutes, and the
+    only LTAC in the ring that no other adapter touches.
+
+    LTAC matters to this user specifically and the coverage was thinner
+    than it looked. Of the four LTACs inside two hours, Kindred (San
+    Leandro) and Kentfield (Marin) are read by other adapters and both
+    routinely sit at zero open RN roles, and Vibra's are 90-120 minutes
+    out in Folsom. So on a normal day the list showed no LTAC at all
+    while a Modesto LTAC was hiring RNs and saying "We encourage new RNs
+    to apply" in the posting.
+
+    The board is one GET: the page embeds its whole job list as JSON
+    under "Jobs", with the city and state in a nested JobLocation object.
+
+    Do NOT classify from the listing. The Description carried there is a
+    110-character teaser, and a truncated description is what produced 40
+    false "no experience required" verdicts when Sutter was read through
+    its Phenom front end. The real text is on the detail page, inside the
+    job-preview-details container.
+    """
+
+    HOST = "https://recruiting.paylocity.com"
+    _JOBS = re.compile(r'"Jobs"\s*:\s*(\[.*?\])\s*[,}]', re.S)
+
+    def __init__(self, employer: str, board_url: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.board_url = board_url
+        self.setting = setting
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(self.board_url)
+        m = self._JOBS.search(body)
+        if not m:
+            raise RuntimeError("no embedded Jobs array on the Paylocity board")
+        out = []
+        for j in json.loads(m.group(1)):
+            jid = str(j.get("JobId") or "")
+            if not jid:
+                continue
+            loc = j.get("JobLocation") or {}
+            city, state = loc.get("City") or "", loc.get("State") or ""
+            out.append(Posting(
+                employer=self.employer,
+                req_id=jid,
+                title=j.get("JobTitle") or "",
+                # LocationName is "On Site" or "Main Office" on this board,
+                # which geo cannot rank. The nested address is the real one.
+                location=", ".join(x for x in (city, state) if x),
+                url=f"{self.HOST}/recruiting/jobs/Details/{jid}",
+                posted_date=(j.get("PublishedDate") or "")[:10] or None,
+                department=j.get("HiringDepartment") or None,
+                setting=self.setting,
+                source_adapter="paylocity",
+            ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        i = body.find("job-preview-details")
+        chunk = body[i:i + 40000] if i >= 0 else body
+        chunk = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>",
+                       " ", chunk)
+        p.description = _html_to_text(chunk)
+        return p
+
+
+# ── adapter 15: iCIMS (Sonoma Valley Hospital) ───────────────────────
+
+class ICIMS:
+    """
+    iCIMS is what the independent hospitals run, and it reaches Sonoma
+    Valley Hospital — a district hospital in the town of Sonoma that sits
+    inside every other source's blind spot: it belongs to no system, so no
+    system-level adapter reaches it, and it is not a county employer, so
+    neither NEOGOV nor JobAps carries it.
+
+    Two things about this platform are worth writing down.
+
+    The portal looks like an app and is not. `/jobs/search?ss=1` renders
+    the whole listing server-side, twenty cards to a page, and says where
+    the next page is in a `<link rel="next">`. Follow that rather than
+    guessing at `pr=N`: the parameter set differs between portals and a
+    guessed URL silently returns page one again, which reads as "the board
+    ended" and truncates the sweep.
+
+    The detail page carries a JSON-LD JobPosting — but only when asked for
+    with `in_iframe=1`. The plain URL serves a 268 KB marketing wrapper
+    with no structured data in it at all, so a scraper that reads the
+    obvious URL gets a description it has to mine out of navigation.
+
+    Do not classify from the listing card. It carries a `description` div,
+    and that div is a one-sentence teaser — the same shape that produced
+    40 false "no experience required" verdicts when Sutter was read
+    through Phenom.
+
+    Cards carry their own location when the employer has more than one
+    site — AHMC writes "US-CA-Daly City" and a Facility name beside it,
+    and its board is mostly southern California, so a default city would
+    have filed Anaheim postings in Daly City. `default_city` is the
+    fallback for a single-site portal like Sonoma Valley's, which prints
+    no location at all.
+    """
+
+    # "US-CA-Daly City" is how iCIMS stores a location. Keep the city and
+    # the state and drop the country, so geo reads a place and the digest
+    # prints one.
+    _ICIMS_LOC = re.compile(r"^\s*US-([A-Z]{2})-(.+?)\s*$")
+
+    MAX_PAGES = 25      # 500 postings of headroom on a 20-per-page board
+
+    # Split on the card marker rather than matching to </li>. A card whose
+    # header fields are themselves list items would end at the first
+    # closing tag, and the fields lost that way are the location and the
+    # facility — which on a multi-site board means a posting silently
+    # falling back to the default city. This is the mistake CLAUDE.md
+    # records against Radancy's newer row template.
+    _CARD_MARK = '<li class="iCIMS_JobCardItem"'
+    _ANCHOR = re.compile(
+        r'<a href="([^"]*?/jobs/(\d+)/[^"]*?)"[^>]*class="iCIMS_Anchor"[^>]*>'
+        r'(.*?)</a>', re.S)
+    _FIELD = re.compile(
+        r'<dt class="iCIMS_JobHeaderField"[^>]*>(.*?)</dt>\s*'
+        r'<dd class="iCIMS_JobHeaderData"[^>]*>(.*?)</dd>', re.S)
+    _NEXT = re.compile(r'<link rel="next" href="([^"]+)"')
+    _LD = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+
+    def __init__(self, employer: str, host: str, default_city: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.default_city = default_city
+        self.setting = setting
+
+    @staticmethod
+    def _title(fragment: str) -> str:
+        # The anchor holds a screen-reader label ahead of the <h3>, and
+        # the label is not the same word on every portal: Sonoma Valley
+        # writes "Title" and AHMC writes "Requisition Title". Strip tags
+        # first, then whichever label is there, or every posting on the
+        # board reads "Requisition Title Staff Nurse II".
+        t = html.unescape(re.sub(r"\s+", " ",
+                                 re.sub(r"<[^>]+>", " ", fragment))).strip()
+        return re.sub(r"^(?:\w+\s+)?Title\s+", "", t)
+
+    def _fields(self, card: str) -> dict[str, str]:
+        """The card's own Requisition ID / Location / Facility / Department."""
+        out = {}
+        for label, value in self._FIELD.findall(card):
+            k = self._title(label).strip(" :").lower()
+            # The label is written twice on some fields, once for screen
+            # readers as "Location : Location". Take the last word.
+            k = k.split(":")[-1].strip()
+            if k:
+                out[k] = self._title(value)
+        return out
+
+    def _where(self, fields: dict[str, str]) -> str:
+        raw = fields.get("location") or ""
+        m = self._ICIMS_LOC.match(raw)
+        if m:
+            return f"{m.group(2)}, {m.group(1)}"
+        return raw or self.default_city
+
+    def fetch_listings(self) -> list[Posting]:
+        url = (f"https://{self.host}/jobs/search?ss=1"
+               "&searchRelation=keyword_all&in_iframe=1")
+        out, seen = [], set()
+        for _ in range(self.MAX_PAGES):
+            body = _request(url)
+            cards = body.split(self._CARD_MARK)[1:]
+            if not cards:
+                break
+            for card in cards:
+                a = self._ANCHOR.search(card)
+                if not a:
+                    continue
+                href, jid, title = a.groups()
+                if jid in seen:
+                    continue
+                seen.add(jid)
+                fields = self._fields(card)
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=jid,
+                    title=self._title(title),
+                    location=self._where(fields),
+                    url=html.unescape(href),
+                    department=fields.get("facility") or fields.get("department"),
+                    setting=self.setting,
+                    source_adapter=f"icims:{self.host.split('.')[0]}",
+                ))
+            m = self._NEXT.search(body)
+            if not m:
+                break
+            url = html.unescape(m.group(1))
+            if "in_iframe" not in url:
+                url += "&in_iframe=1"
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        m = self._LD.search(body)
+        if not m:
+            return p
+        try:
+            d = json.loads(m.group(1))
+        except json.JSONDecodeError:
+            return p
+        p.description = _html_to_text(d.get("description", ""))
+        p.posted_date = (d.get("datePosted") or "")[:10] or p.posted_date
+        # iCIMS writes employmentType "OTHER" when the employer left the
+        # field alone, and the digest prints the schedule verbatim under
+        # the title. A field the posting never filled in stays blank.
+        kind = (d.get("employmentType") or "").strip()
+        if kind and kind.upper() != "OTHER":
+            p.schedule = kind
+        return p
+
+
+# ── adapter 16: UKG Pro Recruiting / UltiPro (Telecare) ──────────────
+
+class UKGRecruiting:
+    """
+    UKG Pro Recruiting (the boards still hosted on recruiting.ultipro.com)
+    is what mid-sized healthcare employers use, and it reaches Telecare —
+    a behavioural-health operator running psychiatric health facilities,
+    crisis units and residential programs in Oakland, San Leandro, San
+    Jose, Stockton, Ceres and Santa Cruz. None of them belongs to a
+    hospital system, so nothing else here sees them.
+
+    The board's own front end POSTs to LoadSearchResults, and it answers
+    an unauthenticated caller. The payload matters: the full filter block
+    the browser sends is rejected with a 500 by this tenant, while the
+    three fields that actually mean anything are accepted. Send the small
+    one.
+
+    `Top` is honoured up to the board's total, so paging is a courtesy
+    rather than a requirement — but page anyway, and stop on `totalCount`
+    rather than on a short page, because a filtered board can return fewer
+    than `Top` and still have more.
+
+    The detail page embeds the whole opportunity as JSON, description
+    included. There is no separate JSON endpoint for it that answers
+    without a session, so the page is the API.
+    """
+
+    PER_PAGE = 100
+    MAX_PAGES = 20
+
+    def __init__(self, employer: str, board_url: str,
+                 setting: str | None = None):
+        self.employer = employer
+        self.board = board_url.rstrip("/")
+        self.setting = setting
+
+    _BUCKET_RANK = {"<30": 0, "30-60": 1, "60-90": 2, "90-120": 3}
+
+    @classmethod
+    def _closeness(cls, city: str) -> int:
+        verdict, bucket, _ = geo.classify(city)
+        if verdict is geo.Geo.IN:
+            return cls._BUCKET_RANK.get(bucket, 4)
+        return 5 if verdict is geo.Geo.UNKNOWN else 6
+
+    def fetch_listings(self) -> list[Posting]:
+        out, seen, skip = [], set(), 0
+        for _ in range(self.MAX_PAGES):
+            body = _request(f"{self.board}/JobBoardView/LoadSearchResults",
+                            data={"opportunitySearch": {
+                                "Top": self.PER_PAGE, "Skip": skip,
+                                "QueryString": "", "OrderBy": [],
+                                "Filters": []}})
+            d = json.loads(body)
+            batch = d.get("opportunities") or []
+            if not batch:
+                break
+            for j in batch:
+                oid = j.get("Id")
+                if not oid or oid in seen:
+                    continue
+                seen.add(oid)
+                # A program posting names exactly one site; a regional one
+                # names several. File it under the nearest, the way the
+                # Workday multi-site postings are filed, and say how many
+                # others there were rather than hiding them.
+                sites = []
+                for loc in j.get("Locations") or []:
+                    a = loc.get("Address") or {}
+                    city = ", ".join(x for x in (
+                        a.get("City"), (a.get("State") or {}).get("Code")) if x)
+                    if not city:
+                        continue
+                    c = loc.get("Coordinates") or {}
+                    sites.append((city, _f(c.get("Latitude")),
+                                  _f(c.get("Longitude"))))
+                lat = lon = None
+                where = ""
+                if sites:
+                    # The coordinates have to come from the same site as the
+                    # label. Taking the first location's while labelling the
+                    # nearest one puts a posting's distance hint hundreds of
+                    # miles from the place the row says it is.
+                    best, lat, lon = min(
+                        sites, key=lambda s: self._closeness(s[0]))
+                    others = len(sites) - 1
+                    where = f"{best} (+{others} more)" if others else best
+                out.append(Posting(
+                    employer=self.employer,
+                    req_id=str(j.get("RequisitionNumber") or oid),
+                    title=j.get("Title") or "",
+                    location=where,
+                    url=f"{self.board}/OpportunityDetail?opportunityId={oid}",
+                    posted_date=(j.get("PostedDate") or "")[:10] or None,
+                    department=j.get("JobCategoryName") or None,
+                    schedule="Full time" if j.get("FullTime") else None,
+                    setting=self.setting,
+                    latitude=lat,
+                    longitude=lon,
+                    source_adapter="ukg",
+                ))
+            skip += len(batch)
+            total = d.get("totalCount")
+            if total and skip >= total:
+                break
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url)
+        i = body.find('"Description":')
+        if i < 0:
+            return p
+        try:
+            raw, _ = json.JSONDecoder().raw_decode(
+                body[i + len('"Description":'):])
+        except ValueError:
+            return p
+        p.description = _html_to_text(raw)
+        return p
+
+
+
+# ── adapter 17: HRMDirect (La Clínica de La Raza) ────────────────────
+
+class HRMDirect:
+    """
+    HRMDirect is what community health centres use, and it reaches La
+    Clínica de La Raza — a federally qualified health centre with clinics
+    in Oakland, San Leandro, Union City, Concord, Pittsburg, Oakley and
+    Vallejo, hiring "Registered Nurse I/II" as we speak.
+
+    That title is the point. This scan was built around hospitals, and
+    the user's own criteria include experience that is *not* acute care;
+    a clinic RN post is where a new graduate without acute experience is
+    actually hired. Nothing here read a single community clinic before.
+
+    The whole board is one GET, 155 rows, no paging and no JSON. Rows are
+    keyed on `data-req-id` rather than on the row element, for the same
+    reason Radancy's are: the title cell's anchor is never closed —
+    HRMDirect writes `<a href=...>Registered Nurse I/II</td>` — so a
+    parser that keys on `<a>...</a>` swallows every row up to the next
+    closing tag and reports one posting where there are a hundred.
+
+    The detail URL needs the row's own `req_loc`, not just the req id: the
+    same requisition open at two clinics has two of them, and the wrong
+    one returns a page with no job text in it at all — no error, no
+    redirect, just a shell. Take the href the row gives you.
+
+    The board is cp1252. Decoded as UTF-8 the employer's own name comes
+    out "La Cl\ufffdnica", which would then be quoted back as evidence.
+    """
+
+    ENCODING = "cp1252"
+
+    def __init__(self, employer: str, host: str, setting: str | None = None):
+        self.employer = employer
+        self.host = host
+        self.base = f"https://{host}/employment"
+        self.setting = setting
+
+    @staticmethod
+    def _text(fragment: str) -> str:
+        return html.unescape(
+            re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", fragment or ""))).strip()
+
+    def _cell(self, chunk: str, cls: str) -> str:
+        m = re.search(r'class="' + cls + r'[^"]*"[^>]*>(.*?)</td>', chunk, re.S)
+        return self._text(m.group(1)) if m else ""
+
+    def fetch_listings(self) -> list[Posting]:
+        body = _request(f"{self.base}/job-openings.php?search=true&nohd=",
+                        encoding=self.ENCODING)
+        out, seen = [], set()
+        for chunk in body.split('data-req-id="')[1:]:
+            req = chunk.split('"', 1)[0]
+            if not req.isdigit() or req in seen:
+                continue
+            seen.add(req)
+            m = re.search(r'href="(job-opening\.php\?req=' + req + r'[^"]*)"',
+                          chunk)
+            if not m:
+                continue
+            href = html.unescape(m.group(1)).split("#")[0].replace("&&", "&")
+            city, state = self._cell(chunk, "cities"), self._cell(chunk, "state")
+            out.append(Posting(
+                employer=self.employer,
+                req_id=req,
+                title=self._cell(chunk, "posTitle"),
+                location=", ".join(x for x in (city, state) if x),
+                url=f"{self.base}/{href}",
+                department=self._cell(chunk, "custSort1") or None,
+                setting=self.setting,
+                source_adapter=f"hrmdirect:{self.host.split('.')[0]}",
+            ))
+        return out
+
+    def fetch_detail(self, p: Posting) -> Posting:
+        body = _request(p.url, encoding=self.ENCODING)
+        i = body.find('class="jobDesc')
+        if i < 0:
+            return p
+        i = body.find(">", i) + 1
+        end = body.find("openingsButton", i)
+        chunk = body[i:end if end > i else i + 30000]
+        chunk = re.sub(r"(?is)<(script|style)[^>]*>.*?</\1>", " ", chunk)
+        p.description = _html_to_text(chunk)
+        return p
+
 
 
 ADAPTERS = [
@@ -1866,6 +2357,74 @@ ADAPTERS = [
     # San Joaquin General Hospital, French Camp. Not on NEOGOV: the slug
     # that looks like it ("sjcounty") is San Juan County, Utah.
     JobAps(),                                             # verified — 30 nurse rows
+
+    # Alameda County's own board. The county hospitals are Alameda Health
+    # System, already read above, but the county itself employs public
+    # health and correctional-health nurses and posts them nowhere else.
+    # It is on JobAps, not NEOGOV — the plausible-looking NEOGOV slug
+    # "alamedaca" is the City of Alameda.
+    JobAps("Alameda County", agency="Alameda",
+           default_city="Oakland", path="jobboard.asp"),   # verified
+
+    # Sonoma Valley Hospital, Sonoma — a district hospital belonging to no
+    # system, which is why nothing reached it. The user asked about Sonoma
+    # specifically; Providence and Sutter cover Santa Rosa, this is the
+    # one independent inside the county.
+    ICIMS("Sonoma Valley Hospital", "careers-svh.icims.com",
+          default_city="Sonoma"),                          # verified
+
+    # Telecare — psychiatric health facilities and crisis programs in
+    # Oakland, San Leandro, San Jose, Stockton, Ceres and Santa Cruz.
+    # Behavioural health is a setting that hires new graduates and no
+    # other adapter here reads any of it.
+    UKGRecruiting("Telecare",
+                  "https://recruiting2.ultipro.com/TEL1006/JobBoard/"
+                  "2fcbb6f4-e717-17cb-9327-3dd87a55b08d",
+                  setting="Behavioral health"),            # verified
+
+    # Marshall Medical Center, Placerville — independent, at the far edge
+    # of the ring at 90-120 minutes.
+    WorkdayCXS("Marshall Medical Center",
+               "marshallmedical.wd1.myworkdayjobs.com",
+               "marshallmedical", "MMC"),                  # verified
+
+    # Central Valley Specialty Hospital, Modesto — long-term acute care.
+    # The only LTAC in range that no other adapter reaches.
+    # Seton Medical Center, Daly City — thirty minutes from Oakland and
+    # read by nothing until now. It belongs to AHMC Healthcare, whose
+    # other California hospitals are all in the San Gabriel Valley and
+    # Riverside, 350 miles out; the board is AHMC-wide and everything of
+    # it that lands in range is Seton, which is why the employer is named
+    # for the hospital and the facility field names it again. Six of its
+    # twenty-two in-range postings were STAFF NURSE I on the day it was
+    # added — the user's first category, at his nearest unread hospital.
+    ICIMS("Seton Medical Center (AHMC)", "careers-ahmchealth.icims.com",
+          default_city="Daly City"),                    # verified — 431 postings
+
+    # La Clínica de La Raza — a community health centre with clinics in
+    # Oakland, San Leandro, Union City, Concord, Pittsburg, Oakley and
+    # Vallejo. The first clinic employer this scan has ever read, and the
+    # tier the user's criteria actually point at: a Registered Nurse I/II
+    # post in a clinic is where a new graduate without acute-care
+    # experience gets hired.
+    HRMDirect("La Clínica de La Raza", "laclinica.hrmdirect.com",
+              setting="Community clinic"),               # verified
+
+    # Sonoma Specialty Hospital, Sebastopol — the county's only long-term
+    # acute care hospital, 37 beds, and the fifth LTAC inside the ring
+    # rather than the four this repo believed it had. Found by asking
+    # which hospitals are in Sonoma County, not which systems were
+    # missing: it belongs to none, and its board is the Paylocity adapter
+    # that was already here.
+    Paylocity("Sonoma Specialty Hospital",
+              "https://recruiting.paylocity.com/recruiting/jobs/All/"
+              "f9f0eb86-623d-4599-9b60-261f34f2735f/Sonoma-Specialty-Hospital",
+              setting="Long-term acute care"),   # verified — 17 postings
+
+    Paylocity("Central Valley Specialty Hospital",
+              "https://recruiting.paylocity.com/recruiting/jobs/All/"
+              "59573989-59eb-4885-ac33-ae95e3c92fb2/Central-Valley-Special",
+              setting="Long-term acute care"),   # verified — 24 postings
 
     USAJobs(),                                            # UNTESTED — needs USAJOBS_KEY
 

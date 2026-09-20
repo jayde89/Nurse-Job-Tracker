@@ -1210,6 +1210,466 @@ for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
     check(f"a unit number is not a grade: {_t[:34]}",
           _bucket(_t) != "LEVEL_II_TITLE", True)
 
+# ── LTAC must not be suppressed by its own name ──────────────────────
+# ACUTE lists "hospital" as a marker, so every sentence naming an
+# employer whose name contains the word matched it. Central Valley
+# Specialty Hospital is a long-term acute care hospital in Modesto whose
+# posting says "We encourage new RNs to apply" and asks only for a
+# licence, BLS and ACLS — and it was hidden as ACUTE_REQUIRED because its
+# benefits paragraph ("wages determined based on ... qualifications and
+# experience") contained both an ACUTE marker and the word "experience".
+_BENEFITS = ("Compensation and Benefits: Central Valley Specialty Hospital "
+             "offers competitive compensation, with individual wages "
+             "determined based on a number of factors including, but not "
+             "limited to, an individual's qualifications and experience.")
+check("an employer's own name in benefits copy is not an acute requirement",
+      bool(C.ACUTE_EXPERIENCE.search(_BENEFITS)), False)
+check("the loose ACUTE pattern still matches it, which is why the tight "
+      "one exists", bool(C.ACUTE.search(_BENEFITS)), True)
+
+# The genuine gates must still fire.
+for _t in ("Two years of acute care hospital experience required.",
+           "Minimum 2 years experience in an acute care setting.",
+           "Requires recent acute care experience.",
+           "1 year hospital experience required.",
+           "Experience in a critical care unit is required."):
+    check(f"a real acute gate still matches: {_t[:40]}",
+          bool(C.ACUTE_EXPERIENCE.search(_t)), True)
+
+# End to end: an LTAC posting that welcomes new grads reaches the user.
+_LTAC = ("Central Valley Specialty Hospital, a leading post-acute care "
+         "facility, is seeking Registered Nurses. We encourage new RNs to "
+         "apply. License / Certification Qualifications: Valid California "
+         "state RN license. Basic Life Support (BLS) certification. " + _BENEFITS)
+_v = C.classify("Registered Nurse (R.N.)", _LTAC)
+check("an LTAC posting welcoming new RNs is a Level I role",
+      _v.bucket, "STAFF_NURSE_I")
+check("and it quotes the invitation, not the benefits paragraph",
+      "new RNs" in _v.evidence, True)
+
+
+# ── "we encourage new RNs to apply" is a new-grad invitation ─────────
+for _t in ("We encourage new RNs to apply", "New RNs are welcome to apply",
+           "new graduates are encouraged to apply", "We welcome new nurses"):
+    check(f"invitation recognised: {_t[:34]}", bool(C.NEW_GRAD.search(_t)), True)
+# An invitation verb is required in either word order, so a bare "new RN"
+# in onboarding prose is not read as one.
+for _t in ("Orientation is provided for the new RN",
+           "The new RN will report to the charge nurse",
+           "New equipment training required"):
+    check(f"not an invitation: {_t[:34]}", bool(C.NEW_GRAD.search(_t)), False)
+
+
+# ── Paylocity (Central Valley Specialty Hospital) ────────────────────
+_PAY = A.Paylocity("Central Valley Specialty Hospital",
+                   "https://example.invalid/board",
+                   setting="Long-term acute care")
+check("LVN written with an abbreviation is still an LVN role",
+      A.title_passes("LICENSED VOC. NURSE"), False)
+check("and the RN beside it still comes through",
+      A.title_passes("Registered Nurse (R.N.)"), True)
+# LocationName on this board is "On Site" or "Main Office", which geo
+# cannot rank; the real city is in the nested JobLocation.
+_body = ('{"Jobs":[{"JobId":3756510,"JobTitle":"Registered Nurse (R.N.)",'
+         '"LocationName":"On Site","PublishedDate":"2026-08-01T00:00:00",'
+         '"HiringDepartment":"Nursing","Description":"teaser only",'
+         '"JobLocation":{"Name":"On Site","City":"Modesto","State":"CA"}}]}')
+_m = A.Paylocity._JOBS.search(_body)
+check("the embedded Jobs array is found", _m is not None, True)
+import json as _json
+_j = _json.loads(_m.group(1))[0]
+check("the city comes from the nested JobLocation, not LocationName",
+      f"{_j['JobLocation']['City']}, {_j['JobLocation']['State']}", "Modesto, CA")
+check("Modesto is in range", geo.classify("Modesto, CA")[0], geo.Geo.IN)
+
+# ── a Level I title is a signal, not a promise ──────────────────────
+# La Clínica posts "Registered Nurse I/II" and then asks, in the body, for
+# "a valid RN license ... supplemented by two to three years clinical
+# experience". Answering that with "Level I / new grad" and quoting the
+# title is the false new-graduate call this codebase exists to prevent,
+# and a community clinic is exactly where a new graduate looks.
+_laclinica = ("Minimum Job Requirements. Knowledge and experience with "
+              "Electronic Health Record programs. Experience and Other "
+              "Certifications. Requires graduation from an accredited school "
+              "of nursing. Possession of a valid RN license in the state of "
+              "California supplemented by two to three years clinical "
+              "experience in the areas of adult medicine. BSN preferred but "
+              "not required.")
+_v = C.classify("Registered Nurse I/II", _laclinica)
+check("a Level I title does not outrank a stated duration",
+      _v.bucket, "UNCLEAR")
+check("and the quote is the requirement, not the title",
+      "two to three years clinical experience" in (_v.evidence or ""), True)
+check("the posting still reaches the user", _v.bucket in C.HIDE, False)
+# With nothing contradicting it, the title still decides.
+_v = C.classify("Registered Nurse I/II",
+                "Requires graduation from an accredited school of nursing "
+                "and a valid California RN license.")
+check("an uncontradicted Level I title is still a Level I role",
+      _v.bucket, "STAFF_NURSE_I")
+# The employer's own new-grad language still beats everything.
+_v = C.classify("Registered Nurse I/II",
+                "We encourage new RNs to apply. Two years of experience "
+                "preferred.")
+check("explicit new-grad language still wins", _v.bucket, "STAFF_NURSE_I")
+
+# The heading that made this reachable: _html_to_text puts a full stop
+# after a heading that sits in its own block and ends without punctuation,
+# and the label matcher used to require a colon or nothing.
+check("a heading ending in a full stop is still a heading",
+      "MINIMUM JOB REQUIREMENTS" in C.sections(_laclinica), True)
+check("and so is the one after it",
+      "EXPERIENCE AND OTHER CERTIFICATIONS" in C.sections(_laclinica), True)
+# A prose label still needs its colon: "Experience." ending a sentence is
+# a sentence, not a section.
+check("a bare prose label is not a heading",
+      "EXPERIENCE" in C.sections("She has five years of experience. "
+                                 "Apply today."), False)
+
+# A duration is quoted in the sentence it sits in, and a sentence about
+# experience is preferred over the first one on the page — La Clínica's
+# first is "40 years advocating for and creating a health home".
+_v = C.classify("Registered Nurse I",
+                "La Clínica has spent over 40 years advocating for our "
+                "communities. Requires two years of clinical experience.")
+check("the duration quote is about experience, not the employer's history",
+      "two years of clinical experience" in (_v.evidence or ""), True)
+
+
+# ── HRMDirect (La Clínica de La Raza) ───────────────────────────────
+# The title cell's anchor is never closed — HRMDirect writes
+# `<a href=...>Registered Nurse I/II</td>` — so a parser keyed on
+# <a>...</a> swallows every row up to the next closing tag and reports one
+# posting where there are 155. Key on data-req-id.
+_hrm = A.HRMDirect("La Clínica de La Raza", "laclinica.hrmdirect.com")
+_row = ('<tr class="reqitem ReqRowClick" data-req-id="3770812" '
+        'data-custom-req-id="3921">'
+        '<td class="custSort1 reqitem">Medical&nbsp;</td>'
+        '<td class="jobId reqitem">3921</td>'
+        '<td class="posTitle reqitem"><a href="job-opening.php?req=3770812'
+        '&amp;req_loc=1405368&amp;&amp;&amp;nohd#job">Registered Nurse I/II</td>'
+        '<td class="cities reqitem">Oakland </td>'
+        '<td class="state reqitem">CA</td></tr>')
+_chunk = _row.split('data-req-id="')[1]
+check("the title cell survives its unclosed anchor",
+      _hrm._cell(_chunk, "posTitle"), "Registered Nurse I/II")
+check("and the city comes from its own cell",
+      _hrm._cell(_chunk, "cities"), "Oakland")
+check("Oakland is in range", geo.classify("Oakland, CA")[0], geo.Geo.IN)
+check("a clinic RN I/II title passes the prefilter",
+      A.title_passes("Registered Nurse I/II"), True)
+# The board is cp1252; decoded as UTF-8 the employer's own name comes out
+# with a replacement character, which would then be quoted as evidence.
+check("the adapter declares its encoding", A.HRMDirect.ENCODING, "cp1252")
+
+
+# ── the evidence has to be the sentence the label rests on ──────────
+# Found by re-reading live verdicts after the adapters started keeping
+# statement boundaries. Every case here is a San Francisco or John Muir
+# posting whose quote did not support its own label.
+
+# 1. A posting that writes both EXPERIENCE and MINIMUM QUALIFICATIONS
+#    means the first one. Reading them in declared order quoted the
+#    recruitment process and threw the requirement away.
+_sf = ("Minimum Qualifications: as listed in the job ad. Applicants may be "
+       "required to submit verification of qualifying education and "
+       "experience at any point during the recruitment and selection "
+       "process. Experience: At least one (1) year of experience working "
+       "as a Registered Nurse.")
+_v = C.classify("Registered Nurse", _sf)
+check("the EXPERIENCE section outranks the QUALIFICATIONS section",
+      _v.evidence, "At least one (1) year of experience working as a "
+                   "Registered Nurse")
+check("and the verdict is general experience", _v.bucket, "GENERAL_EXPERIENCE")
+
+# 2. Sentences about the application are not requirements.
+check("an application-process sentence is not a requirement clause",
+      bool(C.PROCESS_CLAUSE.search(
+          "Applicants may be required to submit verification of qualifying "
+          "education and experience at any point during the recruitment "
+          "and selection process.")), True)
+check("neither is the salary-step instruction",
+      bool(C.PROCESS_CLAUSE.search(
+          "*As of March 29, 2023, in order to place you at the appropriate "
+          "salary step, please include your complete and verifiable "
+          "registered nursing employment history.")), True)
+# ...but a real gate worded as an instruction to applicants still counts,
+# which is why the skip needs both a duration and a required-word.
+_v = C.classify("Registered Nurse",
+                "Experience: Applicants must have at least two years of ICU "
+                "experience.")
+check("a real gate addressed to applicants is still a gate",
+      _v.bucket, "ACUTE_REQUIRED")
+
+# 3. "Requires nursing experience" must rest on a clause that says so.
+_v = C.classify("Per Diem Registered Nurse",
+                "Minimum Qualifications: as listed in the job ad. Under "
+                "general supervision, performs professional nursing duties. "
+                "Performs other related duties as assigned/required.")
+check("a generic section naming no experience is UNCLEAR, not experience",
+      _v.bucket, "UNCLEAR")
+# ...and a section the posting itself headed EXPERIENCE is exempt, because
+# John Muir states the requirement in the heading and not in the clause.
+_v = C.classify("RN - BHC Psychiatric Services",
+                "Education: Graduate of an Accredited School of Nursing - "
+                "Required. Experience: Nursing - Psychiatry - Required.")
+check("an EXPERIENCE-headed section still counts without the word",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and quotes its own clause", _v.evidence,
+      "Nursing - Psychiatry - Required")
+
+# 4. Acute care offered as one acceptable setting among several is not an
+#    acute-care gate. San Francisco's Public Health Nurse asks for a year
+#    "in an acute hospital, primary care facility, home health agency" —
+#    a nurse whose year was spent in a clinic qualifies, and the user's
+#    criteria name that experience as one that belongs on the list.
+_v = C.classify("Public Health Nurse",
+                "Experience: One (1) year of verifiable experience as a "
+                "Registered Nurse in an acute hospital, primary care "
+                "facility, home health agency or clinic.")
+check("acute as one option among several is not an acute-care gate",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and the posting reaches the user", _v.bucket in C.HIDE, False)
+_v = C.classify("Staff Nurse",
+                "Experience: One (1) year of acute care experience required.")
+check("acute on its own still suppresses", _v.bucket, "ACUTE_REQUIRED")
+
+# 5. The quote is the clause that carries the requirement, not whichever
+#    one came first once the bullets stopped running together.
+_v = C.classify("Registered Nurse",
+                "Experience: Required. BLS required. Two years of nursing "
+                "experience required.")
+check("the clause that states the requirement is the one quoted",
+      "Two years of nursing experience" in (_v.evidence or ""), True)
+
+
+# ── an adapter that flattens HTML destroys the evidence ─────────────
+# Workday's jobDescription is a bulleted requirements list. Stripping
+# every tag to a space merged John Muir's bullets into "Graduate of an
+# Accredited School of Nursing - Required Experience: 1 year - Nursing -
+# Acute Care - Required" — one quote spanning three requirements, with
+# "Required Experience" an artefact of the merge.
+_bullets = ("<p>Education:</p><ul><li>Graduate of an Accredited School of "
+            "Nursing - Required</li></ul><p>Experience:</p><ul>"
+            "<li>1 year - Nursing - Acute Care - Required</li>"
+            "<li>2000 hours Nursing - Emergency - Preferred</li></ul>")
+_flat = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", _bullets)).strip()
+check("a flat strip merges the bullets",
+      "Required Experience" in _flat, True)
+check("the block-aware helper does not",
+      "Required Experience" in A._html_to_text(_bullets), False)
+_v = C.classify("RN - Emergency", A._html_to_text(_bullets))
+check("so the evidence is one requirement, not three",
+      _v.evidence, "Experience: 1 year - Nursing - Acute Care - Required.")
+
+
+# ── sub-acute and post-acute are not acute ──────────────────────────
+# Sonoma Specialty Hospital's staff RN posting asks for "One-year
+# sub/post-acute care experience", and the word "acute" inside
+# "post-acute" suppressed it as ACUTE_REQUIRED on the day the hospital
+# was added. Post-acute and sub-acute are the settings the user's own
+# criteria name as basic RN experience that is not acute care, so a
+# posting asking for them belongs on the list.
+check("sub/post-acute experience is not an acute-care gate",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Experience Required: One-year sub/post-acute care experience.")),
+      False)
+check("nor is sub-acute written out",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Minimum one year of sub-acute care experience required.")), False)
+check("nor non-acute",
+      bool(C.ACUTE_EXPERIENCE.search("Non-acute care experience required.")),
+      False)
+check("and a real acute-care gate still matches",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Two years of acute care experience required.")), True)
+check("including one written the other way round",
+      bool(C.ACUTE_EXPERIENCE.search(
+          "Experience in an acute care setting is required.")), True)
+_v = C.classify("Registered Nurse",
+                "Experience Required: One-year sub/post-acute care experience.")
+check("so the posting reaches the user as general experience",
+      _v.bucket, "GENERAL_EXPERIENCE")
+check("and is not suppressed", _v.bucket in C.HIDE, False)
+
+
+# ── iCIMS (Sonoma Valley Hospital) ───────────────────────────────────
+# The portal reads as an app and is server-rendered. Two things this
+# parser has to get right: the screen-reader label that sits inside the
+# anchor ahead of the title, and following the portal's own rel="next"
+# rather than guessing a page parameter.
+_IC = A.ICIMS("Sonoma Valley Hospital", "careers-svh.icims.com",
+              default_city="Sonoma")
+_card = ('<ul class="container-fluid iCIMS_JobsTable">'
+         '<li class="iCIMS_JobCardItem"><div class="row">'
+         '<div class="col-xs-12 title">'
+         '<a href="https://careers-svh.icims.com/jobs/2401/'
+         'registered-nurse-%28per-diem%29/job?in_iframe=1" '
+         'class="iCIMS_Anchor" title="2401 - Registered Nurse (Per Diem)">'
+         '<span class="sr-only field-label">Title</span>'
+         '<h3 > Registered Nurse (Per Diem)</h3></a></div>'
+         '<div class="col-xs-12 description">One sentence of teaser.</div>'
+         '</div></li></ul>'
+         '<link rel="next" href="https://careers-svh.icims.com/jobs/search'
+         '?pr=1&amp;in_iframe=1" />')
+_found = _card.split(A.ICIMS._CARD_MARK)[1:]
+check("an iCIMS job card is found", len(_found), 1)
+_anchor = A.ICIMS._ANCHOR.search(_found[0])
+check("the job id comes from the URL", _anchor.group(2), "2401")
+check("the screen-reader label is not part of the title",
+      _IC._title(_anchor.group(3)), "Registered Nurse (Per Diem)")
+# The label is not the same word on every portal: Sonoma Valley writes
+# "Title" and AHMC writes "Requisition Title".
+check("whichever label the portal uses is stripped",
+      _IC._title('<span class="sr-only field-label">Requisition Title</span>'
+                 '<h3> Staff Nurse II</h3>'), "Staff Nurse II")
+# AHMC is multi-site, so its cards carry their own location and facility.
+# A default city would have filed Anaheim postings in Daly City.
+_ahmc_card = ('<li class="iCIMS_JobCardItem"><div class="col-xs-12 title">'
+              '<a href="https://careers-ahmchealth.icims.com/jobs/28777/'
+              'staff-nurse/job?in_iframe=1" class="iCIMS_Anchor" title="x">'
+              '<span class="sr-only field-label">Requisition Title</span>'
+              '<h3> *STAFF NURSE II</h3></a></div>'
+              '<dl class="iCIMS_JobHeaderGroup">'
+              '<div class="iCIMS_JobHeaderTag">'
+              '<dt class="iCIMS_JobHeaderField">'
+              '<span class="sr-only field-label">Location : Location</span>'
+              '</dt><dd class="iCIMS_JobHeaderData"><span> US-CA-Daly City'
+              '</span></dd></div>'
+              '<div class="iCIMS_JobHeaderTag">'
+              '<dt class="iCIMS_JobHeaderField">Facility</dt>'
+              '<dd class="iCIMS_JobHeaderData"><span> Seton Medical Center'
+              '</span></dd></div></dl></li>')
+_fields = _IC._fields(_ahmc_card.split(A.ICIMS._CARD_MARK)[-1])
+check("the card's own location is read", _fields.get("location"),
+      "US-CA-Daly City")
+check("and turned into something geo can rank",
+      _IC._where(_fields), "Daly City, CA")
+check("Daly City is in range", geo.classify("Daly City, CA")[0], geo.Geo.IN)
+check("the facility comes off the card too", _fields.get("facility"),
+      "Seton Medical Center")
+# "Monterey Park" contains "Monterey", and whole-phrase matching is
+# longest-first, so an AHMC posting in the San Gabriel Valley was filed
+# 90 minutes from Oakland instead of 350 miles away.
+check("Monterey Park is out of range",
+      geo.classify("Monterey Park, CA")[0], geo.Geo.OUT)
+check("and Monterey itself is not",
+      geo.classify("Monterey, CA")[0], geo.Geo.IN)
+check("the next page is read from the portal's own rel=next",
+      A.ICIMS._NEXT.search(_card).group(1),
+      "https://careers-svh.icims.com/jobs/search?pr=1&amp;in_iframe=1")
+check("Sonoma is a city geo places in range",
+      geo.classify("Sonoma")[0], geo.Geo.IN)
+
+
+# ── UKG Pro Recruiting (Telecare) ────────────────────────────────────
+# A regional posting names several sites. File it under the nearest one,
+# the way the Workday multi-site postings are filed, and say how many
+# others there were rather than dropping them silently.
+check("the nearer of two sites wins",
+      min(["Stockton, CA", "San Leandro, CA"], key=A.UKGRecruiting._closeness),
+      "San Leandro, CA")
+check("an out-of-range site loses to an in-range one",
+      min(["Bakersfield, CA", "Ceres, CA"], key=A.UKGRecruiting._closeness),
+      "Ceres, CA")
+# Telecare runs programs in Oregon and Washington as well as California,
+# which is why nothing here may assume a posting is Californian.
+check("a Portland posting is out of range",
+      geo.classify("Portland, OR")[0], geo.Geo.OUT)
+
+
+# ── JobAps: the header cell's class is not the row marker ────────────
+# San Joaquin writes <th class="JobTitle"> on its main table and a bare
+# <th scope="row"> on the departmental tables below it. Keying on the
+# class read 88 of that agency's 98 rows, and none at all of Alameda's,
+# whose whole board uses the bare form. A Staff Nurse posting can land on
+# a departmental list.
+_ja_main = ('<tr><th class="JobTitle"><a href="/SJQ/sup/bulpreview.asp?R1=1"'
+            ' class="JobTitle">Staff Nurse II</a>'
+            '<a class="JobNum">0326-RH1102-AC</a></th>'
+            '<td class="Locs">French Camp<br </td>'
+            '<td class="Dept">Health Care Services</td></tr>')
+_ja_dept = ('<tr><th scope="row"><a href="/Alameda/sup/bulpreview.asp?R1=2"'
+            ' class="JobTitle" title="x">Public Health Nurse </a>'
+            '<a href="/Alameda/sup/bulpreview.asp?R1=2" class="JobNum IconNew"'
+            ' title="x">25-5301-01 </a></th>'
+            '<td class="Salary">$1</td></tr>')
+check("the main table's rows are read",
+      len(A.JobAps._ROW.findall(_ja_main)), 1)
+check("and so are the departmental table's",
+      len(A.JobAps._ROW.findall(_ja_dept)), 1)
+check("the JobNum modifier class does not hide a row",
+      A.JobAps._text(A.JobAps._ROW.findall(_ja_dept)[0][2]), "25-5301-01")
+# Alameda is on JobAps, not NEOGOV: the plausible slug "alamedaca" is the
+# City of Alameda. Its board lives at jobboard.asp, not at the root.
+check("an agency can put its listing somewhere other than the root",
+      A.JobAps(employer="Alameda County", agency="Alameda",
+               default_city="Oakland", path="jobboard.asp").path,
+      "jobboard.asp")
+check("Oakland is in range", geo.classify("Oakland")[0], geo.Geo.IN)
+
+
+# ── JobAps evidence must be the bulletin, not the site's menu ───────
+# The container this looked for (id="bulletin") exists on neither agency,
+# so every San Joaquin General posting was classified from the whole
+# page: the description opened with "HRS Home. Update Contact Info.
+# Logon. Job Portal Home. Current Openings..." and the classifier reads
+# from the front of what it is given.
+_ja_page = ('<div id="PageWrapper"><nav>Job Portal Home Current Openings'
+            ' How Do I Apply</nav>'
+            '<div class="JobBulletinBody"> Introduction. This recruitment is'
+            ' for the San Joaquin General Hospital.'
+            '<div id="ApplyPanelDiv">Apply now</div></div></div>')
+_i = _ja_page.find("JobBulletinBody")
+_i = _ja_page.find(">", _i) + 1
+_end = _ja_page.find("ApplyPanelDiv", _i)
+_chunk = _ja_page[_i:_end]
+check("the bulletin body is what gets read",
+      "Job Portal Home" in _chunk, False)
+check("and the attribute itself is not part of it",
+      _chunk.strip().startswith("Introduction"), True)
+
+
+# ── geo: places inside the ring the table did not know ───────────────
+# Kentfield is the load-bearing one. It is a long-term acute care
+# hospital this scan already reads through Vibra's board, the user asked
+# for LTAC by name, and its postings could never be ranked.
+check("Kentfield is in range", geo.classify("Kentfield, CA")[0], geo.Geo.IN)
+check("and it is ranked, not just accepted",
+      geo.classify("Kentfield, CA")[1], "30-60")
+check("San Lorenzo is in range", geo.classify("San Lorenzo, CA")[0], geo.Geo.IN)
+check("Oakdale is in range", geo.classify("Oakdale, CA")[0], geo.Geo.IN)
+check("Half Moon Bay is in range",
+      geo.classify("Half Moon Bay, CA")[0], geo.Geo.IN)
+# A name that is also a place somewhere else stays a question rather than
+# becoming a wrong answer. Ashland is in Alameda County and in Oregon,
+# and this scan now reads an employer with Oregon programs.
+check("an ambiguous name is left for review, not guessed",
+      geo.classify("Ashland")[0], geo.Geo.UNKNOWN)
+# ...and when the posting names the state, no guessing is needed at all.
+check("a state that isn't California is out of range",
+      geo.classify("Ashland, OR")[0], geo.Geo.OUT)
+# 30 of one scan's 33 review rows were the same Texas posting arriving
+# without coordinates. The review bucket is only useful if it is short.
+check("so is Texas", geo.classify("Lufkin, Texas")[0], geo.Geo.OUT)
+check("the state test reads the last segment only, not a substring",
+      geo.classify("Nevada City, CA")[0], geo.Geo.OUT)   # in OUT_CITIES
+check("and a Californian city with a state name in it is unharmed",
+      geo.classify("Kansas City, MO")[0], geo.Geo.OUT)
+check("a bare city with no state is still looked up",
+      geo.classify("French Camp")[0], geo.Geo.IN)
+check("and California spelled out is not mistaken for another state",
+      geo.classify("Oakland, California")[0], geo.Geo.IN)
+# The adapters that resolve a multi-site posting label it "City, ST
+# (+N more)", and that suffix would otherwise sit where the state is.
+check("the multi-site suffix does not hide the state",
+      geo.classify("Tukwila, WA (+1 more)")[0], geo.Geo.OUT)
+check("and does not break an in-range one",
+      geo.classify("Alameda, CA (+4 more)")[0], geo.Geo.IN)
+check("adding names did not break the longest-first ordering",
+      geo.classify("Sutter Creek, CA")[0], geo.Geo.OUT)
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:

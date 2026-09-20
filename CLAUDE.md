@@ -52,6 +52,19 @@ never before — see the docstring there for why, and keep it that way.
 The user also chose to show no count of what was hidden, so the digest
 says nothing about it; the scan's stdout line still reports it honestly.
 
+**An employer whose name contains "Hospital" is not stating a requirement.**
+`ACUTE` lists `hospital` as a marker, so every sentence naming such an
+employer matched it. Central Valley Specialty Hospital — a long-term acute
+care hospital in Modesto whose posting says "We encourage new RNs to
+apply" and asks only for a licence, BLS and ACLS — was suppressed as
+`ACUTE_REQUIRED`, because its benefits paragraph ("wages determined based
+on ... qualifications and experience") contained both an `ACUTE` marker
+(its own name) and the word "experience". Requiring the clause to also say
+"experience" was not enough; benefits copy says "experience" too. Use
+`ACUTE_EXPERIENCE`, which requires the two to be about each other. This
+was systematic against LTAC, which is the one setting whose employers all
+have "acute" or "hospital" in their names.
+
 **Evidence must come from the field that actually said it, and must be the
 tightest clause that says it.** Three ways this broke on 2026-09-09, all
 found by reading labels against their own quotes:
@@ -68,6 +81,46 @@ found by reading labels against their own quotes:
 - `_snippet` falls back to the opening of the text when its pattern does
   not match, so a signal that lived only in the *title* was evidenced by
   hospital marketing copy. Quote whichever field matched.
+
+**A verdict's label has to be supported by the sentence it quotes, and
+five ways that broke were found on 2026-09-09 by reading live verdicts
+after the adapters stopped flattening HTML.** Finer clauses are better
+evidence and they also expose every place the classifier was picking the
+wrong sentence:
+
+- A posting that writes both `EXPERIENCE` and `MINIMUM QUALIFICATIONS`
+  means the first. San Francisco puts the licence list and the
+  recruitment process under Qualifications and the actual gate under
+  Experience, and declared order took the wrong one.
+- Sentences about the application are not requirements. "Applicants may
+  be required to submit verification of qualifying education and
+  experience" carries a required-word and the word experience and asks
+  nothing of the nurse. `PROCESS_CLAUSE` skips these unless the clause
+  states both a duration and a required-word, so a real gate worded as an
+  instruction survives.
+- `GENERAL_EXPERIENCE` must rest on a clause that names experience. When
+  a generic QUALIFICATIONS heading swallows a whole page the surviving
+  clause was "Performs other related duties as assigned/required"; that
+  is `UNCLEAR`. A section the posting headed `EXPERIENCE` is exempt,
+  because John Muir puts the word in the heading and never in the clause.
+- Acute care offered as one setting among several is not an acute-care
+  gate — "in an acute hospital, primary care facility, home health
+  agency" is satisfied by clinic experience, which the user's criteria
+  call eligible. `_acute_only` guards every clause-based suppression.
+- **A Level I title is a signal, not a promise.** La Clínica posts
+  "Registered Nurse I/II" and then asks for "two to three years clinical
+  experience"; the title rule ran first and labelled it new-graduate.
+  It now yields to an unhedged duration in the body, the same way
+  `NO_EXPERIENCE` already does. Explicit new-grad language in the
+  posting's own words still beats everything.
+
+**A heading may end in a full stop, and that full stop is ours.**
+`_html_to_text` terminates a block that ends without punctuation, which
+is what a heading in its own `<p>` looks like, so "Minimum Job
+Requirements." stopped matching the moment the adapters started keeping
+statement boundaries — and La Clínica's RN I/II parsed to no requirements
+section at all. Distinctive labels accept `[:.]?`; the prose labels still
+require a colon, because "Experience." ending a sentence is a sentence.
 
 **The section splitter treats "experience" as a heading wherever it
 appears**, including mid-sentence. "Acute care experience: 2 years
@@ -91,7 +144,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 98 cases, no dependencies, ~instant
+python3 test_rules.py     # 332 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this
@@ -114,8 +167,13 @@ cp state/seen.json $T/state/; (cd $T && python3 run_scan.py)
 `--quick` skips detail fetches and runs in about a minute, but classifies
 nothing, so it can't tell you whether a classifier change worked.
 
-A full run takes 8-10 minutes, most of it the deliberate one-second pause
-between requests. Keep that pause.
+A full run takes about 18 minutes with 26 sources (measured 2026-09-09),
+most of it the deliberate one-second pause between requests — roughly 400
+detail fetches plus the listing pages. Keep the pause. The workflow is
+killed at 60 minutes, so there is headroom, but it is no longer the
+half-hour it was: check this number again after adding a source with
+hundreds of in-range postings, and remember NEOGOV can spend 420s of its
+own budget on a bad day.
 
 ## Invariants
 
@@ -158,6 +216,14 @@ between requests. Keep that pause.
   taken down, and building that section from `shown` meant the application
   disappeared from the dashboard the moment the employer pulled the
   listing. The row was always in the CSV; nothing surfaced it.
+- **A posting whose location names another state is out of range, and
+  that is decided before the city table is consulted.** Only the last
+  comma-separated segment is tested and only against a whole state name
+  or code, because testing the whole string puts "Nevada City, CA" and
+  "Kansas City" out on a substring. This exists because 30 of one scan's
+  33 review rows were the same CommonSpirit posting in Lufkin and
+  Livingston, Texas, arriving without coordinates — a review bucket is
+  only useful while it is short enough to read.
 - **Never tokenize the city table in `geo.py`.** Match whole phrases,
   longest first. Splitting on whitespace once put "creek" (from Sutter
   Creek) in the out-of-range set and silently rejected every Walnut Creek
@@ -219,6 +285,26 @@ sources didn't:
   parser on `data-job-id`, because keying on the outer `<li>` silently
   loses facility and location on the newer one, whose job-info fields are
   themselves nested `<li>` elements.
+- **HRMDirect** (La Clínica de La Raza) serves its whole board in one GET
+  and needs two things right. Key rows on `data-req-id`, because the
+  title cell's anchor is never closed — `<a href=...>Registered Nurse
+  I/II</td>` — so keying on `<a>...</a>` swallows every row up to the
+  next closing tag and reports one posting where there are 155. And take
+  the detail URL from the row: the same requisition at two clinics has
+  two `req_loc` values, and the wrong one returns a page with no job text
+  in it, with no error. The board is cp1252; decoded as UTF-8 the
+  employer's own name comes out "La Cl\ufffdnica" and gets quoted back as
+  evidence, which is why `_request` takes an encoding.
+- **Paylocity Recruiting** (`recruiting.paylocity.com`) is what small
+  independent employers use, and it reaches Central Valley Specialty
+  Hospital in Modesto. The board is one GET: the page embeds its whole job
+  list as JSON under `"Jobs"`, with the real city in a nested
+  `JobLocation` object — `LocationName` is "On Site" or "Main Office",
+  which geo cannot rank. Do not classify from the listing: the
+  `Description` there is a 110-character teaser, the same trap that
+  produced 40 false "no experience required" verdicts when Sutter was read
+  through Phenom. The full text is on `/recruiting/jobs/Details/{JobId}`
+  inside `job-preview-details`.
 - **JobAps** (`jobapscloud.com`) is the third CA-government platform after
   NEOGOV and SmartRecruiters. San Joaquin County is on it. Its landing
   page is the whole listing — no paging, no JSON. Strip unclosed trailing
@@ -239,10 +325,67 @@ sources didn't:
   `alamedaca` is the City of Alameda, not the county. Verify every slug
   against a posting's own `addressLocality` before adding it.
 
+- **iCIMS** (Sonoma Valley Hospital, Seton Medical Center) reads as an
+  app and is not:
+  `/jobs/search?ss=1` renders the whole listing server-side, twenty cards
+  to a page. Follow the portal's own `<link rel="next">` rather than
+  guessing `pr=N` — a guessed parameter set silently re-serves page one,
+  which looks like the end of the board. The detail page carries a JSON-LD
+  JobPosting **only** with `in_iframe=1`; the plain URL is a 268 KB
+  marketing wrapper with no structured data at all.
+- **UKG Pro Recruiting** (`recruiting*.ultipro.com`, Telecare) POSTs to
+  `JobBoardView/LoadSearchResults` and answers an unauthenticated caller —
+  but only to a small payload. The full filter block the browser sends
+  returns HTTP 500; `{"opportunitySearch":{"Top","Skip","QueryString",
+  "OrderBy":[],"Filters":[]}}` works. The detail page embeds the whole
+  opportunity as JSON, description included; there is no separate JSON
+  endpoint that answers without a session.
+- **JobAps** writes `<th class="JobTitle">` on an agency's main table and
+  a bare `<th scope="row">` on its departmental ones. Keying on the class
+  read 88 of San Joaquin's 98 rows and none at all of Alameda's, whose
+  whole board uses the bare form. Key on the anchors inside the cell. The
+  listing is not always at the agency root either — Alameda's root is a
+  splash page and the board is at `jobboard.asp`, so reading the root
+  returns a populated-looking page with no jobs in it. The bulletin lives
+  in `class="JobBulletinBody"`, and taking it is not tidying: without it
+  the description opens with the site's navigation menu and the classifier
+  reads from the front of what it is given.
+- **Paycom** (`paycomonline.net`, Dameron Hospital in Stockton, Community
+  Medical Centers) is genuinely blocked. The board is a React app, no
+  `/api/*` path answers, the loader bundle carries no endpoint, and there
+  is no RSS or feed. Needs a browser, same as HCA and CalCareers.
+
 Check the careers subdomain, not the marketing site. Check whether the
 listing endpoint reports its own total, and compare that to what you
 actually collect — three separate silent truncations were found that way
 (Workday's page cap, NEOGOV's unstable sort, El Camino's zeroed total).
+
+## Long-term acute care
+
+The user asked for LTAC specifically on 2026-09-09. There are **five**
+inside the ring — the fifth was found the same day by asking which
+hospitals are in Sonoma County rather than which systems were missing —
+and all five are now read:
+
+- **Kindred Hospital San Francisco Bay Area**, San Leandro (<30) —
+  ScionHealth. Routinely has zero open staff RN roles; a scan showing
+  nothing from it is usually correct, not broken.
+- **Kentfield Hospital**, Kentfield (30-60) — Vibra, via the same JIBE
+  board. Also frequently at zero.
+- **Vibra Hospital of Sacramento**, Folsom (90-120) — Vibra. Usually the
+  only LTAC with anything open, and it is at the far edge of the ring.
+- **Central Valley Specialty Hospital**, Modesto (60-90) — Paylocity,
+  added 2026-09-09. Was reached by nothing before.
+- **Sonoma Specialty Hospital**, Sebastopol (90-120) — Paylocity, added
+  2026-09-09. Sonoma County's only LTAC, 37 beds, belongs to no system,
+  and had two RN roles open on the day it was added. It was missing
+  because nothing had ever enumerated Sonoma County's hospitals; the
+  adapter it needed was already in the file.
+
+That distribution is why the list can look like it has no LTAC in it at
+all: the two nearest are usually empty, and the rest are 60-120 minutes
+out, so they sort to the bottom and fall outside an alert that leads with
+the nearest postings.
 
 ## Outstanding
 
@@ -262,12 +405,21 @@ actually collect — three separate silent truncations were found that way
   the user as places he has seen postings. Chinese Hospital in San
   Francisco runs no recognisable ATS. All three, plus CalCareers, are the
   remaining browser-shaped work.
-- **Whether UCSF now carries the two former Dignity hospitals in San
-  Francisco** — Saint Francis Memorial and St. Mary's — is unverified.
-  CommonSpirit's board no longer lists either and its San Francisco city
-  page is down to one posting, while UCSF shows 23 San Francisco RN roles
-  under a generic "San Francisco, CA". If they are not in there, SF has a
-  hole. Check a UCSF posting's facility field.
+- **Settled 2026-09-09: UCSF does carry the two former Dignity hospitals
+  in San Francisco.** The purchase completed in August 2024 and Saint
+  Francis Memorial is now UCSF Health Stanyan Hospital. Their postings are
+  on the UCSF Oracle board filed under a generic "San Francisco, CA" with
+  no facility field on the listing or in the description, which is why
+  looking for the names finds nothing. SF has no hole; don't re-open this.
+- **The gap that is left is not hospitals.** `COVERAGE.md` enumerates
+  every RN employer inside the ring and says which are read, which are
+  blocked and why, and which are not read yet. The short version: hospital
+  coverage is now essentially complete, and the uncovered tier is skilled
+  nursing beyond PACS, dialysis, hospice, community clinics and the rest
+  of behavioural health — which is precisely the tier the user's own
+  criteria describe as "basic RN experience that is not acute care". An
+  Indeed cross-check near Santa Rosa put five of ten RN postings in that
+  tier, in a county where every hospital is read.
 - **USAJOBS / VA is the only adapter not returning.** It needs
   `USAJOBS_KEY` and `USAJOBS_EMAIL` as repo secrets; the key must be
   requested by the repo owner at https://developer.usajobs.gov/apirequest/.
