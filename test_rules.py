@@ -43,6 +43,36 @@ check("bare CNA posting still excluded", A.title_passes("CNA - FT Days"), False)
 check("nursing assistant still excluded",
       A.title_passes("Certified Nursing Assistant (CNA)"), False)
 check("LVN still excluded", A.title_passes("LVN - Skilled Nursing"), False)
+# Five Certified Nurse Midwife postings sat in her live list, because
+# "nurse midwife" reached the include side through its own word "nurse".
+# An APRN role needs a master's or doctorate plus national certification —
+# she is a BSN RN and cannot hold one, so these are pure noise.
+for _t in ("Certified Nurse Midwife", "Nurse Midwife", "Midwife, Per Diem",
+           "CNM - Women's Health", "Inpatient Certified Nurse Midwife",
+           "Nurse Midwife (2325) - Department of Public Health - 162331"):
+    check(f"APRN midwife role excluded: {_t}", A.title_passes(_t), False)
+# RNFA is an RN, but only after a perioperative program she has not done.
+for _t in ("Certified Registered Nurse First Assist", "RN First Assistant",
+           "RNFA - Operating Room"):
+    check(f"first-assistant role excluded: {_t}", A.title_passes(_t), False)
+# "lead" did not match "Leadership" or "Leader": an RN Float Pool
+# (Leadership) posting was being offered as a job to apply to today.
+for _t in ("RN, Float Pool (Leadership)", "Nursing Leadership Development",
+           "Nurse Leader, Med-Surg", "Team Leader RN", "Clinical Lead RN"):
+    check(f"leadership role excluded: {_t}", A.title_passes(_t), False)
+# Non-bedside RN work earns no acute-care hours, which is the whole point.
+for _t in ("Nurse Auditor", "Utilization Review Nurse",
+           "Utilization Management RN", "Quality Improvement Nurse",
+           "Quality Assurance Nurse", "Infection Preventionist"):
+    check(f"non-bedside role excluded: {_t}", A.title_passes(_t), False)
+# None of that may cost a bedside posting. Obstetric *staff nurse* roles
+# are hers to apply to — only the midwife credential is out of reach.
+for _t in ("Staff Nurse - Labor and Delivery", "RN, Mother Baby Unit",
+           "Registered Nurse - Women's Health", "RN - Postpartum",
+           "Registered Nurse NOC", "Registered Nurse, ICU",
+           "RN - Emergency Services", "Registered Nurse II, Step-Down",
+           "Infusion RN I", "Clinical Nurse I"):
+    check(f"bedside RN role survives: {_t}", A.title_passes(_t), True)
 # The user asked, in as many words, that no CNA or LVN role ever reach her:
 # "Make sure no CNA or LVN jobs show up in our directories or anywhere,
 # because they do not apply to me." An audit against that found seven real
