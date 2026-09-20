@@ -150,9 +150,25 @@ EXCLUDE_TITLE = re.compile(
     # roles are the CNA ladder under a different name.
     r"|nurse aide|nursing aide|nurse tech(?:nician)?|nursing tech(?:nician)?"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
+    # The four APRN roles all need a master's or doctorate plus national
+    # certification. Three were already named here; midwife was not, and
+    # five midwife postings sat in her live list because "nurse midwife"
+    # reached the include side through its own word "nurse". A BSN RN
+    # cannot hold any of them, so they are noise she has to read past.
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
+    r"|midwife|\bCNM\b"
+    # RNFA is an RN, but only after a perioperative program and CNOR-track
+    # certification. The posting names the credential; she does not hold it.
+    r"|first assist(?:ant)?|\bRNFA\b"
     r"|manager|director|supervisor|educator|informatics|informaticist|analyst"
-    r"|charge|lead|coordinator|navigator|consultant|specialist|preceptor"
+    # "lead" alone missed "Leadership" and "Leader" — "RN, Float Pool
+    # (Leadership)" was classified as a job she could apply to today.
+    r"|charge|lead|leader|leadership|coordinator|navigator|consultant"
+    r"|specialist|preceptor"
+    # Non-bedside RN work. Real nursing, but it earns no acute-care hours,
+    # which is the entire point of this search.
+    r"|auditor|utilization (?:review|management)"
+    r"|quality (?:improvement|assurance)|infection preventionist"
     r"|travel|per[- ]diem agency|locum"
     r"|student|intern|volunteer|extern)\b", re.I)
 
