@@ -884,7 +884,13 @@ class NeoGov:
     # makes that safe: their rows are left alone and the digest names
     # them. Generous against a healthy host (a full sweep is ~90s) and a
     # hard stop against a sick one.
-    BUDGET_SEC = 420
+    #
+    # Raised 420 -> 600 on 2026-09-20. At 420 the budget was spent every
+    # run and five agencies were never read at all; a healthy full sweep
+    # measured 95s locally, so 420 was not slack, it was the cliff. The
+    # whole scan takes ~27 of its 60 minutes, so 3 more minutes here is
+    # affordable and still stops well short of the kill.
+    BUDGET_SEC = 600
     MAX_PAGES = 40          # 10 per page; largest agency here is ~75
 
     # Paging without an explicit sort is not stable: the server reorders
@@ -947,6 +953,34 @@ class NeoGov:
         """The agencies this run actually read. See `reached`."""
         return set(self.reached)
 
+    def _rotated_agencies(self):
+        """
+        The agency list, rotated so a different one starts each run.
+
+        The budget above is a real defence, but iterating a fixed dict
+        means the SAME tail is starved every single time it bites. On
+        2026-09-20 the five skipped were positions 7-11 — Santa Clara,
+        San Mateo, Monterey, Sacramento and Sonoma — and they had been
+        the five skipped before that, so Santa Clara Valley Medical
+        Center, a major public hospital, was not unreachable-sometimes.
+        It was unreachable-always, while the scan reported "degraded" and
+        looked like a transient.
+
+        Rotating by the hour spreads the loss: every agency is read first
+        sometimes and last sometimes, so a persistent shortfall becomes a
+        partial one that self-heals across runs (the scan runs 3x daily).
+        Fixing the budget alone would not have helped — a slow host just
+        moves the cliff.
+
+        Deterministic within an hour so a rerun of the same scan reads
+        the same agencies, which keeps `missed` meaningful.
+        """
+        items = list(self.agencies.items())
+        if not items:
+            return items
+        offset = int(time.time() // 3600) % len(items)
+        return items[offset:] + items[:offset]
+
     def all_employers(self) -> set[str]:
         """Every agency this adapter is responsible for, read or not.
         The gap between this and covered_employers() is what the digest
@@ -957,7 +991,7 @@ class NeoGov:
         out: list[Posting] = []
         self.reached = set()
         deadline = time.monotonic() + self.BUDGET_SEC
-        for slug, (name, city) in self.agencies.items():
+        for slug, (name, city) in self._rotated_agencies():
             if time.monotonic() > deadline:
                 print(f"     {name}: skipped, adapter budget "
                       f"({self.BUDGET_SEC}s) spent")

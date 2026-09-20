@@ -1968,6 +1968,47 @@ check("a bare minimum is a bar",
 # required the correct spelling of "anesthetist".
 check("a misspelled CRNA title is still rejected",
       A.title_passes("Senior Nurse Anesthestist, PD"), False)
+
+# ---------------------------------------------------------------------------
+# NEOGOV agency rotation.
+#
+# The wall-clock budget is a real defence, but iterating a fixed dict
+# starved the SAME tail every run: positions 7-11 (Santa Clara, San
+# Mateo, Monterey, Sacramento, Sonoma) were never read, while the scan
+# reported "degraded" three times a day and looked transient. Santa Clara
+# Valley Medical Center is a major public hospital.
+# ---------------------------------------------------------------------------
+_ng = A.NeoGov()
+check("rotation keeps every agency",
+      {v[1][0] for v in _ng._rotated_agencies()},
+      {v[0] for v in A.NeoGov.AGENCIES.values()})
+check("rotation preserves the agency count",
+      len(_ng._rotated_agencies()), len(A.NeoGov.AGENCIES))
+
+import unittest.mock as _mock
+_leads = set()
+for _h in range(len(A.NeoGov.AGENCIES)):
+    with _mock.patch("time.time", return_value=_h * 3600):
+        _leads.add(A.NeoGov()._rotated_agencies()[0][1][0])
+check("every agency leads the sweep at some hour",
+      len(_leads), len(A.NeoGov.AGENCIES))
+
+# Deterministic inside an hour, or `missed` stops meaning anything.
+with _mock.patch("time.time", return_value=5 * 3600):
+    _a = [x[0] for x in A.NeoGov()._rotated_agencies()]
+with _mock.patch("time.time", return_value=5 * 3600 + 900):
+    _b = [x[0] for x in A.NeoGov()._rotated_agencies()]
+check("rotation is stable within the hour", _a, _b)
+
+# An empty agency map must not crash the rotation. The constructor
+# treats {} as "use the defaults", so set the attribute directly.
+_empty = A.NeoGov(); _empty.agencies = {}
+check("rotation handles an empty agency map", _empty._rotated_agencies(), [])
+
+# The budget was the cliff, not slack: a healthy sweep is ~95s.
+check("the NEOGOV budget leaves room for a full sweep",
+      A.NeoGov.BUDGET_SEC >= 600, True)
+
 check("nurse anesthesia in any form is rejected",
       A.title_passes("Nurse Anesthesia Resident"), False)
 check("an ordinary RN title is untouched by the anesthesia rule",
