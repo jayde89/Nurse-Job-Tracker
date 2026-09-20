@@ -44,13 +44,13 @@ HIDE = set()
 
 # Rank for sorting the digest — lower is more interesting to you.
 #
-# 2026-09-19: the user is no longer a new graduate. She is a BSN RN working
+# 2026-09-19: the user is no longer a new graduate. He is a BSN RN working
 # at San Francisco Post Acute since June 2026 and is hunting for an ACUTE
 # CARE hospital role. The old ranking optimised for the opposite person, so
 # the two buckets that now matter most — a posting that requires acute
 # experience, and a graded Level II title — are ranked first rather than
-# suppressed. Nothing is hidden any more: she has experience to argue with,
-# so a requirement she doesn't perfectly meet is a judgement call for her to
+# suppressed. Nothing is hidden any more: he has experience to argue with,
+# so a requirement he doesn't perfectly meet is a judgement call for him to
 # make, not one for the scanner to make silently.
 RANK = {"ACUTE_REQUIRED": 0, "LEVEL_II_TITLE": 1, "GENERAL_EXPERIENCE": 2,
         "UNCLEAR": 3, "STAFF_NURSE_I": 4, "NO_EXPERIENCE": 5}
