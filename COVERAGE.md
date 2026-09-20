@@ -84,13 +84,22 @@ is why they are invisible as names. SF has no hole.*
 | Facility | City | Drive | Read by |
 |---|---|---|---|
 | MarinHealth Medical Center | Greenbrae | 30-60 | Workday |
-| Kentfield Hospital (LTAC) | Kentfield | 30-60 | Vibra (JIBE) |
+| Kentfield Hospital (LTAC) | Kentfield | 30-60 | **Paycom (AAM)** — corrected this pass |
 | Novato Community | Novato | 30-60 | Sutter (Workday) |
 | Marin County health services | San Rafael | 30-60 | NEOGOV |
 
 *Kentfield's city was not in the geo table until this pass, so its postings
 could never be ranked — an LTAC the user asked for by name, read by an
 adapter that already worked, landing in the review bucket every scan.*
+
+*And the adapter did not work either. Kentfield is no longer Vibra's — it
+is a subsidiary of **American Advanced Management**, posting on Paycom,
+with a second campus in **San Francisco 94117 that is under 30 minutes**
+and is now the nearest LTAC in the ring. JIBE returned zero Kentfield rows
+for months, which reads as "no openings" rather than "wrong company".
+Two full-time staff RN posts were open the day the Paycom adapter was
+added, at $55.50–$73.39/hr, asking for an RN licence, BLS and ACLS and
+nothing else. **Check the owner, not just the board.**
 
 ### Napa and Solano
 
@@ -133,7 +142,7 @@ added, on a Paylocity board this scan already knew how to read.
 | Sutter Tracy Community | Tracy | 30-60 | Sutter (Workday) |
 | Adventist Health Lodi Memorial | Lodi | 60-90 | Adventist (Oracle) — 74 listings |
 | Doctors Hospital of Manteca | Manteca | 60-90 | Tenet (Oracle) — 9 listings |
-| **Dameron Hospital (200 beds)** | Stockton | 60-90 | **blocked** — Paycom board renders client-side; no JSON endpoint answers |
+| **Dameron Hospital (200 beds)** | Stockton | 60-90 | **Paycom (AAM)** — unblocked this pass; 27 in-range nurse postings |
 | **California Health Care Facility** | Stockton | 60-90 | **blocked** — CalCareers (CCHCS) |
 | Telecare programs | Stockton | 60-90 | **added this pass** — UKG |
 | Kaiser Manteca, Stockton | — | 60-90 | excluded |
@@ -141,8 +150,12 @@ added, on a Paylocity board this scan already knew how to read.
 An Indeed cross-check of "registered nurse" near Stockton returned ten
 postings: Tenet, San Joaquin County, Sutter and Adventist — every one already
 read — plus two private outfits too small to have a board (a dialysis
-contractor and an infusion agency). Stockton's hospital coverage is complete
-except for Dameron.
+contractor and an infusion agency). Stockton's hospital coverage is now
+complete apart from the state prison facility: Dameron shares American
+Advanced Management's Paycom board with Kentfield, so the adapter written
+to reach Kentfield reached Dameron as a side effect. It is a general acute
+hospital, not an LTAC, and the adapter labels it as its own employer and
+setting rather than inheriting Kentfield's — see the `BY_SITE` map.
 
 ### Stanislaus
 
