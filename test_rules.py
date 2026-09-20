@@ -2411,6 +2411,42 @@ check("card reasons speak to him, not about him",
 check("card reasons use second person", "your rate" in _r_txt, True)
 
 
+# Dameron Hospital (AAM, Stockton) posts "RN STAFF 1(ER - NOC)". Two shapes
+# in one title defeated the Level I rule: an intervening "staff" between the
+# noun and the grade, and a numeral glued to an opening paren so `\b` never
+# fired. Falling through to the body rules was expensive — the posting
+# *defines* the rung as "An RN I is an RN who has less than 6 months acute
+# care experience", an eligibility CEILING which the acute rules read as a
+# requirement floor, and three entry-grade ER/Med-Surg jobs were suppressed
+# as ACUTE_REQUIRED. Hiding a Level I job from a Level I candidate is the
+# exact failure this file exists to prevent.
+for _t in ("RN STAFF 1(ER - NOC)", "RN STAFF 1(MED/SURG - DAYS)",
+           "RN STAFF 1(MED/SURG - NOC)"):
+    check(f"glued-paren staff grade is Level I: {_t}",
+          bool(C.TITLE_LEVEL_I.search(_t)), True)
+check("a spelled-out staff grade is still Level I",
+      bool(C.TITLE_LEVEL_I.search("RN Staff Level 1 - Telemetry")), True)
+# The same loosening must not promote the grades above it.
+for _t in ("RN STAFF 2 (ICU-PD)", "RN STAFF 3 (ER - Per Diem)",
+           "RN STAFF 4 (ER- FT NOC)"):
+    check(f"higher staff grade is not Level I: {_t}",
+          bool(C.TITLE_LEVEL_I.search(_t)), False)
+# A bare numeral that is a unit name, not a grade, must stay out.
+for _t in ("Registered Nurse 10 West", "RN 12 Hour Nights"):
+    check(f"a numeral that is not a grade stays out: {_t}",
+          bool(C.TITLE_LEVEL_I.search(_t)), False)
+# Kentfield's two staff RN roles are the nearest LTAC openings and state
+# acute experience only as "strongly preferred" — they must stay applicable.
+check("acute experience hedged as strongly preferred is not a bar",
+      C.classify("Registered Nurse, NOC",
+                 "MINIMUM QUALIFICATIONS: Current, valid, and active license "
+                 "to practice as a Registered Nurse in the state of "
+                 "California. Current BLS and ACLS certification. ADDITIONAL "
+                 "QUALIFICATIONS: Previous acute care experience is strongly "
+                 "preferred.").bucket,
+      "NO_EXPERIENCE")
+
+
 
 # ── marks round trip (sync_marks.py) ─────────────────────────────────
 # Marks live in this device's localStorage, so the ledger never learned
