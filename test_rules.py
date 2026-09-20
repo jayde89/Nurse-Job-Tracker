@@ -1917,6 +1917,109 @@ check("page is installable to the home screen",
 
 
 
+# ---------------------------------------------------------------------------
+# ranking.py -- which of the eligible jobs is worth opening first.
+#
+# The page used to sort tier, then drive, then employer NAME. Alphabetical
+# order is not a priority: six identical "STAFF NURSE I" cards from Seton
+# led the list while an ED job at $113/hr, thirty minutes away, sat below.
+#
+# Ranking only reorders jobs she is already eligible for. A low score
+# never hides anything -- eligibility belongs to classifier.py and
+# mobile_page.tier_for, which read the posting's own words.
+# ---------------------------------------------------------------------------
+import ranking as RK
+
+# Pay, read strictly. "$2550/yr" is a stipend on four San Joaquin posts;
+# read as hourly it put a "$255 rate" at the top of the whole list.
+check("hourly range parses", RK.hourly_pay("Full-time . $46-$55/hr"), (46.0, 55.0))
+check("single hourly rate parses", RK.hourly_pay("$47/hr"), (47.0, 47.0))
+check("a yearly stipend is not an hourly wage", RK.hourly_pay("$2550/yr"), None)
+check("no pay stated is None, not zero", RK.hourly_pay("Skilled nursing"), None)
+check("an implausible RN hourly rate is ignored", RK.hourly_pay("$18/hr"), None)
+
+# Unit valuation. This is the whole point of the search: acute hospital
+# hours are what she is missing, and what every later job asks for.
+check("ED is recognised", RK.unit_of("RN - Emergency 335"), "ed")
+check("ICU is recognised", RK.unit_of("Registered Nurse (RN) - Neuro ICU"), "icu")
+check("cath lab counts as cardiac", RK.unit_of("RN - CATH LAB 31"), "cardiac")
+check("telemetry is recognised", RK.unit_of("RN Telemetry"), "telemetry")
+# Roles that borrow a unit name without the bedside hours.
+check("a quality role is not an ED job",
+      RK.unit_of("Trauma Performance Improvement Nurse"), "clinic")
+check("an educator is not an ICU job",
+      RK.unit_of("Clinical Nurse Educator - ICU"), "clinic")
+check("infusion is outpatient", RK.unit_of("Infusion RN I"), "clinic")
+# LTAC is a hospital. Kentfield is the bridge job the search exists for.
+check("LTAC is not lumped in with skilled nursing",
+      RK.unit_of("Registered Nurse (R.N.)", "", "Long-term acute care"), "ltac")
+check("a skilled nursing post is a sideways move",
+      RK.unit_of("Registered Nurse", "Sunnyvale Gardens Post Acute . Skilled nursing",
+                 "Skilled nursing"), "snf")
+
+# Scoring behaviour.
+_ed = {"title": "RN - Emergency", "details": "$70.00/hr", "drive": "<30",
+       "tier": "B_soon", "setting": ""}
+_clinic = {"title": "Infusion RN", "details": "$90.00/hr", "drive": "<30",
+           "tier": "B_soon", "setting": ""}
+check("acute experience outranks a better-paid outpatient job",
+      RK.score(_ed)[0] > RK.score(_clinic)[0], True)
+
+_near = {"title": "RN Med Surg", "details": "$60/hr", "drive": "<30",
+         "tier": "A_open", "setting": ""}
+_far = dict(_near, drive="90-120")
+check("a shorter commute scores higher", RK.score(_near)[0] > RK.score(_far)[0], True)
+
+_quiet = {"title": "RN Med Surg", "details": "", "drive": "<30",
+          "tier": "A_open", "setting": ""}
+_paid = dict(_quiet, details="$70/hr")
+# Only 43 of 111 actionable postings state pay. Silence must not be a
+# penalty, or two thirds of the list would sink for saying nothing.
+check("a posting that states no pay is not punished for it",
+      RK.score(_quiet)[0] > 0, True)
+check("but stated good pay still helps", RK.score(_paid)[0] > RK.score(_quiet)[0], True)
+
+_cut = {"title": "RN", "details": "$38/hr", "drive": "<30", "tier": "A_open",
+        "setting": ""}
+check("a pay cut scores below the same job with no pay stated",
+      RK.score(_cut)[0] < RK.score(_quiet)[0], True)
+
+_snf = {"title": "RN", "details": "Skilled nursing . $60/hr", "drive": "<30",
+        "tier": "B_bridge", "setting": "Skilled nursing"}
+_hosp = {"title": "RN Med Surg", "details": "$50/hr", "drive": "<30",
+         "tier": "A_open", "setting": ""}
+check("a hospital job outranks a better-paid sideways move",
+      RK.score(_hosp)[0] > RK.score(_snf)[0], True)
+
+_fresh = dict(_near, age_days=1)
+_stale = dict(_near, age_days=90)
+check("a fresh posting outranks a stale one", RK.score(_fresh)[0] > RK.score(_stale)[0], True)
+check("an unknown posting date is not penalised",
+      RK.score(dict(_near, age_days=None))[0] == RK.score(_near)[0], True)
+
+# Every score ships with its reasons -- a ranking she cannot interrogate
+# is one she has to trust blindly.
+check("the score explains itself", len(RK.score(_ed)[1]) > 0, True)
+
+# The Best bets strip.
+_page = MP.render_page([
+    {"key": "A::1", "title": "RN - Emergency", "employer": "St Rose",
+     "location": "Hayward", "drive": "<30", "details": "$90/hr", "setting": "",
+     "evidence": "12 months general nursing", "url": "https://a.invalid",
+     "tier": "B_soon", "score": 40.0, "why_ranked": ["ED", "under 30 min"]},
+    {"key": "B::2", "title": "RN Med Surg", "employer": "X", "location": "Y",
+     "drive": "60-90", "details": "", "setting": "",
+     "evidence": "new grads welcome", "url": "https://b.invalid",
+     "tier": "A_newgrad", "score": 9.0, "why_ranked": []}], "now")
+check("best bets section appears", "Best bets" in _page, True)
+check("the top job is pinned into it", _page.count('data-k="A::1"'), 2)
+check("the ranking reasons show on the card", "under 30 min" in _page, True)
+# A pinned card is a second copy of a job listed below; counting both
+# would report more jobs than exist.
+check("pinned copies are excluded from the count",
+      "!c.classList.contains('pin')" in _page, True)
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:

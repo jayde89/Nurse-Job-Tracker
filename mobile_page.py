@@ -337,6 +337,9 @@ main{padding:12px 16px;max-width:880px;margin:0 auto}
 .c.hid{display:none}
 .c.done{opacity:.42}
 .h a{font-weight:640;color:#0b5fbe;text-decoration:none;font-size:15.5px}
+.rw{font-size:12px;color:#7fd4a8;margin:6px 0 0;line-height:1.45}
+.gh.best{color:#ffd479;border-color:#3a3f2a}
+.c.pin{border-left:3px solid #ffd479}
 .ref{font-size:11px;color:#6b7c8f;font-weight:400}
 .v{background:#0a7;color:#fff;font-size:10px;padding:2px 6px;
   border-radius:4px;margin-left:7px;vertical-align:2px;letter-spacing:.4px}
@@ -387,7 +390,10 @@ function ap(){
     if(H&&mark)vis=false;
     c.classList.toggle('hid',!vis);
     c.classList.toggle('done',!!mark);
-    if(vis&&c.dataset.elig!=='0')shown++;
+    // A Best-bets card is a second copy of a job that also appears in its
+    // own tier below. Counting both would report 119 jobs where there are
+    // 111, so the pinned copy is shown but never counted.
+    if(vis&&c.dataset.elig!=='0'&&!c.classList.contains('pin'))shown++;
   });
   document.querySelectorAll('.gh').forEach(h=>{
     const g=h.dataset.gh;
@@ -403,7 +409,7 @@ ap();
 """
 
 
-def _card(j: dict) -> str:
+def _card(j: dict, pinned: bool = False) -> str:
     elig = "1" if j["tier"] in ELIGIBLE else "0"
     blob = f"{j['title']} {j['employer']} {j['location']} {j.get('key','')}".lower()
     badge = '<span class="v">VERIFIED</span>' if j["tier"] == "A_open" else ""
@@ -418,14 +424,26 @@ def _card(j: dict) -> str:
     # differs, so it goes on the card.
     ref = j["key"].rsplit("::", 1)[-1] if "::" in j.get("key", "") else ""
     ref_html = f' <span class="ref">#{esc(ref)}</span>' if ref else ""
+    # Why this ranks where it does. A ranking she cannot interrogate is
+    # one she has to take on trust, and nothing else in this repo asks
+    # that of her — every verdict already ships with its evidence.
+    rank_why = ""
+    if j.get("why_ranked"):
+        rank_why = (f'<div class="rw">{esc(" &middot; ".join(j["why_ranked"]))}</div>'
+                    .replace("&amp;middot;", "&middot;"))
+    # A pinned copy appears in Best bets AND in its own tier; the key must
+    # stay identical so that marking either one marks both, but the DOM id
+    # must not collide.
+    cls = "c pin" if pinned else "c"
     return (
-        f'<div class="c" data-g="{esc(j["tier"])}" data-d="{esc(j["drive"])}"'
+        f'<div class="{cls}" data-g="{esc("__best" if pinned else j["tier"])}"'
+        f' data-d="{esc(j["drive"])}"'
         f' data-k="{esc(j["key"])}" data-elig="{elig}" data-s="{esc(blob)}">'
         f'<div class="h"><a href="{esc(j["url"])}" target="_blank"'
         f' rel="noopener">{esc(j["title"])}</a>{badge}{ref_html}</div>'
         f'<div class="m">{esc(j["employer"])} &middot; {esc(j["location"])}'
         + (f' &middot; <b>{esc(j["drive"])} min</b>' if j.get("drive") else "")
-        + f'</div>{det}<div class="w">{esc(why)}</div>'
+        + f'</div>{det}{rank_why}<div class="w">{esc(why)}</div>'
         f'<div class="b">'
         f'<button onclick="mk(\'{esc(j["key"])}\',\'a\')">Applied</button>'
         f'<button onclick="mk(\'{esc(j["key"])}\',\'p\')">Pass</button>'
@@ -435,6 +453,7 @@ def _card(j: dict) -> str:
 def render_page(jobs: list, scanned_at: str) -> str:
     """`jobs` is a list of plain dicts — see build_rows() in run_scan."""
     jobs = sorted(jobs, key=lambda j: (TIER_RANK.get(j["tier"], 99),
+                                       -float(j.get("score") or 0),
                                        DRIVE_RANK.get(j.get("drive", ""), 9),
                                        j.get("employer", "")))
     elig = [j for j in jobs if j["tier"] in ELIGIBLE]
@@ -466,6 +485,24 @@ def render_page(jobs: list, scanned_at: str) -> str:
         '<button onclick="rs()">Reset</button>',
         '</div></header><main>',
     ]
+
+    # Best bets: the highest-scoring eligible jobs regardless of tier.
+    #
+    # Tiers answer "may she apply"; they cannot answer "which of these 111
+    # is worth her Saturday". An ED post at $90/hr twenty minutes away and
+    # a per-diem SNF job at $46 an hour and a half away sit in different
+    # tiers, and the one she should open first was not necessarily near
+    # the top of any of them.
+    #
+    # Capped at eight. A shortlist of thirty is just the list again.
+    best = [j for j in sorted(elig, key=lambda x: -float(x.get("score") or 0))
+            if float(j.get("score") or 0) > 0][:8]
+    if best:
+        out.append('<div class="gh best" data-gh="__best">'
+                   '&#9733; Best bets &mdash; worth opening first</div>')
+        for j in best:
+            out.append(_card(j, pinned=True))
+
     seen = None
     for j in jobs:
         if j["tier"] != seen:
