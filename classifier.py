@@ -453,11 +453,22 @@ def _clauses(text: str) -> list[str]:
 # "Registered Nurse Level I/II" and "Public Health Nurse Level I/II", and
 # without it the grade word sat between the noun and the numeral so
 # neither this pattern nor the Level II one below saw the grade at all.
-_GRADE_WORD = r"(?:\s*(?:level|lvl|grade))?"
+# Dameron (AAM) posts "RN STAFF 1(ER - NOC)": the grade word sits *after*
+# an intervening "staff", and the numeral is glued to an opening paren with
+# no whitespace. Both shapes are Level I roles and both were missed — they
+# fell through to the body rules and were suppressed as ACUTE_REQUIRED by
+# the posting's own definition of the rung ("An RN I is an RN who has less
+# than 6 months acute care experience"), which is an eligibility *ceiling*
+# read as a requirement floor. Three entry-grade ER/Med-Surg jobs were hidden.
+# Allow a short run of filler, not just one word: Dameron writes "RN STAFF 1"
+# and "RN Staff Level 1" is the same rung with both fillers present.
+_GRADE_WORD = r"(?:\s*(?:level|lvl|grade|staff)){0,2}"
 
+# `\b` fails between "1" and "(", so accept a paren/slash/dash as the
+# right-hand boundary alongside a real word break.
 TITLE_LEVEL_I = re.compile(
     r"(?i)\b(staff nurse|clinical nurse|registered nurse|ambulatory services nurse"
-    r"|nurse|rn)" + _GRADE_WORD + r"\s*(i|1)\b(?!\s*[iv])")
+    r"|nurse|rn)" + _GRADE_WORD + r"\s*(i|1)(?=[\s(/,\-]|$)(?!\s*[iv])")
 
 # "Nurse II" must never match Level I. Guard explicitly.
 TITLE_LEVEL_2PLUS = re.compile(r"(?i)\b(ii|iii|iv|v|2|3|4|5)\b")
