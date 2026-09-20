@@ -41,15 +41,16 @@ import adapters
 import classifier as C
 import geo
 import highlights
+import mobile_page
 
 STATE_DIR = "state"
 SEEN_PATH = os.path.join(STATE_DIR, "seen.json")
 SOURCES_PATH = os.path.join(STATE_DIR, "sources.json")
 LEDGER_PATH = "applications.csv"
 
-LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Title",
-                 "Details", "Employer", "Location", "Drive time",
-                 "Requirement evidence", "Posted", "First seen", "Last seen",
+LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Tier",
+                 "Title", "Details", "Employer", "Location", "Drive time",
+                 "Setting", "Requirement evidence", "Posted", "First seen", "Last seen",
                  "Marked active", "URL"]
 
 # ── what a status means to the dashboard ─────────────────────────────
@@ -333,14 +334,26 @@ def build(rows, review, quick=False):
     # have wiped your tracking three times a day.
     ledger = load_ledger()
     for p in shown:
+        # The tier is the reading order the phone page uses. Computed here,
+        # where the posting's own evidence sentence is still in scope —
+        # reconstructing it later from the Bucket column alone is provably
+        # wrong (it promoted a Nurse Midwife into "apply now" and hid nine
+        # ED jobs), so it is written down rather than re-derived.
+        p_tier = mobile_page.tier_for(
+            BUCKET_LABEL.get(p.bucket, p.bucket) or "",
+            setting=getattr(p, "setting", "") or "",
+            evidence=p.evidence or "",
+            title=p.title)
         row = ledger.get(p.key)
         if row is None:
             ledger[p.key] = {
                 "Key": p.key, "Status": "unapplied", "Applied On": "",
                 "Notes": "", "Bucket": BUCKET_LABEL.get(p.bucket, p.bucket),
+                "Tier": p_tier,
                 "Title": p.title, "Details": getattr(p, "details", ""),
                 "Employer": p.employer,
                 "Location": p.location, "Drive time": p.drive_time_bucket or "",
+                "Setting": getattr(p, "setting", "") or "",
                 "Requirement evidence": (p.evidence or "")[:300],
                 "Posted": p.posted_date or "", "First seen": now,
                 "Last seen": now, "URL": p.url,
@@ -349,9 +362,11 @@ def build(rows, review, quick=False):
             # Refresh what the employer controls; leave your columns alone.
             row.update({
                 "Bucket": BUCKET_LABEL.get(p.bucket, p.bucket),
+                "Tier": p_tier,
                 "Title": p.title, "Details": getattr(p, "details", ""),
                 "Location": p.location,
                 "Drive time": p.drive_time_bucket or "",
+                "Setting": getattr(p, "setting", "") or "",
                 "Requirement evidence": (p.evidence or "")[:300],
                 "Last seen": now, "URL": p.url,
             })
@@ -442,16 +457,34 @@ def build(rows, review, quick=False):
                sources=load_sources(), quick=quick)
 
     html = render(d)
-    with open("digest.html", "w") as f:
-        f.write(html)
 
     # The repo is public and served by GitHub Pages, so the same HTML goes
     # to index.html: Pages serves index.html at the site root, and without
     # it the bare URL 404s and you have to remember to type /digest.html.
     # Written as a copy rather than a redirect so both paths keep working —
     # digest.html is what earlier commits and any saved bookmark point at.
-    with open("index.html", "w") as f:
+    #
+    # index.html is now the PHONE page. The desktop digest remains at
+    # digest.html, unchanged and still linked from everywhere it was: the
+    # site root is the thing she opens from a phone on a break, so the root
+    # should be the page built for that, not a dense three-column table she
+    # has to pinch-zoom.
+    with open("digest.html", "w") as f:
         f.write(html)
+
+    mobile_rows = [{
+        "key": p.key,
+        "title": p.title,
+        "employer": p.employer,
+        "location": p.location,
+        "drive": p.drive_time_bucket or "",
+        "details": getattr(p, "details", ""),
+        "evidence": (p.evidence or "")[:300],
+        "url": p.url,
+        "tier": ledger[p.key]["Tier"],
+    } for p in open_shown]
+    with open("index.html", "w") as f:
+        f.write(mobile_page.render_page(mobile_rows, now[:16].replace("T", " ")))
 
     # DIGEST.md still matters: GitHub renders Markdown on mobile without
     # waiting for a Pages build, and it is what the commit history shows as
