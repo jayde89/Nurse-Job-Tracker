@@ -42,6 +42,18 @@ jobs:
           USAJOBS_EMAIL: ${{ secrets.USAJOBS_EMAIL }}
         run: python3 run_scan.py
 
+      # A filter fix only changes what the NEXT scan admits — rows already
+      # written stay until something removes them. Tightening EXCLUDE_TITLE
+      # therefore left five Certified Nurse Midwife postings sitting in her
+      # live list looking exactly as before, which is the complaint that
+      # prompted the fix. Run the purge every scan so the ledger can never
+      # drift from the rules again.
+      #
+      # It refuses to touch a row she has annotated and keeps closed rows
+      # as history, so it is safe to run unattended.
+      - name: Drop rows the title filter would now reject
+        run: python3 purge_ineligible.py --apply
+
       - name: Publish digest
         uses: actions/upload-artifact@v4
         with:
