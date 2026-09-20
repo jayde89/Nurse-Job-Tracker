@@ -150,7 +150,30 @@ _NOT_A_REQUIREMENT = re.compile(
     # can fail to meet.
     r"|[^.]*?\byears?\s+of\s+age\b[^.]*(?:\.|$)"
     r"|[^.]*?\bage\s+of\s+\d+[^.]*(?:\.|$)"
-    r"|[^.]*?\beligible lists?\b[^.]*(?:\.|$)", re.I)
+    r"|[^.]*?\beligible lists?\b[^.]*(?:\.|$)"
+    # A ceiling is not a floor. Dameron defines its entry rung as "An RN I
+    # is an RN who has less than 6 months acute care experience" — that
+    # sentence says who the job is FOR, and he clears it with nothing at
+    # all: he has zero acute months. Read as a requirement it did the
+    # exact opposite of what it says, parsing 6 months of demanded acute
+    # experience and filing three entry-grade ER and Med-Surg jobs under
+    # "wants acute experience he does not have".
+    #
+    # Bounded to the sentence, and only where the comparison is explicitly
+    # an upper bound, so "minimum of less than..." nonsense cannot match
+    # and a genuine floor in a neighbouring sentence still stands.
+    r"|[^.]*?\b(?:less|fewer)\s+than\s+\d+[^.]*(?:\.|$)"
+    r"|[^.]*?\bno\s+more\s+than\s+\d+[^.]*(?:\.|$)"
+    r"|[^.]*?\bup\s+to\s+\d+\s*(?:months?|years?)[^.]*(?:\.|$)"
+    # The adapter labels a job board's structured field "Job board lists
+    # (not stated as required): Minimum 2 Years." precisely because it is
+    # NOT the employer's bar -- St. Rose ED 334 and 335 carry identical
+    # qualification prose ("two-years ED experience preferred") and this
+    # field reads 2 Years on one, 1 Year on the other. The label has to
+    # mean something: without this the sentence still parsed as a hard
+    # 24-month requirement and kept a $89.51-$113.38/hr ED job in
+    # F_tenure, which is the whole failure the label was added to stop.
+    r"|[^.]*?\bnot stated as required\b[^.]*(?:\.|$)", re.I)
 
 
 def _strip_non_requirements(text: str) -> str:

@@ -2485,6 +2485,53 @@ check("the footer no longer claims marks are device-only",
       "device only" in _mk_page, False)
 
 
+# ── a ceiling is not a floor ─────────────────────────────────────────
+# Dameron (AAM) defines its entry rung as "An RN I is an RN who has less
+# than 6 months acute care experience". That says who the job is FOR,
+# and he clears it with nothing at all. Read as a requirement it parsed
+# 6 months of demanded ACUTE experience and filed three entry-grade ER
+# and Med-Surg jobs under "wants acute experience he does not have" --
+# the exact opposite of what the sentence says.
+_rung = "An RN I is an RN who has less than 6 months acute care experience."
+check("an upper bound is not read as a requirement",
+      MP.required_months(_rung), None)
+check("an upper bound is not read as a specialty demand",
+      MP._specialty_experience(_rung), False)
+check("the entry rung stays reachable",
+      MP.tier_for("Requirements unclear", setting="", evidence=_rung,
+                  title="RN STAFF 1(ER - NOC)"), "C_unclear")
+# ...but a real floor must still bite, including in the same evidence.
+check("a genuine acute floor still closes the door",
+      MP.tier_for("Requirements unclear", setting="",
+                  evidence="Minimum of 2 years of acute care nursing "
+                           "experience required.",
+                  title="RN STAFF 1(ER)"), "E_acute_req")
+check("a ceiling beside a real floor does not neutralise it",
+      MP.tier_for("Requirements unclear", setting="",
+                  evidence="An RN I has less than 6 months acute care "
+                           "experience. Two years of ICU experience "
+                           "required.",
+                  title="RN STAFF 1(ICU)"), "E_acute_req")
+check("'up to 12 months' is an upper bound too",
+      MP.required_months("Up to 12 months of experience."), None)
+
+
+# The adapter's "not stated as required" label has to actually mean it.
+# Without this the labelled sentence still parsed as a hard 24-month bar
+# and kept a $89.51-$113.38/hr ED job in F_tenure -- the exact failure
+# the label was introduced to stop.
+_junk = "Job board lists (not stated as required): Minimum 2 Years."
+check("a field marked not-required is not parsed as a requirement",
+      MP.required_months(_junk), None)
+check("the ED job stays reachable",
+      MP.tier_for("Requirements unclear", setting="", evidence=_junk,
+                  title="RN - Emergency 334"), "C_unclear")
+check("a real bar in the same evidence still bites",
+      MP.tier_for("Requirements unclear", setting="",
+                  evidence=_junk + " Two years of ICU experience required.",
+                  title="RN - Emergency 334"), "E_acute_req")
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:
