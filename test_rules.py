@@ -43,15 +43,15 @@ check("bare CNA posting still excluded", A.title_passes("CNA - FT Days"), False)
 check("nursing assistant still excluded",
       A.title_passes("Certified Nursing Assistant (CNA)"), False)
 check("LVN still excluded", A.title_passes("LVN - Skilled Nursing"), False)
-# Five Certified Nurse Midwife postings sat in her live list, because
+# Five Certified Nurse Midwife postings sat in his live list, because
 # "nurse midwife" reached the include side through its own word "nurse".
 # An APRN role needs a master's or doctorate plus national certification —
-# she is a BSN RN and cannot hold one, so these are pure noise.
+# he is a BSN RN and cannot hold one, so these are pure noise.
 for _t in ("Certified Nurse Midwife", "Nurse Midwife", "Midwife, Per Diem",
            "CNM - Women's Health", "Inpatient Certified Nurse Midwife",
            "Nurse Midwife (2325) - Department of Public Health - 162331"):
     check(f"APRN midwife role excluded: {_t}", A.title_passes(_t), False)
-# RNFA is an RN, but only after a perioperative program she has not done.
+# RNFA is an RN, but only after a perioperative program he has not done.
 for _t in ("Certified Registered Nurse First Assist", "RN First Assistant",
            "RNFA - Operating Room"):
     check(f"first-assistant role excluded: {_t}", A.title_passes(_t), False)
@@ -66,14 +66,14 @@ for _t in ("Nurse Auditor", "Utilization Review Nurse",
            "Quality Assurance Nurse", "Infection Preventionist"):
     check(f"non-bedside role excluded: {_t}", A.title_passes(_t), False)
 # None of that may cost a bedside posting. Obstetric *staff nurse* roles
-# are hers to apply to — only the midwife credential is out of reach.
+# are his to apply to — only the midwife credential is out of reach.
 for _t in ("Staff Nurse - Labor and Delivery", "RN, Mother Baby Unit",
            "Registered Nurse - Women's Health", "RN - Postpartum",
            "Registered Nurse NOC", "Registered Nurse, ICU",
            "RN - Emergency Services", "Registered Nurse II, Step-Down",
            "Infusion RN I", "Clinical Nurse I"):
     check(f"bedside RN role survives: {_t}", A.title_passes(_t), True)
-# The user asked, in as many words, that no CNA or LVN role ever reach her:
+# The user asked, in as many words, that no CNA or LVN role ever reach him:
 # "Make sure no CNA or LVN jobs show up in our directories or anywhere,
 # because they do not apply to me." An audit against that found seven real
 # leaks — every one a variant the exclusion list didn't name.
@@ -150,7 +150,7 @@ check("a Level II role now reaches you",
                                "EDUCATION: Graduate of nursing school.")),
       True)
 # 2026-09-19: nothing is suppressed any more. The user is an experienced RN
-# hunting acute care, so both formerly-hidden buckets must reach her, and
+# hunting acute care, so both formerly-hidden buckets must reach him, and
 # they lead the digest rather than trailing it.
 check("an acute-required role now reaches you",
       C.should_show(C.classify("Staff Nurse, ICU",
@@ -1439,7 +1439,7 @@ check("and so is the one after it",
 # A prose label still needs its colon: "Experience." ending a sentence is
 # a sentence, not a section.
 check("a bare prose label is not a heading",
-      "EXPERIENCE" in C.sections("She has five years of experience. "
+      "EXPERIENCE" in C.sections("He has five years of experience. "
                                  "Apply today."), False)
 
 # A duration is quoted in the sentence it sits in, and a sentence about
@@ -1806,21 +1806,21 @@ check("spelled-out months", MP.required_months("six (6) months of RN experience"
 check("spelled-out years", MP.required_months("Five years of nursing"), 60)
 check("no requirement stated", MP.required_months("No prior experience required"), None)
 # "Preferred" is not a bar, and that distinction is the premise of the
-# whole search — most jobs she can actually get say "preferred".
+# whole search — most jobs he can actually get say "preferred".
 check("preferred is not required",
       MP.required_months("VERIFIED: 'prefer' two years pre/post-op - preferred, not required"),
       None)
 check("preferred alongside a hard minimum still counts",
       MP.required_months("Minimum 1 year required; 3 years preferred"), 12)
-# A deadline the employer gives HER is not experience she must already
+# A deadline the employer gives him is not experience he must already
 # have. This sentence hid a job whose only real bar was a certificate.
 check("months-from-hire is a deadline, not a requirement",
       MP.required_months("Nurses without labor and delivery experience will have "
                          "six (6) months from hire to obtain certification."), None)
 
-# Sub-acute and post-acute are the floor she works on now. The word
-# "acute" inside "sub-acute" was reading as experience she lacks.
-check("her own setting is not a specialty bar",
+# Sub-acute and post-acute are the floor he works on now. The word
+# "acute" inside "sub-acute" was reading as experience he lacks.
+check("his own setting is not a specialty bar",
       MP._specialty_experience("Experience Required: One-year sub/post-acute care experience."),
       False)
 check("OR experience is a specialty bar",
@@ -1844,7 +1844,7 @@ check("multi-year general requirement is not reachable soon",
       MP.tier_for("Experience required, not acute", title="RN",
                   evidence="Minimum 5 years experience as a Registered Nurse"),
       "F_tenure")
-# A reachable requirement outranks the unit in the title: six ED jobs she
+# A reachable requirement outranks the unit in the title: six ED jobs he
 # can hold in May 2027 were being buried for the word "Emergency".
 check("reachable requirement beats the unit in the title",
       MP.tier_for("Experience required, not acute", title="RN - Emergency 338",
@@ -1860,7 +1860,7 @@ check("Staff Nurse II is a promoted grade", bool(MP._SENIOR_GRADE.search("Staff 
 check("a unit number is not a grade", bool(MP._SENIOR_GRADE.search("RN - CATH LAB 31")), False)
 check("ED unit number is not a grade", bool(MP._SENIOR_GRADE.search("Registered Nurse - Emergency 338")), False)
 check("Staff Nurse I is entry grade", bool(MP._SENIOR_GRADE.search("Staff Nurse I")), False)
-# "Level I/II" posts hire AT Level I - she is eligible, so it must not
+# "Level I/II" posts hire AT Level I - he is eligible, so it must not
 # read as senior.
 check("a I/II range is open at the bottom",
       bool(MP._SENIOR_GRADE.search("Public Health Nurse Level I/II")), False)
@@ -1870,7 +1870,7 @@ check("entry grade on a specialty floor ranks below a fully open post",
       MP.tier_for("Level I / new grad", title="Registered Nurse (RN) - Neuro ICU",
                   evidence="California RN license, BLS, ACLS within 6 months of hire for new grads"),
       "A_spec_entry")
-check("LTAC is NOT demoted - it is the acute experience she is hunting",
+check("LTAC is NOT demoted - it is the acute experience he is hunting",
       MP.tier_for("No experience required", setting="Long-term acute care hospital",
                   evidence="No experience required"),
       "A_open")
@@ -1899,7 +1899,7 @@ _page = MP.render_page([{
     "location": "SF", "drive": "<30", "details": "", "evidence": "none",
     "url": "https://example.invalid", "tier": "A_open"}], "now")
 # Six identical "STAFF NURSE I" cards from one employer are six real
-# postings; without the number she cannot tell which she already opened.
+# postings; without the number he cannot tell which he already opened.
 _dup = MP.render_page([
     {"key":"Seton::27189","title":"STAFF NURSE I","employer":"Seton","location":"Daly City",
      "drive":"30-60","details":"","evidence":"new grad","url":"https://x.invalid","tier":"A_newgrad"},
@@ -1910,7 +1910,7 @@ check("duplicate titles are told apart by posting number",
 check("a posting number is searchable", 'data-s="staff nurse i seton daly city seton::27189"' in _dup, True)
 check("job titles are escaped in the page",
       "&lt;script&gt;alert(1)" in _page, True)
-check("mark key is unchanged (changing it wipes her saved marks)",
+check("mark key is unchanged (changing it wipes his saved marks)",
       "rnjobs.marks.v2" in _page, True)
 check("page is installable to the home screen",
       "apple-mobile-web-app-capable" in _page, True)
@@ -1924,7 +1924,7 @@ check("page is installable to the home screen",
 # order is not a priority: six identical "STAFF NURSE I" cards from Seton
 # led the list while an ED job at $113/hr, thirty minutes away, sat below.
 #
-# Ranking only reorders jobs she is already eligible for. A low score
+# Ranking only reorders jobs he is already eligible for. A low score
 # never hides anything -- eligibility belongs to classifier.py and
 # mobile_page.tier_for, which read the posting's own words.
 # ---------------------------------------------------------------------------
@@ -1939,7 +1939,7 @@ check("no pay stated is None, not zero", RK.hourly_pay("Skilled nursing"), None)
 check("an implausible RN hourly rate is ignored", RK.hourly_pay("$18/hr"), None)
 
 # Unit valuation. This is the whole point of the search: acute hospital
-# hours are what she is missing, and what every later job asks for.
+# hours are what he is missing, and what every later job asks for.
 check("ED is recognised", RK.unit_of("RN - Emergency 335"), "ed")
 check("ICU is recognised", RK.unit_of("Registered Nurse (RN) - Neuro ICU"), "icu")
 check("cath lab counts as cardiac", RK.unit_of("RN - CATH LAB 31"), "cardiac")
@@ -1997,20 +1997,22 @@ check("a fresh posting outranks a stale one", RK.score(_fresh)[0] > RK.score(_st
 check("an unknown posting date is not penalised",
       RK.score(dict(_near, age_days=None))[0] == RK.score(_near)[0], True)
 
-# Every score ships with its reasons -- a ranking she cannot interrogate
-# is one she has to trust blindly.
+# Every score ships with its reasons -- a ranking he cannot interrogate
+# is one he has to trust blindly.
 check("the score explains itself", len(RK.score(_ed)[1]) > 0, True)
 
-# The Best bets strip.
+# The Best bets strip. Every job in it carries a band, because the
+# shortlist is drawn by band, not by score alone.
 _page = MP.render_page([
     {"key": "A::1", "title": "RN - Emergency", "employer": "St Rose",
      "location": "Hayward", "drive": "<30", "details": "$90/hr", "setting": "",
-     "evidence": "12 months general nursing", "url": "https://a.invalid",
-     "tier": "B_soon", "score": 40.0, "why_ranked": ["ED", "under 30 min"]},
+     "evidence": "acute care preferred, not required", "url": "https://a.invalid",
+     "tier": "A_pref", "score": 40.0, "band": "now",
+     "why_ranked": ["ED", "under 30 min"]},
     {"key": "B::2", "title": "RN Med Surg", "employer": "X", "location": "Y",
      "drive": "60-90", "details": "", "setting": "",
      "evidence": "new grads welcome", "url": "https://b.invalid",
-     "tier": "A_newgrad", "score": 9.0, "why_ranked": []}], "now")
+     "tier": "A_newgrad", "score": 9.0, "band": "now", "why_ranked": []}], "now")
 check("best bets section appears", "Best bets" in _page, True)
 check("the top job is pinned into it", _page.count('data-k="A::1"'), 2)
 check("the ranking reasons show on the card", "under 30 min" in _page, True)
@@ -2018,6 +2020,118 @@ check("the ranking reasons show on the card", "under 30 min" in _page, True)
 # would report more jobs than exist.
 check("pinned copies are excluded from the count",
       "!c.classList.contains('pin')" in _page, True)
+
+
+# ---------------------------------------------------------------------------
+# Signal-to-noise: the jobs he is MOST qualified for come first.
+#
+# Reported: "a lot of the jobs that require experience, or don't specify,
+# are getting mixed in with the jobs I am a lot more qualified for... They
+# might say 'acute care preferred', but they don't say 'required', so they
+# are given to me more toward the bottom."
+#
+# Two separate faults. The shortlist ranked on how good a job was and
+# ignored whether he could have it: five of eight best bets demanded a
+# year of RN experience. And "Unclear" outranked two tiers where the
+# posting says in its own words that experience is only preferred.
+# ---------------------------------------------------------------------------
+
+# Confidence bands: does the posting say he qualifies TODAY?
+check("a verified no-bar posting is a 'now' job", RK.confidence("A_open"), "now")
+check("open to new grads is a 'now' job", RK.confidence("A_newgrad"), "now")
+# The specific complaint: preferred is not required.
+check("'acute preferred' is a job he qualifies for now",
+      RK.confidence("A_pref"), "now")
+check("entry grade on a specialty floor is a 'now' job",
+      RK.confidence("A_spec_entry"), "now")
+check("silence is 'maybe', not 'now'", RK.confidence("C_unclear"), "maybe")
+check("a stated bar cleared in 2027 is 'later'", RK.confidence("B_soon"), "later")
+check("acute-required is not reachable", RK.confidence("E_acute_req"), "no")
+
+# Qualification dominates the score, over a better job he cannot have.
+_pref_far = {"title": "RN Med Surg", "details": "$55/hr", "drive": "30-60",
+             "tier": "A_pref", "setting": ""}
+_soon_ed = {"title": "RN - Emergency", "details": "$110/hr", "drive": "<30",
+            "tier": "B_soon", "setting": ""}
+check("a job he qualifies for outranks a better one he does not",
+      RK.score(_pref_far)[0] > RK.score(_soon_ed)[0], True)
+
+_unclear = dict(_pref_far, tier="C_unclear")
+check("'preferred, not required' outranks a posting that states nothing",
+      RK.score(_pref_far)[0] > RK.score(_unclear)[0], True)
+
+# Reading order must agree with the bands.
+check("'acute preferred' is read before 'unclear'",
+      MP.TIER_RANK["A_pref"] < MP.TIER_RANK["C_unclear"], True)
+check("'entry grade specialty' is read before 'unclear'",
+      MP.TIER_RANK["A_spec_entry"] < MP.TIER_RANK["C_unclear"], True)
+check("everything he qualifies for is read before 'reachable soon'",
+      max(MP.TIER_RANK[t] for t in ("A_open", "A_newgrad", "A_pref",
+                                    "A_spec_entry", "B_bridge"))
+      < MP.TIER_RANK["B_soon"], True)
+check("'unclear' is still read before 'reachable soon'",
+      MP.TIER_RANK["C_unclear"] < MP.TIER_RANK["B_soon"], True)
+
+# The shortlist is drawn by band, never by score alone.
+check("'later' jobs are excluded from the shortlist",
+      "later" in RK.SHORTLIST_BANDS, False)
+check("'no' jobs are excluded from the shortlist",
+      "no" in RK.SHORTLIST_BANDS, False)
+_mixed = MP.render_page([
+    {"key": "S::1", "title": "RN - Emergency", "employer": "E", "location": "L",
+     "drive": "<30", "details": "$113/hr", "setting": "", "evidence": "needs 1 yr",
+     "url": "https://x.invalid", "tier": "B_soon", "score": 99.0,
+     "band": "later", "why_ranked": []},
+    {"key": "Q::2", "title": "RN Med Surg", "employer": "E2", "location": "L2",
+     "drive": "30-60", "details": "", "setting": "", "evidence": "acute preferred",
+     "url": "https://y.invalid", "tier": "A_pref", "score": 20.0,
+     "band": "now", "why_ranked": []}], "now")
+_best_block = _mixed.split("Best bets")[1].split('data-gh="A_')[0]
+check("the highest-scoring job he cannot have stays out of best bets",
+      'data-k="S::1"' in _best_block, False)
+check("the job he qualifies for is the one pinned",
+      'data-k="Q::2"' in _best_block, True)
+
+# rank() must attach the band, or the page cannot filter on it.
+_r = RK.rank([dict(_pref_far)])
+check("rank attaches a band to every job", _r[0]["band"], "now")
+
+# An "evidence" line that only repeats the job title is not evidence, and
+# it occupies the most valuable space on the card. Several Level II
+# postings quote their own title back as the requirement.
+check("a title echoed as evidence is detected",
+      MP._echoes_title("Staff Nurse II, Neuro ICU", "Staff Nurse II, Neuro ICU"), True)
+check("a real requirement sentence is not an echo",
+      MP._echoes_title("Acute care facility experience: Preferred.",
+                       "RN - Emergency Department"), False)
+check("an empty evidence string is not an echo", MP._echoes_title("", "RN"), False)
+_echo_page = MP.render_page([
+    {"key": "T::1", "title": "Staff Nurse II, Neuro ICU", "employer": "E",
+     "location": "L", "drive": "<30", "details": "", "setting": "",
+     "evidence": "Staff Nurse II, Neuro ICU", "url": "https://z.invalid",
+     "tier": "C_unclear", "score": 10.0, "band": "maybe", "why_ranked": []}], "now")
+check("an echoed title on a PROMOTED grade names the grade as the bar",
+      "the grade in the title is the bar" in _echo_page, True)
+# An entry grade that states nothing is an opening, not a warning. Saying
+# "the grade is the bar" under "Infusion RN I" misreads a job open to him.
+_echo_entry = MP.render_page([
+    {"key": "T::2", "title": "Infusion RN I", "employer": "E", "location": "L",
+     "drive": "<30", "details": "", "setting": "", "evidence": "Infusion RN I",
+     "url": "https://w.invalid", "tier": "A_spec_entry", "score": 10.0,
+     "band": "now", "why_ranked": []}], "now")
+check("an echoed title on an ENTRY grade is not called a bar",
+      "the grade in the title is the bar" in _echo_entry, False)
+check("an echoed title on an entry grade says the posting is silent",
+      "No experience requirement stated" in _echo_entry, True)
+
+# The reasons render on the card, so they address him directly rather
+# than narrating about him in the third person.
+_r_txt = " ".join(RK.score({"title": "RN - Emergency", "details": "$90/hr",
+                            "drive": "<30", "tier": "A_pref", "setting": ""})[1])
+check("card reasons speak to him, not about him",
+      ("his rate" not in _r_txt) and ("he is" not in _r_txt), True)
+check("card reasons use second person", "your rate" in _r_txt, True)
+
 
 
 if __name__ == "__main__":

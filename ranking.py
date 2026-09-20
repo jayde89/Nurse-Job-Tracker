@@ -1,5 +1,5 @@
 """
-How the list decides what she sees first.
+How the list decides what he sees first.
 
 The page used to sort by tier, then drive time, then employer name.
 Alphabetical order is not a priority, and it showed: six identical
@@ -20,7 +20,7 @@ others.
 
 import re
 
-# What she is actually hunting. An acute-care hospital job is the entire
+# What he is actually hunting. An acute-care hospital job is the entire
 # point of the search: it pays more, and it is the experience that opens
 # every door after it. A skilled-nursing job at the same wage is a
 # sideways move, which is why it can never outscore a hospital post.
@@ -33,9 +33,9 @@ ACUTE_VALUE = {
     "medsurg": 7,     # the classic acute bridge job
     "periop": 6,
     "other_acute": 5,
-    "ltac": 5,        # a hospital, and her realistic near-term route in
+    "ltac": 5,        # a hospital, and his realistic near-term route in
     "clinic": 2,
-    "snf": 0,         # what she already does
+    "snf": 0,         # what he already does
 }
 
 _UNIT_PATTERNS = [
@@ -142,27 +142,55 @@ def hourly_pay(details: str):
     return best
 
 
-# What she earns now. A job below this is a pay cut and should sink even
+# What he earns now. A job below this is a pay cut and should sink even
 # if it is otherwise attractive.
 CURRENT_HOURLY = 45.0
 
 _DRIVE_SCORE = {"<30": 10.0, "30-60": 6.0, "60-90": 2.0, "90-120": -4.0}
 
-# Tier already groups the list; this only breaks ties *within* a group and
-# feeds the cross-tier "best bets" shortlist.
-_TIER_SCORE = {
-    "A_open": 12.0, "A_newgrad": 10.0, "A_pref": 9.0, "A_spec_entry": 8.0,
-    "B_soon": 5.0, "B_bridge": 3.0, "C_unclear": 4.0,
-    "D_specialty": 0.0, "E_acute_req": 0.0, "F_tenure": 0.0,
+# How sure we are he MEETS THE BAR TODAY. This is the dominant term.
+#
+# Without it, the shortlist ranked on how good a job was and ignored
+# whether he could have it: five of the eight "best bets" were postings
+# demanding a year of RN experience he does not reach until 2027. A
+# great job he cannot apply to is noise, however well it pays.
+#
+#   now   - the posting's own words say he qualifies. "Acute care
+#           preferred" belongs here: preferred is not required, and he
+#           asked specifically that these stop sinking.
+#   maybe - the posting states no bar at all. Worth an application, but
+#           it is silence, not an invitation.
+#   later - a stated bar he reaches later (1 yr RN in June 2027).
+#   no    - he does not meet it and will not soon.
+CONFIDENCE = {
+    "A_open":       ("now",   40.0),
+    "A_newgrad":    ("now",   38.0),
+    "A_pref":       ("now",   36.0),
+    "A_spec_entry": ("now",   32.0),
+    "B_bridge":     ("now",   30.0),
+    "C_unclear":    ("maybe", 14.0),
+    "B_soon":       ("later",  4.0),
+    "D_specialty":  ("no",     0.0),
+    "E_acute_req":  ("no",     0.0),
+    "F_tenure":     ("no",     0.0),
 }
+
+# Bands that belong on the shortlist at all. "later" is deliberately out:
+# it is the band that was crowding it.
+SHORTLIST_BANDS = ("now", "maybe")
+
+
+def confidence(tier: str) -> str:
+    """Band name for a tier — 'now', 'maybe', 'later' or 'no'."""
+    return CONFIDENCE.get(tier, ("no", 0.0))[0]
 
 
 def score(job: dict) -> tuple:
     """
     (points, reasons) for one posting.
 
-    `reasons` is shown on the card. A ranking she cannot interrogate is a
-    ranking she has to trust blindly, and the rest of this repo refuses to
+    `reasons` is shown on the card. A ranking he cannot interrogate is a
+    ranking he has to trust blindly, and the rest of this repo refuses to
     ask that — every verdict ships with the sentence behind it.
     """
     title = job.get("title", "")
@@ -179,7 +207,7 @@ def score(job: dict) -> tuple:
     # nowhere must not outrank a $70/hr ED post that does.
     pts += uv * 1.6
     if uv >= 9:
-        reasons.append(f"{unit.upper()} — the experience she is hunting")
+        reasons.append(f"{unit.upper()} — the experience you are after")
     elif unit == "ltac":
         reasons.append("LTAC — acute experience, realistic entry")
     elif unit == "snf":
@@ -193,21 +221,24 @@ def score(job: dict) -> tuple:
         delta = top - CURRENT_HOURLY
         # Capped hard, and deliberately smaller than the acute weighting.
         # A very high advertised ceiling is usually the top of a long
-        # seniority ladder she would not start on.
+        # seniority ladder he would not start on.
         pts += max(-8.0, min(9.0, delta * 0.3))
         if delta >= 5:
-            reasons.append(f"${top:.0f}/hr — ${delta:.0f} over her rate")
+            reasons.append(f"${top:.0f}/hr — ${delta:.0f} over your rate")
         elif delta < 0:
-            reasons.append(f"${top:.0f}/hr — below her current rate")
+            reasons.append(f"${top:.0f}/hr — below your current rate")
 
     drive = _DRIVE_SCORE.get(job.get("drive", ""), 0.0)
     pts += drive
     if job.get("drive") == "<30":
         reasons.append("under 30 min")
 
-    pts += _TIER_SCORE.get(job.get("tier", ""), 0.0)
+    # Whether he can actually have the job. Deliberately the largest term
+    # in the score: a great posting he is not eligible for is noise.
+    band, conf_pts = CONFIDENCE.get(job.get("tier", ""), ("no", 0.0))
+    pts += conf_pts
 
-    # Freshness: a posting she sees on day one is worth more than the same
+    # Freshness: a posting he sees on day one is worth more than the same
     # posting three weeks later, when the req may already be filled.
     age = job.get("age_days")
     if isinstance(age, (int, float)):
@@ -224,7 +255,8 @@ def score(job: dict) -> tuple:
 
 
 def rank(jobs: list) -> list:
-    """Attach score/reasons and return the list in ranked order."""
+    """Attach score/reasons/band and return the list in ranked order."""
     for j in jobs:
         j["score"], j["why_ranked"] = score(j)
+        j["band"] = confidence(j.get("tier", ""))
     return sorted(jobs, key=lambda j: -j["score"])

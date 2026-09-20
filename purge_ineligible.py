@@ -4,7 +4,7 @@ Remove ledger rows the current title filter would never have admitted.
 
 A filter fix only changes what the NEXT scan lets in. Rows already written
 stay until something removes them, so tightening `EXCLUDE_TITLE` silently
-leaves the offending jobs in her list — which is exactly the complaint
+leaves the offending jobs in his list — which is exactly the complaint
 that prompted the fix.
 
     python3 purge_ineligible.py           # report only
@@ -12,12 +12,12 @@ that prompted the fix.
 
 Two rules, both load-bearing:
 
-* **Never delete a row she has touched.** Any row with a Status other than
-  unapplied, or with anything in Notes or Applied On, is hers — it is the
-  record that she applied somewhere, and the ledger is append-only for
+* **Never delete a row he has touched.** Any row with a Status other than
+  unapplied, or with anything in Notes or Applied On, is his — it is the
+  record that he applied somewhere, and the ledger is append-only for
   precisely this reason. Such a row is reported and kept.
 * **Never delete a closed row.** Closed rows are history; an application
-  she sent to a job that later closed must keep its trail.
+  he sent to a job that later closed must keep its trail.
 """
 import argparse
 import csv
@@ -31,13 +31,13 @@ sys.path.insert(0, REPO)
 import adapters  # noqa: E402
 
 
-def hers(row: dict) -> bool:
+def his(row: dict) -> bool:
     """
-    Has she put anything of her own on this row?
+    Has he put anything of his own on this row?
 
-    "closed" is written by the scanner, not by her, so it must be tested
+    "closed" is written by the scanner, not by him, so it must be tested
     separately — folding it in here reported 25 closed rows as "yours",
-    which would have taught her to distrust the report.
+    which would have taught him to distrust the report.
     """
     status = (row.get("Status") or "").strip().lower()
     return (status not in ("", "unapplied", "closed")
@@ -60,7 +60,7 @@ def main() -> int:
     for r in rows:
         if adapters.title_passes(r.get("Title", "")):
             keep.append(r)
-        elif hers(r):
+        elif his(r):
             protected.append(r)
             keep.append(r)
         elif (r.get("Status") or "").strip().lower() == "closed":

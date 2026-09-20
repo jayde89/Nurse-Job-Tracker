@@ -159,7 +159,7 @@ def still_listed(row, now) -> bool:
 # The buckets that are the day's action list. 2026-09-19: these were
 # ("STAFF_NURSE_I", "NO_EXPERIENCE") — the two a new grad could act on.
 # The user is now an experienced RN targeting acute care, so the action
-# list is the acute and graded-II roles she is actually hunting.
+# list is the acute and graded-II roles he is actually hunting.
 ENTRY_LEVEL = ("ACUTE_REQUIRED", "LEVEL_II_TITLE")
 
 
@@ -478,8 +478,8 @@ def build(rows, review, quick=False):
     #
     # index.html is now the PHONE page. The desktop digest remains at
     # digest.html, unchanged and still linked from everywhere it was: the
-    # site root is the thing she opens from a phone on a break, so the root
-    # should be the page built for that, not a dense three-column table she
+    # site root is the thing he opens from a phone on a break, so the root
+    # should be the page built for that, not a dense three-column table he
     # has to pinch-zoom.
     with open("digest.html", "w") as f:
         f.write(html)
@@ -498,8 +498,8 @@ def build(rows, review, quick=False):
         "age_days": _age_days(ledger[p.key].get("Posted", "")),
     } for p in open_shown]
     # Ranking runs over the same rows the page renders, so the score and
-    # the card can never disagree. It only reorders jobs she is already
-    # eligible for; it never decides what she may apply to.
+    # the card can never disagree. It only reorders jobs he is already
+    # eligible for; it never decides what he may apply to.
     ranking.rank(mobile_rows)
     with open("index.html", "w") as f:
         f.write(mobile_page.render_page(mobile_rows, now[:16].replace("T", " ")))

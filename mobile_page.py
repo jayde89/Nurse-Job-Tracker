@@ -1,10 +1,10 @@
 """
-The page she reads on her phone.
+The page he reads on his phone.
 
 Published to GitHub Pages by every scan, so it is never older than the
 last run. That is the whole point: the good interface used to be a file
-on her Mac, generated from a frozen snapshot, and it went stale the moment
-she walked away from the desk.
+on his Mac, generated from a frozen snapshot, and it went stale the moment
+he walked away from the desk.
 
 Why the tier is computed HERE and not downstream
 ------------------------------------------------
@@ -13,7 +13,7 @@ page exists to deliver. It was computed once by a throwaway script and
 then guessed at from the ledger's `Bucket` column, which does not carry
 enough information: tried against real data that guess agreed only 264
 times in 419, promoting a Nurse Midwife and an RN Float Pool (Leadership)
-role into "apply now" while hiding nine ED jobs she is eligible for.
+role into "apply now" while hiding nine ED jobs he is eligible for.
 
 At this point in the scan the Posting object is still in scope, with its
 bucket, its evidence sentence and its setting. Nothing has been thrown
@@ -29,17 +29,35 @@ from __future__ import annotations
 import html
 import re
 
-# Tier order is reading order. A/B/C she can act on now; D/E/F are real
-# jobs she is not yet eligible for, kept behind a toggle rather than
-# dropped — "why did that job vanish" costs more than a hidden section.
+# ranking owns the "can he have this job" bands. mobile_page imports
+# ranking and never the reverse, so there is no cycle: ranking knows
+# nothing about HTML.
+import ranking
+
+# Tier order is reading order, and it follows one rule: how sure the
+# posting's own words are that he qualifies TODAY.
+#
+# The bands he can act on come first, strongest evidence first, and a
+# posting that states nothing ("Unclear") sits below every posting that
+# states he is welcome. Silence is not an invitation, and it used to
+# outrank two tiers where the posting explicitly says experience is only
+# preferred — which is exactly the mix-up he reported.
+#
+# Then "reachable soon" (a stated bar he clears in 2027), then the jobs
+# he is not yet eligible for, kept behind a toggle rather than dropped —
+# "why did that job vanish" costs more than a hidden section.
 TIER_HEADING = {
+    # He qualifies now, by the posting's own sentence.
     "A_open":       "You meet the requirement",
     "A_newgrad":    "Open to new grads",
-    "A_pref":       "Acute preferred, not required",
+    "A_pref":       "Acute preferred — not required",
     "A_spec_entry": "Entry grade, specialty unit",
-    "C_unclear":    "Unclear — worth a look",
-    "B_soon":       "Reachable soon (1 yr RN in 2027)",
     "B_bridge":     "Skilled nursing — lateral, but it counts",
+    # The posting says nothing either way.
+    "C_unclear":    "Unclear — worth a look",
+    # A stated bar, cleared later.
+    "B_soon":       "Reachable soon (1 yr RN in 2027)",
+    # Not yet eligible.
     "D_specialty":  "Specialty unit, wants experience",
     "E_acute_req":  "Acute experience required",
     "F_tenure":     "Wants multiple years",
@@ -71,11 +89,11 @@ _SPECIALTY = re.compile(
 
 # How much experience the posting asks for, in months.
 #
-# This is the difference between "needs one year, she has it in May 2027"
+# This is the difference between "needs one year, he has it in May 2027"
 # and "needs five years, which is not this job hunt" — and it is the one
 # thing the Bucket column cannot carry. Both land in
 # "Experience required, not acute", so a tier derived from the bucket
-# alone put 22 multi-year postings into her reachable-soon list.
+# alone put 22 multi-year postings into his reachable-soon list.
 _YEARS = re.compile(
     r"(?:(\d+)\s*(?:\+|plus)?\s*(?:-|to|\u2013)?\s*(\d+)?)\s*"
     r"(year|yr|month|mo)", re.I)
@@ -91,7 +109,7 @@ def required_months(evidence: str) -> int | None:
     Smallest experience requirement the evidence states, in months.
 
     Returns None when the posting only *prefers* experience. "Prefer two
-    years pre/post-op" is not a bar — treating it as one moved a job she
+    years pre/post-op" is not a bar — treating it as one moved a job he
     can apply to today into "wants multiple years", which is the opposite
     of helping.
     """
@@ -109,14 +127,14 @@ def required_months(evidence: str) -> int | None:
         n = _WORD_YEARS[m.group(1).lower()]
         found.append(n if m.group(2).lower().startswith("mo") else n * 12)
     # The smallest number wins: a posting saying "1 year required, 3
-    # preferred" is open to her at one year, and reading the larger figure
-    # would hide a job she can take.
+    # preferred" is open to him at one year, and reading the larger figure
+    # would hide a job he can take.
     return min(found) if found else None
 
 
 # Durations that are not experience requirements. "Six months from hire to
-# obtain ACLS" is a deadline the employer gives *her*, and reading it as a
-# requirement hid a job whose only real bar was a certificate she can sit
+# obtain ACLS" is a deadline the employer gives *his*, and reading it as a
+# requirement hid a job whose only real bar was a certificate he can sit
 # for. Likewise a grace period or a probationary term.
 #
 # Evidence sentences are often clipped mid-flight by the scanner, so the
@@ -134,12 +152,12 @@ def _strip_non_requirements(text: str) -> str:
 
 
 # "Preferred" is not a requirement, and the distinction is the entire
-# premise of this search — most postings she can actually get say the
+# premise of this search — most postings he can actually get say the
 # experience is preferred.
 _PREFERRED_ONLY = re.compile(r"prefer", re.I)
 # A negated requirement is the opposite of a requirement. "Preferred, not
 # required" contains the word "required" and must not read as one — that
-# sentence is the single most common way a posting says she qualifies.
+# sentence is the single most common way a posting says he qualifies.
 _NEGATED = re.compile(r"\bnot\s+(?:strictly\s+|necessarily\s+)?"
                       r"(?:required|necessary|mandatory)\b", re.I)
 _HARD_REQUIRED = re.compile(r"\brequire|\bmust have|\bminimum\b", re.I)
@@ -149,11 +167,11 @@ def _states_a_hard_requirement(text: str) -> bool:
     return bool(_HARD_REQUIRED.search(_NEGATED.sub(" ", text or "")))
 
 
-# She reaches one year of RN experience in May 2027. A posting wanting
+# He reaches one year of RN experience in May 2027. A posting wanting
 # meaningfully more than that is not reachable soon, whatever its bucket.
 _REACHABLE_MONTHS = 12
 
-# Experience she cannot accrue where she works. A year of general nursing
+# Experience he cannot accrue where he works. A year of general nursing
 # arrives on its own in May 2027; a year of ICU does not, because the
 # subacute floor is not an ICU. The classifier's ACUTE_REQUIRED bucket
 # catches most of these, but a Level I title with an acute requirement in
@@ -171,7 +189,7 @@ def _acute_unit_experience(evidence: str) -> bool:
 
 # Experience *in a named unit*, as opposed to nursing in general. The
 # distinction the size of the number cannot make: "six months of OR RN
-# experience" is smaller than a year and still a door she cannot open,
+# experience" is smaller than a year and still a door he cannot open,
 # while "12 months of general nursing" is larger and opens by itself in
 # May 2027.
 #
@@ -190,22 +208,22 @@ _SPECIALTY_EXP = re.compile(
 
 
 def _specialty_experience(evidence: str) -> bool:
-    """Does the posting want experience in a unit she does not work in?"""
+    """Does the posting want experience in a unit he does not work in?"""
     text = _strip_non_requirements(evidence or "")
     # "Preferred" is not a bar, here as everywhere else.
     if _PREFERRED_ONLY.search(text) and not _states_a_hard_requirement(text):
         return False
-    # Subacute and post-acute are the floor she works on now. A posting
+    # Subacute and post-acute are the floor he works on now. A posting
     # asking for "one year sub/post-acute experience" is asking for what
-    # she already has — it is the closest thing to a sure bet in the whole
+    # he already has — it is the closest thing to a sure bet in the whole
     # list, and the word "acute" inside "sub-acute" was hiding it.
     if _HER_OWN_SETTING.search(text):
         return False
     return bool(_SPECIALTY_EXP.search(text))
 
 
-# The setting she works in today. "sub-acute", "post-acute", "skilled
-# nursing", "long-term care" — experience she has, not experience she
+# The setting he works in today. "sub-acute", "post-acute", "skilled
+# nursing", "long-term care" — experience he has, not experience he
 # lacks.
 _HER_OWN_SETTING = re.compile(
     r"sub.?acute|post.?acute|skilled nursing|long.?term care|\bSNF\b|\bLTC\b",
@@ -223,7 +241,7 @@ _LATERAL_SETTING = re.compile(
 _LTAC = re.compile(r"long.?term acute|\bLTACH?\b|acute (?:care )?hospital", re.I)
 
 # A promoted grade in the title. II is one step up, III and IV are two and
-# three; none are open to a nurse in her first year, whatever a long
+# three; none are open to a nurse in his first year, whatever a long
 # posting says elsewhere about new graduates.
 #
 # Matched on the title only, and anchored to the nurse noun so that a unit
@@ -237,17 +255,17 @@ _SENIOR_GRADE = re.compile(
 
 def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
              title: str = "") -> str:
-    """Which section of her list this posting belongs in."""
+    """Which section of his list this posting belongs in."""
     bucket = (bucket or "").strip()
     setting = (setting or "").lower()
     title = title or ""
     ev = evidence or ""
 
     # SNF outranks the bucket. A skilled-nursing posting with no
-    # experience bar is still a lateral move from the job she has, and the
+    # experience bar is still a lateral move from the job he has, and the
     # entire point of the search is acute-care experience. It stays in the
-    # list because it pays more than her current role, but it must never
-    # sit above a hospital posting she can actually apply to.
+    # list because it pays more than his current role, but it must never
+    # sit above a hospital posting he can actually apply to.
     #
     # LTAC is deliberately NOT demoted: a long-term acute care hospital is
     # an acute setting and counts as acute experience on a résumé. It is
@@ -257,10 +275,10 @@ def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
         return "B_bridge"
 
     months = required_months(ev)
-    # Experience she cannot accrue on a subacute floor. "Six months of OR
+    # Experience he cannot accrue on a subacute floor. "Six months of OR
     # RN experience" is a smaller number than a year and still a closed
     # door, so the size of the requirement is irrelevant once it names a
-    # unit she does not work in.
+    # unit he does not work in.
     specialist = _specialty_experience(ev)
 
     if bucket == "No experience required":
@@ -273,12 +291,12 @@ def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
         # A senior grade in the title beats a new-grad hint in the body.
         # "Clinical Nurse III - Operating Room" mentions new graduates
         # somewhere in a long posting, but a III is two promotions above
-        # her; the grade is the requirement.
+        # his; the grade is the requirement.
         if _SENIOR_GRADE.search(title):
             return "E_acute_req"
         # A stated requirement beats the grade in the title. "Registered
         # Nurse (RN) - Neuro ICU" is a Level I title whose posting demands
-        # ICU experience; offering it as open to new grads sends her to a
+        # ICU experience; offering it as open to new grads sends him to a
         # wall.
         if months or specialist:
             if specialist or (months or 0) > _REACHABLE_MONTHS:
@@ -298,7 +316,7 @@ def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
         if months is not None and months > _REACHABLE_MONTHS:
             return "F_tenure"
         # A reachable general requirement outranks the unit in the title.
-        # "RN - Emergency, needs 12 months general nursing" is a job she
+        # "RN - Emergency, needs 12 months general nursing" is a job he
         # can hold in May 2027; demoting it for the word "Emergency"
         # buried six of them.
         if months is not None:
@@ -409,6 +427,25 @@ ap();
 """
 
 
+def _echoes_title(evidence: str, title: str) -> bool:
+    """
+    Is this "evidence" just the job title repeated back?
+
+    `Staff Nurse II, Neuro ICU` appears as its own requirement sentence on
+    a number of Level II postings. It looks like a quote and carries no
+    information, so the card should say what is actually known instead of
+    pretending the title is a citation.
+    """
+    def norm(s: str) -> str:
+        return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+
+    e, t = norm(evidence), norm(title)
+    if not e or not t:
+        return False
+    # Equal, or the evidence is the title plus a word or two of packaging.
+    return e == t or (t in e and len(e) <= len(t) + 12)
+
+
 def _card(j: dict, pinned: bool = False) -> str:
     elig = "1" if j["tier"] in ELIGIBLE else "0"
     blob = f"{j['title']} {j['employer']} {j['location']} {j.get('key','')}".lower()
@@ -416,17 +453,33 @@ def _card(j: dict, pinned: bool = False) -> str:
     det = f'<div class="det">{esc(j["details"])}</div>' if j.get("details") else ""
     # A posting that states no requirement says so. The evidence ships with
     # the verdict, always — if the quote does not support the label, the
-    # rule is wrong, and she can see that at a glance.
-    why = j.get("evidence") or "This posting states no requirement."
+    # rule is wrong, and he can see that at a glance.
+    #
+    # But an "evidence" line that only repeats the title is not evidence,
+    # and it occupies the most valuable space on the card. Several Level
+    # II postings carry exactly that: `Staff Nurse II, Neuro ICU` quoted
+    # back as its own requirement. Say what is actually known instead.
+    why = j.get("evidence") or ""
+    if _echoes_title(why, j.get("title", "")):
+        # What the silence means depends on the grade in the title. An
+        # entry grade with nothing else stated is an opening; a promoted
+        # grade IS the requirement. Saying "the grade is the bar" under
+        # "Infusion RN I" reads as a warning about a job open to him.
+        if _SENIOR_GRADE.search(j.get("title", "")):
+            why = "No requirement quoted — the grade in the title is the bar."
+        else:
+            why = "No experience requirement stated anywhere in the posting."
+    elif not why.strip():
+        why = "This posting states no requirement."
     # Big employers post the same title six times for six different units,
-    # and the cards are then indistinguishable: she cannot tell which one
-    # she already opened. The posting number is the only thing that
+    # and the cards are then indistinguishable: he cannot tell which one
+    # he already opened. The posting number is the only thing that
     # differs, so it goes on the card.
     ref = j["key"].rsplit("::", 1)[-1] if "::" in j.get("key", "") else ""
     ref_html = f' <span class="ref">#{esc(ref)}</span>' if ref else ""
-    # Why this ranks where it does. A ranking she cannot interrogate is
-    # one she has to take on trust, and nothing else in this repo asks
-    # that of her — every verdict already ships with its evidence.
+    # Why this ranks where it does. A ranking he cannot interrogate is
+    # one he has to take on trust, and nothing this repo does elsewhere
+    # asks that of him — every verdict already ships with its evidence.
     rank_why = ""
     if j.get("why_ranked"):
         rank_why = (f'<div class="rw">{esc(" &middot; ".join(j["why_ranked"]))}</div>'
@@ -486,17 +539,21 @@ def render_page(jobs: list, scanned_at: str) -> str:
         '</div></header><main>',
     ]
 
-    # Best bets: the highest-scoring eligible jobs regardless of tier.
+    # Best bets: the highest-scoring jobs he can actually apply to today.
     #
-    # Tiers answer "may she apply"; they cannot answer "which of these 111
-    # is worth her Saturday". An ED post at $90/hr twenty minutes away and
-    # a per-diem SNF job at $46 an hour and a half away sit in different
-    # tiers, and the one she should open first was not necessarily near
-    # the top of any of them.
+    # Tiers answer "may he apply"; they cannot answer "which of these 111
+    # is worth his Saturday". But the shortlist must not answer the second
+    # question while ignoring the first: ranking on job quality alone put
+    # five postings demanding a year of RN experience at the top of it.
+    #
+    # So the shortlist is drawn only from the bands where the posting's
+    # own words say he qualifies now, or say nothing at all. "Reachable
+    # soon" is excluded here and keeps its own section below — it is real,
+    # but it is not what he opens on a Saturday.
     #
     # Capped at eight. A shortlist of thirty is just the list again.
     best = [j for j in sorted(elig, key=lambda x: -float(x.get("score") or 0))
-            if float(j.get("score") or 0) > 0][:8]
+            if j.get("band") in ranking.SHORTLIST_BANDS][:8]
     if best:
         out.append('<div class="gh best" data-gh="__best">'
                    '&#9733; Best bets &mdash; worth opening first</div>')
