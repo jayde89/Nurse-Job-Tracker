@@ -71,8 +71,32 @@ jobs:
           git config user.name  "rn-scan"
           git config user.email "rn-scan@users.noreply.github.com"
           git add state/seen.json state/sources.json applications.csv digest.html index.html DIGEST.md
-          git diff --staged --quiet || git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "scan $(date -u +%Y-%m-%dT%H:%M)"
+          # A scan takes ~27 minutes. Anything pushed to main inside that
+          # window makes this push a non-fast-forward, and the run fails
+          # having thrown away the entire scan — every adapter fetched,
+          # every posting classified, all discarded. That happened on
+          # 2026-09-20 because a PR merged mid-run.
+          #
+          # Rebase and retry instead. The scan only writes generated files,
+          # so replaying them on top of whatever landed is exactly right:
+          # last writer wins per file and the human commit keeps its edits
+          # to the source. Five attempts covers a burst of merges.
+          for i in 1 2 3 4 5; do
+            if git push; then
+              echo "pushed on attempt $i"
+              exit 0
+            fi
+            echo "push rejected (attempt $i) — rebasing onto origin/main"
+            git pull --rebase --autostash origin main || {
+              echo "::error::rebase failed — scan results not saved"
+              exit 1
+            }
+            sleep $((i * 5))
+          done
+          echo "::error::could not push scan results after 5 attempts"
+          exit 1
 
       # Email without SMTP credentials. GitHub sends you a notification
       # email whenever it assigns you an issue, so assigning one to the repo
