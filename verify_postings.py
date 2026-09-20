@@ -276,6 +276,43 @@ def persistently_missed(rows, act):
     return out
 
 
+def check_links(rows, act, limit=None, timeout=25):
+    """
+    Fetch each actionable posting's URL and report the ones that no
+    longer resolve. Off by default because it is slow and hits ~100 live
+    hosts; run it with --links before trusting a long list.
+
+    Kept out of the CHECKS list deliberately: a network failure on this
+    machine is not a defect in the ledger, and a check that goes red for
+    reasons outside the repo trains you to ignore red.
+
+    A note on method: a browser tab reported one of these as redirected
+    to an unrelated job, and an HTTP check of the same URL returned 200.
+    The tab was stale. Trust the request, not the rendering.
+    """
+    import urllib.error
+    import urllib.request
+    out = []
+    todo = act[:limit] if limit else act
+    for r in todo:
+        u = (r.get("URL") or "").strip()
+        if not u.startswith("http"):
+            out.append(dict(r, _detail="no URL"))
+            continue
+        try:
+            req = urllib.request.Request(
+                u, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                code = resp.getcode()
+            if code >= 400:
+                out.append(dict(r, _detail=f"HTTP {code}"))
+        except urllib.error.HTTPError as e:
+            out.append(dict(r, _detail=f"HTTP {e.code}"))
+        except Exception as e:                              # noqa: BLE001
+            out.append(dict(r, _detail=f"{type(e).__name__}: {e}"))
+    return out, len(todo)
+
+
 def load():
     with open(LEDGER) as f:
         rows = list(csv.DictReader(f))
@@ -332,7 +369,23 @@ def main():
                     help="re-run until two consecutive clean passes")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--max-passes", type=int, default=10)
+    ap.add_argument("--links", action="store_true",
+                    help="also fetch every actionable posting's URL (slow)")
     a = ap.parse_args()
+
+    if a.links:
+        rows, act = load()
+        print(f"fetching {len(act)} actionable postings...")
+        bad, n = check_links(rows, act)
+        if bad:
+            print(f"\n{len(bad)} of {n} no longer resolve:")
+            for r in bad:
+                print(f"  {r.get('_detail','')[:22]:22} "
+                      f"{(r.get('Title') or '')[:40]:40} "
+                      f"| {(r.get('Employer') or '')[:20]}")
+        else:
+            print(f"all {n} postings still resolve")
+        return 1 if bad else 0
 
     if a.json:
         errors, warns, results = run_once(verbose=False)
