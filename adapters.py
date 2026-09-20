@@ -140,6 +140,15 @@ INCLUDE_TITLE = re.compile(
 # "clinical nurse specialist" that was already here.
 EXCLUDE_TITLE = re.compile(
     r"\b(LVN|LPN|licensed voc(?:\.|ationa?l?)?\s+nurse|licensed practical nurse"
+    # "Licensed" is not required. Employers post "Vocational Nurse II" and
+    # "Vocational Nurse, Clinic" with no prefix, and the bare phrase reached
+    # the include side through its own word "nurse".
+    r"|vocational nurse|practical nurse"
+    # "Nurse aide" is a separate job title from "nursing assistant" and was
+    # not covered by it: "Certified Nurse Aide", "Nurse Aide II" and
+    # "Restorative Nurse Aide" are all real postings that passed. The aide
+    # roles are the CNA ladder under a different name.
+    r"|nurse aide|nursing aide|nurse tech(?:nician)?|nursing tech(?:nician)?"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
     r"|CRNA|nurse anesthetist|clinical nurse specialist"
     r"|manager|director|supervisor|educator|informatics|informaticist|analyst"

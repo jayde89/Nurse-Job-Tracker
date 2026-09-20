@@ -43,6 +43,31 @@ check("bare CNA posting still excluded", A.title_passes("CNA - FT Days"), False)
 check("nursing assistant still excluded",
       A.title_passes("Certified Nursing Assistant (CNA)"), False)
 check("LVN still excluded", A.title_passes("LVN - Skilled Nursing"), False)
+# The user asked, in as many words, that no CNA or LVN role ever reach her:
+# "Make sure no CNA or LVN jobs show up in our directories or anywhere,
+# because they do not apply to me." An audit against that found seven real
+# leaks — every one a variant the exclusion list didn't name.
+#
+# "Nurse aide" is its own job title and was NOT covered by "nursing
+# assistant": the aide ladder is the CNA ladder under another name.
+for _t in ("Certified Nurse Aide", "Nurse Aide", "Nurse Aide II",
+           "Restorative Nurse Aide", "Acute Care Nurse Aide",
+           "Nursing Aide", "Nurse Technician", "Nursing Technician"):
+    check(f"aide/tech role excluded: {_t}", A.title_passes(_t), False)
+# And "Licensed" is not required — employers post the bare phrase, which
+# reached the include side through its own word "nurse".
+for _t in ("Vocational Nurse", "Vocational Nurse II",
+           "Vocational Nurse, Clinic", "Practical Nurse"):
+    check(f"unprefixed vocational role excluded: {_t}",
+          A.title_passes(_t), False)
+# The widening must not cost an RN posting. "CNA" in a John Muir title is
+# the union; "Caregiver" in a Providence title is the population served.
+for _t in ("Registered Nurse NOC", "Staff Nurse I", "Clinical Nurse I",
+           "Registered Nurse, Subacute", "Infusion RN I",
+           "Dialysis Registered Nurse", "Registered Nurse (R.N.)",
+           "Associate RN Employee (Caregiver) Health - On Site"):
+    check(f"RN role survives the aide exclusions: {_t}",
+          A.title_passes(_t), True)
 check("nurse practitioner still excluded",
       A.title_passes("Nurse Practitioner - Cardiology"), False)
 check("CNS still excluded",
