@@ -1284,6 +1284,95 @@ for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
     check(f"a unit number is not a grade: {_t[:34]}",
           _bucket(_t) != "LEVEL_II_TITLE", True)
 
+# ── application-process boilerplate is not a requirement ─────────────
+# San Francisco's civil-service postings carry a paragraph about how
+# credentials get verified. SFDPH's new-graduate training programme
+# (H00206, posted 2026-09-18) came out GENERAL_EXPERIENCE on it and spent a
+# day in "Watching" instead of "Worth applying to now" — a quote that says
+# nothing about what the job needs, standing as the evidence that it needs
+# experience.
+_SF_BOILERPLATE = (
+    "Verification of Education and Experience: Every application is "
+    "reviewed to ensure that you meet the minimum qualifications as listed "
+    "in the job ad. Review SF Careers Employment Applications for "
+    "considerations taken when reviewing applications. Applicants may be "
+    "required to submit verification of qualifying education and experience "
+    "at any point during the recruitment and selection process. Note: "
+    "Falsifying one's education, training, or work experience or attempted "
+    "deception on the application may result in disqualification.")
+
+check("verification boilerplate is not an experience requirement",
+      C.classify("Registered Nurse (2320) - Citywide",
+                 _SF_BOILERPLATE).bucket != "GENERAL_EXPERIENCE", True)
+# And it must not flip to the expensive error either. The section said
+# nothing, so the honest answer is that nothing is known — never
+# "no experience required" evidenced by the same paperwork sentence.
+check("verification boilerplate does not read as no-experience-required",
+      C.classify("Registered Nurse (2320) - Citywide",
+                 _SF_BOILERPLATE).bucket, "UNCLEAR")
+check("a section of pure paperwork is not an experience section",
+      C.experience_section(_SF_BOILERPLATE), None)
+# A posting may state a real requirement and then explain how it is
+# checked. Only the second sentence is boilerplate.
+check("a real requirement survives beside its verification sentence",
+      C.classify("Registered Nurse",
+                 "Minimum Qualifications: Two (2) years of recent acute care "
+                 "experience is required. Applicants may be required to "
+                 "submit verification of qualifying education and experience "
+                 "at any point during the selection process.").bucket,
+      "ACUTE_REQUIRED")
+check("the surviving evidence is the requirement, not the paperwork",
+      "verification" not in (C.classify(
+          "Registered Nurse",
+          "Minimum Qualifications: Two (2) years of recent acute care "
+          "experience is required. Applicants may be required to submit "
+          "verification of qualifying education and experience at any point "
+          "during the selection process.").evidence or "").lower(), True)
+check("stripping keeps the sentences that are about the job",
+      C.strip_process_boilerplate(
+          "One year of nursing experience is required. Every application is "
+          "reviewed to ensure that you meet the minimum qualifications."),
+      "One year of nursing experience is required.")
+
+
+# ── an employer saying any experience level may apply ────────────────
+# SFDPH's training programme says so in a sentence no pattern in NEW_GRAD
+# came close to matching, and it is the whole answer to the only question
+# this classifier asks.
+_H00206 = ("The purpose of the 2320 Registered Nurse Training Programs is to "
+           "prepare registered nurses at any stage of their careers to "
+           "provide safe and competent nursing care to all patients. "
+           "Psychiatric Care Registered Nurses in this program will learn "
+           "how to provide nursing care to patients with mental health "
+           "needs.")
+
+check("'at any stage of their careers' is an eligibility statement",
+      C.classify("Registered Nurse [Training Program] (2320) – Citywide",
+                 _H00206).bucket, "STAFF_NURSE_I")
+# The evidence has to be the sentence that says it, not the opening of the
+# posting — the same rule that caught Adventist quoting hospital history.
+check("the all-levels verdict quotes the sentence that says it",
+      "at any stage of their careers" in C.classify(
+          "Registered Nurse [Training Program] (2320) – Citywide",
+          _H00206).evidence, True)
+for _phrase in ("Open to nurses at all levels of experience.",
+                "We hire regardless of prior experience.",
+                "Both new and experienced nurses are encouraged to apply.",
+                "No previous experience is necessary."):
+    check(f"all-levels phrasing: {_phrase[:38]}",
+          C.classify("Registered Nurse", _phrase).bucket, "STAFF_NURSE_I")
+# A training programme can be one a nurse is hired to teach, so the title
+# word alone must never carry this verdict — only the body sentence does.
+check("'training program' in a title is not itself eligibility",
+      C.classify("RN Training Program Coordinator",
+                 "Coordinates the nurse training program. Five years of "
+                 "acute care experience required.").bucket != "STAFF_NURSE_I",
+      True)
+# The whole point: the real posting lands where he would have seen it.
+check("the SFDPH training programme is a job he can apply to",
+      C.classify("Registered Nurse [Training Program] (2320) – Citywide – "
+                 "(H00206)", _SF_BOILERPLATE + " " + _H00206).bucket,
+      "STAFF_NURSE_I")
 # ── LTAC must not be suppressed by its own name ──────────────────────
 # ACUTE lists "hospital" as a marker, so every sentence naming an
 # employer whose name contains the word matched it. Central Valley
@@ -1552,6 +1641,26 @@ check("an EXPERIENCE-headed section still counts without the word",
       _v.bucket, "GENERAL_EXPERIENCE")
 check("and quotes its own clause", _v.evidence,
       "Nursing - Psychiatry - Required")
+# That exemption and the boilerplate strip collide, and the collision is
+# why `_substantive` takes a flag. The strip empties any section whose
+# surviving text contains no form of the word "experience" — and John
+# Muir's says it only in the heading. Without the flag this section
+# vanished, the verdict fell through to free-form matching, and the
+# evidence came back as "Experience: Nursing - Psychiatry - Required." —
+# the heading quoted back with the clause, which is not a clause.
+check("a heading-stated requirement survives the boilerplate strip",
+      C._substantive("Nursing - Psychiatry - Required",
+                     heading_says_experience=True),
+      "Nursing - Psychiatry - Required")
+# The exemption must not become a way back in for paperwork. A section
+# headed EXPERIENCE that says nothing but process is still empty.
+check("but paperwork under an EXPERIENCE heading is still nothing",
+      C._substantive(
+          "Applicants may be required to submit verification of qualifying "
+          "education and experience at any point during the recruitment "
+          "and selection process.",
+          heading_says_experience=True),
+      "")
 
 # 4. Acute care offered as one acceptable setting among several is not an
 #    acute-care gate. San Francisco's Public Health Nurse asks for a year

@@ -11,9 +11,18 @@ A false **"no experience required"** is the most expensive bug this
 codebase can produce. It spends a job-seeker's time on an application they
 were never eligible for. Every verdict therefore carries the requirement
 sentence it rests on, and that quote is the contract: **if the evidence
-doesn't support the label, the rule is wrong.** Four bugs of exactly this
+doesn't support the label, the rule is wrong.** Five bugs of exactly this
 shape were found by reading labels against their own evidence — see the
 "Read the evidence" section of the README.
+
+The fifth is the reason to keep reading quotes even when the label errs in
+the *safe* direction. A wrong `GENERAL_EXPERIENCE` hides nothing — the row
+is still on the list — so nothing fails and nothing alerts. It just moves a
+job the user is eligible for out of the 46-row "worth applying to now" list
+into the 84-row "watching" list, where he did not look. That was SFDPH's
+new-graduate training programme, labelled off a sentence about verifying
+paperwork, found only because he asked after it by name. **An over-strict
+label is not a safe label; it is a quiet one.**
 
 ## Who this is for, in the user's own words
 
@@ -52,6 +61,24 @@ never before — see the docstring there for why, and keep it that way.
 The user also chose to show no count of what was hidden, so the digest
 says nothing about it; the scan's stdout line still reports it honestly.
 
+**A clause about the hiring process is not a clause about the candidate.**
+`_PROCESS_BOILERPLATE` drops the paragraph every civil-service posting
+carries about verifying education and experience. Three things in San
+Francisco's version are load-bearing to the parser and none mean what it
+thought: "Experience:" ends a noun phrase and became a section heading,
+"minimum qualifications" matched a colon-optional label mid-sentence, and
+"required" made the verification sentence look like a gate. Note what
+`_substantive()` is for: skipping those clauses inside `classify()` alone
+would leave no required clauses and fall straight through to
+`NO_EXPERIENCE` quoting the same boilerplate — turning the quiet error into
+the expensive one. A section that only discussed paperwork has said
+nothing, so it must not count as a section at all.
+
+`ALL_EXPERIENCE_LEVELS` is the other half: an employer stating in its own
+words that any experience level may apply. Read from the body only, never
+the title — a training programme can be one a nurse is hired to teach, and
+a title is not evidence of eligibility.
+
 **An employer whose name contains "Hospital" is not stating a requirement.**
 `ACUTE` lists `hospital` as a marker, so every sentence naming such an
 employer matched it. Central Valley Specialty Hospital — a long-term acute
@@ -64,6 +91,12 @@ on ... qualifications and experience") contained both an `ACUTE` marker
 `ACUTE_EXPERIENCE`, which requires the two to be about each other. This
 was systematic against LTAC, which is the one setting whose employers all
 have "acute" or "hospital" in their names.
+
+These two rules meet in `experience_section()`, and the order is load-
+bearing: **filter the process talk out first, then choose which section to
+read.** Choosing first picks a section on the strength of a duration
+sitting in its boilerplate, and the filtering then empties the very
+section that was picked.
 
 **Evidence must come from the field that actually said it, and must be the
 tightest clause that says it.** Three ways this broke on 2026-09-09, all
@@ -144,7 +177,7 @@ nursing home — it comes from the adapter, which knows what it is reading.
 ## Before you push a rule change
 
 ```bash
-python3 test_rules.py     # 332 cases, no dependencies, ~instant
+python3 test_rules.py     # 350 cases, no dependencies, ~instant
 ```
 
 Every case is a bug that already shipped once. The workflow runs this

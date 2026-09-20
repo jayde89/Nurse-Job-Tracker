@@ -215,6 +215,17 @@ The most recent batch, found by checking labels against their own evidence:
   counted as no requirement at all — which is how a Sutter posting reached
   the recommendations quoting "Previous experience as an RN in an acute care
   hospital setting" as its evidence for needing no experience.
+* **The one that cost a real job.** Every San Francisco civil-service
+  posting carries a paragraph about how credentials get verified. SFDPH's
+  new-graduate training programme was labelled "experience required, not
+  acute" and evidenced by "Applicants may be required to submit
+  verification of qualifying education and experience at any point during
+  the recruitment and selection process" — a sentence about paperwork, not
+  about the job. It sat in *Watching* for a day while the posting itself
+  said it was there "to prepare registered nurses **at any stage of their
+  careers**". Process boilerplate is now ignored, and a posting that says
+  in so many words that any experience level may apply is read as saying
+  it.
 
 ---
 
