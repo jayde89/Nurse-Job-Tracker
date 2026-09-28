@@ -1,17 +1,22 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-09-27 19:28 UTC. 447 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, Contra Costa County, County of Sonoma, Marin County, Napa County, Solano County
+_Scanned 2026-09-28 00:00 UTC. 458 shown._
+_Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
-**286 worth your attention** — Level I or no experience required,
-and not already in your pile. 161 more need experience you do not
+**291 worth your attention** — Level I or no experience required,
+and not already in your pile. 166 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 286
+## Worth applying to now — 291
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| 30-60 | [Registered Nurse ( Emergency, Perianesthesia, GI Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996127/registered-nurse-emergency-perianesthesia-gi-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse ( Inpatient Psych, Psych Emergency Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996170/registered-nurse-inpatient-psych-psych-emergency-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Critical Care, Intermediate Care, Telemetry, Surgical, and Medical Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4971428/registered-nurse-critical-care-intermediate-care-telemetry-surgical-and-medi)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Labor & Delivery, Nursery, and Postpartum Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996104/registered-nurse-labor-delivery-nursery-and-postpartum-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Operating Room Assignment)](https://www.governmentjobs.com/careers/contracosta/jobs/4996178/registered-nurse-operating-room-assignment)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | Two (2) years of full-time, or its equivalent, experience performing duties as a Registered Nurse in an acute care setting, one (1) year of which must |
 | 30-60 | [Critical Care Nurse - Intensive Care Unit (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/4456634/critical-care-nurse-intensive-care-unit-open-promotional)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | Two years of experience working in acute care hospital units providing care to patients with serious, complex and acute illnesses or injuries that req |
 | 30-60 | [Perioperative Relief Nurse (Open)](https://www.governmentjobs.com/careers/sanmateo/jobs/5071603/perioperative-relief-nurse-open)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | The ideal candidate will possess the following: At least two years of experience in the Operating Room or PACU of an acute care hospital. |
 | 30-60 | [Clinical Nurse II - PD - Eves - Nursery - Intensive Care @ MV](https://ech.wd5.myworkdayjobs.com/ech/job/Mountain-View-CA/Clinical-Nurse-II---PD---Eves---Nursery---Intensive-Care---MV_R00017720)<br>Part-time · $93.87–$122.62/hr | El Camino Health | Mountain View, CA | Acute care required | Must have recent Level III NICU experience. |
@@ -306,11 +311,13 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 1
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| <30 | [Registered Nurse- Allergy, Immunology, and Infectious Diseases](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8053) | UCSF Health | San Francisco, CA | Experience required, not acute | Two years RN experience in-patient. |
 
-## Watching — 161
+## Watching — 166
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -318,11 +325,15 @@ apply to today.
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
+| 30-60 | [Registered Nurse (Public Health, Behav Health, CC Health Plan, Ambulatory, & Detention Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4994598/registered-nurse-public-health-behav-health-cc-health-plan-ambulatory-dete)<br>Health Services - Continuous | Contra Costa County | Martinez | Experience required, not acute | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in a hospital, medical facility or ambulatory care se |
 | 30-60 | [Wound Care RN (Per diem)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/299624)<br>Long-term acute care · Per diem · $65.73–$80.13/hr | Kentfield Hospital (AAM) | Kentfield, CA 94904 | Experience required, not acute | One (1) year of experience in wound care required. |
+| 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [Nurse (RN), Cardiology, (Larkspur/Novato), Per Diem, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Larkspur-CA/Nurse--RN---Cardiology---Larkspur-Novato---Per-Diem--Days_JR102188)<br>Per diem · Days · $62.78–$78.47/hr | MarinHealth | Larkspur, CA (+1 more) | Experience required, not acute | Minimum of two-year cardiovascular clinic experience and/or hospital nursing experience. |
 | 30-60 | [Nurse (RN) - Cardiology, Cardiovascular Medicine, (Larkspur), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Larkspur-CA/Nurse--RN----Cardiology--Cardiovascular-Medicine---Larkspur---Full-Time--Days_JR101977)<br>Full-time · Days · $62.78–$78.47/hr | MarinHealth | Larkspur, CA | Experience required, not acute | Minimum of two-year cardiovascular clinic experience and/or hospital nursing experience. |
 | 30-60 | [CERT NURSE ASST](https://careers-ahmchealth.icims.com/jobs/28809/cert-nurse-asst/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Experience required, not acute | A minimum of six month experience performing similar duties is desired. |
+| 30-60 | [Public Health Nurse](https://www.governmentjobs.com/careers/solanocounty/jobs/5284503/public-health-nurse)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | One year of public health and clinical nursing experience. |
+| 30-60 | [Public Health Nurse (Senior)](https://www.governmentjobs.com/careers/solanocounty/jobs/5302587/public-health-nurse-senior)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | Five (5) years public health and clinical nursing experience that demonstrates possession of and competency in requisite knowledge and abilities. |
 | 30-60 | [Registered Nurse, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-140366-1)<br>Part-time · Days · $66.40–$90.82/hr | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Registered Nurse (RN) - Employee Health](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603023000)<br>Full-time · Days | Tenet Health | San Ramon, CA | Experience required, not acute | Minimum Experience/Skills: Minimum five (5) years recent RN experience. |
 | 30-60 | [Ambulatory OR RN](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603016285)<br>Full-time · Days | Tenet Health | San Ramon, CA | Experience required, not acute | Minimum of recent six (6) months of OR RN experience required; |
@@ -380,6 +391,7 @@ apply to today.
 | 90-120 | [Registered Nurse (RN) – ER](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603020754)<br>Full-time · Evenings | Tenet Health | Turlock, CA | Experience required, not acute | Minimum 1yr experience. |
 | 90-120 | [Registered Nurse (RN) - L&D](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603018695)<br>Full-time · Days | Tenet Health | Turlock, CA | Experience required, not acute | Minimum of one year of L&D experience required. |
 | <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015109716-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Experience required, not acute | At least one (1) year of experience working as a Registered Nurse. |
+| <30 | [Supervising Public Health Nurse](https://www.governmentjobs.com/careers/berkeley/jobs/5431012/supervising-public-health-nurse)<br>HHCS Health | City of Berkeley | Berkeley | Experience required, not acute | and required documents (qualifying experience will be calculated based on the application period close date). |
 | <30 | [Pre-Op / PACU RN - Oakland Oncology Surgery Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Pre-Op---PACU-RN---Oakland-Oncology-Surgery-Center_R-136806)<br>Full-time · Day / Evening · $86.27–$120.77/hr | Sutter Health | Oakland | Experience required, not acute | 2 years recent relevant experience |
 | <30 | [Wound Care RN, Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Alameda/Wound-Care-RN--Home-Health_R-138459)<br>Full-time · Days · $73.11–$98.24/hr | Sutter Health | Alameda | Experience required, not acute | 2 Minimum of two years of recent home care experience. |
 | <30 | [Registered Nurse - Plastic & Reconstructive Surgery](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8013)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Two years of recent RN experience in Plastic Surgery or surgical ambulatory patient care area. |
