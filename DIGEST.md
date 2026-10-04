@@ -1,14 +1,14 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-04 10:01 UTC. 470 shown._
+_Scanned 2026-10-04 18:59 UTC. 466 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
-**305 worth your attention** — Level I or no experience required,
+**301 worth your attention** — Level I or no experience required,
 and not already in your pile. 165 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 305
+## Worth applying to now — 301
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
@@ -37,9 +37,6 @@ Nothing sent yet.
 | 30-60 | [RN Recovery](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603013680)<br>Part-time | Tenet Health | San Ramon, CA | Acute care required | Minimum Experience/Skills: Minimum of three (3) year recent work experience in an acute care setting required; |
 | 30-60 | [Registered Nurse (RN) -Wound](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603018829)<br>Part-time | Tenet Health | San Ramon, CA | Acute care required | Minimum Experience/Skills: Minimum of one (1) years experience in an acute clinical nursing department, ideally a medical surgical or specialty area. |
 | 60-90 | [Emergency Nurse](https://www.commonspirit.careers/job/sacramento/emergency-nurse/35300/99228724128)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | Required: One (1) year of experience in the Emergency Room or a related field of nursing. |
-| 60-90 | [Definitive Observation Nurse](https://www.commonspirit.careers/job/sacramento/definitive-observation-nurse/35300/101399744576)<br>Definitive Observation · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of telemetry experience in a medical/surgical acute care setting as an RN. |
-| 60-90 | [Definitive Observation Nurse](https://www.commonspirit.careers/job/sacramento/definitive-observation-nurse/35300/101399744496)<br>Definitive Observation · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of telemetry experience in a medical/surgical acute care setting as an RN. |
-| 60-90 | [Definitive Observation Nurse](https://www.commonspirit.careers/job/sacramento/definitive-observation-nurse/35300/101399744432)<br>Definitive Observation · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of telemetry experience in a medical/surgical acute care setting as an RN. |
 | 60-90 | [Definitive Observation Nurse](https://www.commonspirit.careers/job/sacramento/definitive-observation-nurse/35300/101399744368)<br>Definitive Observation · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of telemetry experience in a medical/surgical acute care setting as an RN. |
 | 60-90 | [Labor and Delivery Nurse](https://www.commonspirit.careers/job/sacramento/labor-and-delivery-nurse/35300/97620063776)<br>Family Birth Center · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of labor and delivery experience as an RN required in an acute care setting. |
 | 60-90 | [Labor and Delivery Nurse](https://www.commonspirit.careers/job/sacramento/labor-and-delivery-nurse/35300/97620063728)<br>Family Birth Center · Full-time | CommonSpirit / Dignity Health | Sacramento, CA | Acute care required | One (1) year of labor and delivery experience as an RN required in an acute care setting. |
@@ -89,7 +86,6 @@ Nothing sent yet.
 | 60-90 | [Behavioral Health Program Administrator 194 (LMFT, LCSW, LPCC, RN) - $10K Sign-on Bonus](https://recruiting2.ultipro.com/TEL1006/JobBoard/2fcbb6f4-e717-17cb-9327-3dd87a55b08d/OpportunityDetail?opportunityId=b54dd133-a965-4bf4-ac39-810611c8cff1)<br>Operations · Behavioral health · Full-time · AM / PM / Days 8:00 AM – 5:00 PM | Telecare | Santa Cruz, CA | Acute care required | Four (4) years of experience in an administrative management position in an inpatient Psych health care setting, Prefer Joint Commission experience. |
 | 60-90 | [Registered Nurse (RN) - Coronary ICU](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603015818)<br>Full-time · Nights | Tenet Health | Modesto, CA | Acute care required | Minimum 1 + years ICU experience required. |
 | 90-120 | [Nurse Emergency](https://www.commonspirit.careers/job/carmichael/nurse-emergency/35300/101370163264)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Two (2) years recent experience in an Emergency department as a RN within the last five (5) years. |
-| 90-120 | [Break Relief Nurse Definitive Observation 2](https://www.commonspirit.careers/job/carmichael/break-relief-nurse-definitive-observation-2/35300/101374591056)<br>Definitive Observation · Part-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | One (1) year RN experience in an acute medical surgical or telemetry unit within the last five (5) years. |
 | 90-120 | [Nurse Emergency](https://www.commonspirit.careers/job/carmichael/nurse-emergency/35300/101260015040)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Two (2) years recent experience in an Emergency department as a RN within the last five (5) years. |
 | 90-120 | [Nurse NICU](https://www.commonspirit.careers/job/carmichael/nurse-nicu/35300/101078247200)<br>Neonatal ICU · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Minimum one (1) year RN experience in Level 3 NICU. |
 | 90-120 | [Nurse NICU](https://www.commonspirit.careers/job/carmichael/nurse-nicu/35300/101078247168)<br>Neonatal ICU · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Minimum one (1) year RN experience in Level 3 NICU. |
