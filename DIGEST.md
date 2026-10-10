@@ -1,6 +1,6 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-10 10:06 UTC. 445 shown._
+_Scanned 2026-10-10 19:34 UTC. 445 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
 **287 worth your attention** — Level I or no experience required,
