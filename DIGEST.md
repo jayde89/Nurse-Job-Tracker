@@ -1,14 +1,14 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-11 00:34 UTC. 424 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of Sonoma, Marin County, Napa County, Sacramento County, Solano County
+_Scanned 2026-10-11 10:24 UTC. 424 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of Sonoma, Sacramento County, Solano County
 
-**280 worth your attention** — Level I or no experience required,
-and not already in your pile. 144 more need experience you do not
+**279 worth your attention** — Level I or no experience required,
+and not already in your pile. 145 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 280
+## Worth applying to now — 279
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
@@ -192,7 +192,6 @@ Nothing sent yet.
 | 60-90 | [Staff Nurse II - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1102&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse II - Inpatient |
 | 60-90 | [Staff Nurse IV - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1104&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse IV - Inpatient |
 | 60-90 | [Ambulatory Services Nurse II, Operating Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Ambulatory-Services-Nurse-II--Operating-Room_R-141484-1)<br>Full-time · Days · $71.73–$100.42/hr | Sutter Health | Sacramento | Level II role | Ambulatory Services Nurse II, Operating Room |
-| 60-90 | [Registered Nurse II, Cardiac Care Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Cardiac-Care-Unit_R-141917)<br>Full-time · Nights · $82.48–$115.46/hr | Sutter Health | Sacramento | Level II role | Registered Nurse II, Cardiac Care Unit |
 | 60-90 | [Registered Nurse II, Orthopedics](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Orthopedics_R-142426)<br>Full-time · Nights · $82.48–$115.46/hr | Sutter Health | Sacramento | Level II role | Registered Nurse II, Orthopedics |
 | 60-90 | [Staff Nurse II, Birthing Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Staff-Nurse-II--Birthing-Center_R-138402)<br>Full-time · Nights · $78.31–$103.71/hr | Sutter Health | Davis | Level II role | Staff Nurse II, Birthing Center |
 | 60-90 | [Clinic Nurse II Urgent Care](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Riverbank/Clinic-Nurse-II-Urgent-Care_R-142120)<br>Full-time · Day / Evening · $71.72–$100.40/hr | Sutter Health | Riverbank | Level II role | Clinic Nurse II Urgent Care |
@@ -304,7 +303,7 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 144
+## Watching — 145
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -313,6 +312,7 @@ apply to today.
 |---|---|---|---|---|---|
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
 | 30-60 | [Critical Care Nurse-Emergency Department (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/5479392/critical-care-nurse-emergency-department-open-promotional)<br>San Mateo Medical Center · $75.52–$89.24/hr | County of San Mateo | San Mateo | Experience required, not acute | Any combination of education and experience that would likely provide the required knowledge, skills and abilities is qualifying. |
+| 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [Nurse (RN), Cardiology, (Larkspur/Novato), Per Diem, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Larkspur-CA/Nurse--RN---Cardiology---Larkspur-Novato---Per-Diem--Days_JR102188)<br>Per diem · Days · $62.78–$78.47/hr | MarinHealth | Larkspur, CA (+1 more) | Experience required, not acute | Minimum of two-year cardiovascular clinic experience and/or hospital nursing experience. |
 | 30-60 | [CERT NURSE ASST](https://careers-ahmchealth.icims.com/jobs/28809/cert-nurse-asst/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Experience required, not acute | A minimum of six month experience performing similar duties is desired. |
