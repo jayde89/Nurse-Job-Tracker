@@ -1,19 +1,17 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-11 10:24 UTC. 424 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of Sonoma, Sacramento County, Solano County
+_Scanned 2026-10-11 19:48 UTC. 419 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of San Mateo, County of Santa Clara, County of Sonoma, Sacramento County
 
-**279 worth your attention** — Level I or no experience required,
-and not already in your pile. 145 more need experience you do not
+**275 worth your attention** — Level I or no experience required,
+and not already in your pile. 143 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 279
+## Worth applying to now — 275
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 30-60 | [Critical Care Nurse - Intensive Care Unit (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/4456634/critical-care-nurse-intensive-care-unit-open-promotional)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | Two years of experience working in acute care hospital units providing care to patients with serious, complex and acute illnesses or injuries that req |
-| 30-60 | [Perioperative Relief Nurse (Open)](https://www.governmentjobs.com/careers/sanmateo/jobs/5071603/perioperative-relief-nurse-open)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | The ideal candidate will possess the following: At least two years of experience in the Operating Room or PACU of an acute care hospital. |
 | 30-60 | [*STAFF NURSE II](https://careers-ahmchealth.icims.com/jobs/27566/*staff-nurse-ii/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Acute care required | Experience and training as an ICU nurse. |
 | 30-60 | [*STAFF NURSE II](https://careers-ahmchealth.icims.com/jobs/27214/*staff-nurse-ii/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Acute care required | Staff Nurse II– At least one year as a Registered Nurse experience in acute care settings. |
 | 30-60 | [*STAFF NURSE II](https://careers-ahmchealth.icims.com/jobs/27213/*staff-nurse-ii/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Acute care required | Staff Nurse II– At least one year as a Registered Nurse experience in acute care settings. |
@@ -184,10 +182,8 @@ Nothing sent yet.
 | 30-60 | [Staff Nurse II, Neurology](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Burlingame/Staff-Nurse-II--Neurology_R-139955-1)<br>Part-time · Nights · $86.59–$117.18/hr | Sutter Health | Burlingame | Level II role | Staff Nurse II, Neurology |
 | 30-60 | [Staff Nurse II, Emergency Department](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--Emergency-Department_R-131766-1)<br>Part-time · Nights · $83.34–$112.76/hr | Sutter Health | Novato | Level II role | Staff Nurse II, Emergency Department |
 | 30-60 | [Staff Nurse II, Emergency Services](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Antioch/Staff-Nurse-II--Emergency-Services_R-139418-1)<br>Full-time · Day / Evening / Night · $83.34–$112.76/hr | Sutter Health | Antioch | Level II role | Staff Nurse II, Emergency Services |
-| 30-60 | [Clinic Nurse II, Neuroscience](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Clinic-Nurse-II--Neuroscience_R-141211)<br>Part-time · Days · $71.72–$100.40/hr | Sutter Health | Fairfield (+2 more) | Level II role | Clinic Nurse II, Neuroscience |
 | 30-60 | [Staff Nurse II, OR Circulator](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--OR-Circulator_R-138190-1)<br>Full-time · Varied · $80.52–$108.95/hr | Sutter Health | Novato | Level II role | Staff Nurse II, OR Circulator |
 | 30-60 | [Staff Nurse II, OR Circulator](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Novato/Staff-Nurse-II--OR-Circulator_R-138205-1)<br>Part-time · Varied · $80.52–$108.95/hr | Sutter Health | Novato | Level II role | Staff Nurse II, OR Circulator |
-| 60-90 | [Clinical Nurse III - Hemodialysis](https://www.governmentjobs.com/careers/santaclara/jobs/5509165/clinical-nurse-iii-hemodialysis)<br>Santa Clara Valley Healthcare (SCVHC) | County of Santa Clara | San Jose | Level II role | Clinical Nurse III - Hemodialysis |
 | 60-90 | [RN STAFF 4 (ER - FT)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/217668)<br>Full-time · $62.62–$83.84/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Level II role | RN STAFF 4 (ER - FT) |
 | 60-90 | [Staff Nurse II - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1102&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse II - Inpatient |
 | 60-90 | [Staff Nurse IV - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1104&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse IV - Inpatient |
@@ -299,11 +295,13 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 1
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| 60-90 | [Registered Nurse Oncology](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Oncology_R-142908)<br>Part-time · Nights · $74.98–$104.96/hr | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
 
-## Watching — 145
+## Watching — 143
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -311,11 +309,12 @@ apply to today.
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
-| 30-60 | [Critical Care Nurse-Emergency Department (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/5479392/critical-care-nurse-emergency-department-open-promotional)<br>San Mateo Medical Center · $75.52–$89.24/hr | County of San Mateo | San Mateo | Experience required, not acute | Any combination of education and experience that would likely provide the required knowledge, skills and abilities is qualifying. |
 | 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [Nurse (RN), Cardiology, (Larkspur/Novato), Per Diem, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Larkspur-CA/Nurse--RN---Cardiology---Larkspur-Novato---Per-Diem--Days_JR102188)<br>Per diem · Days · $62.78–$78.47/hr | MarinHealth | Larkspur, CA (+1 more) | Experience required, not acute | Minimum of two-year cardiovascular clinic experience and/or hospital nursing experience. |
 | 30-60 | [CERT NURSE ASST](https://careers-ahmchealth.icims.com/jobs/28809/cert-nurse-asst/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Experience required, not acute | A minimum of six month experience performing similar duties is desired. |
+| 30-60 | [Public Health Nurse](https://www.governmentjobs.com/careers/solanocounty/jobs/5284503/public-health-nurse)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | One year of public health and clinical nursing experience. |
+| 30-60 | [Public Health Nurse (Senior)](https://www.governmentjobs.com/careers/solanocounty/jobs/5302587/public-health-nurse-senior)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | Five (5) years public health and clinical nursing experience that demonstrates possession of and competency in requisite knowledge and abilities. |
 | 30-60 | [Registered Nurse, Emergency Dept.](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--Emergency-Dept_R-140454-1)<br>Full-time · Nights · $68.73–$94.00/hr | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Registered Nurse, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Tracy/Registered-Nurse--ICU_R-140366-1)<br>Part-time · Days · $66.40–$90.82/hr | Sutter Health | Tracy | Experience required, not acute | 2 years of recent relevant experience |
 | 30-60 | [Ambulatory OR RN](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603016285)<br>Full-time · Days | Tenet Health | San Ramon, CA | Experience required, not acute | Minimum of recent six (6) months of OR RN experience required; |
@@ -376,12 +375,9 @@ apply to today.
 | <30 | [Registered Nurse - Primary Care and Multispecialty Ambulatory Clinic](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9948)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: Minimum of two (2) years’ recent experience in an outpatient setting and/or Emergency Room as a Registered Nurse. |
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
 | <30 | [Registered Nurse - Plastic & Reconstructive Surgery](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8013)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Two years of recent RN experience in Plastic Surgery or surgical ambulatory patient care area. |
-| <30 | [Registered Nurse-  Operating Room Bayfront (FT, evening)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8340)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum two years of recent RN clinical experience in an adult operation room in an out-patient setting. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 | 30-60 | [RN, Part Time Regular, Dayshift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/73116)<br>Part-time · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [RN, Part Time Regular, Evening Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/73027)<br>Part-time · Evening | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
-| 30-60 | [Ambulatory Care Nurse (Bilingual Spanish/English Preferred) - Open & Promotional](https://www.governmentjobs.com/careers/sanmateo/jobs/3398393/ambulatory-care-nurse-bilingual-spanish-english-preferred-open-promotional)<br>San Mateo Medical Center · $59.49–$70.31/hr | County of San Mateo | San Mateo | Requirements unclear | The ideal candidate is a licensed Registered Nurse with at least one year of health care work experience preferred, ideally as a Registered Nurse (RN) |
-| 30-60 | [Correctional Health Nurse (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/5488634/correctional-health-nurse-open-promotional)<br>Correctional Health Services | County of San Mateo | San Mateo | Requirements unclear | Current County of San Mateo and County of San Mateo Superior Court of California employees with at least six months (1040 hours) of continuous service |
 | 30-60 | [Registered Nurse I/II](https://laclinica.hrmdirect.com/employment/job-opening.php?req=3792972&req_loc=1440172&&nohd)<br>Medical · Community clinic | La Clínica de La Raza | Concord, CA | Requirements unclear | Possession of a valid RN license in the state of California supplemented by two to three years clinical experience in the areas of adult medicine, ped |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR183728)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred). |
 | 60-90 | [RN STAFF 1(ER - NOC)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/208619)<br>Full-time · NOC · $58.83–$58.83/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Requirements unclear | Experience: An RN I is an RN who has less than 6 months acute care experience. |
