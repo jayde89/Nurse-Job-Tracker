@@ -1,17 +1,22 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-12 00:36 UTC. 442 shown._
-_Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
+_Scanned 2026-10-12 10:59 UTC. 443 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley
 
-**285 worth your attention** — Level I or no experience required,
-and not already in your pile. 157 more need experience you do not
+**288 worth your attention** — Level I or no experience required,
+and not already in your pile. 154 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 285
+## Worth applying to now — 288
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
+| <30 | [Registered Nurse - PACU (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10205) | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Eligible candidates include, but are not limited to: Internal UCSF RNs with two years’ experience in pediatric high-acuity se |
+| <30 | [Registered Nurse - Pediatric OR (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10221) | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Completion of AORN Periop 101 or 5 years experience in a level 3 or 4 acute care facility. |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10343)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10344)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10353)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
 | 30-60 | [Registered Nurse ( Emergency, Perianesthesia, GI Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996127/registered-nurse-emergency-perianesthesia-gi-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
 | 30-60 | [Registered Nurse ( Inpatient Psych, Psych Emergency Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996170/registered-nurse-inpatient-psych-psych-emergency-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
 | 30-60 | [Registered Nurse (Critical Care, Intermediate Care, Telemetry, Surgical, and Medical Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4971428/registered-nurse-critical-care-intermediate-care-telemetry-surgical-and-medi)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
@@ -137,7 +142,6 @@ Nothing sent yet.
 | <30 | [Registered Nurse - Ophthalmology (FT, day, 8am-5pm)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8748)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | One year’s experience in providing acute symptom triage via telephone and/or EMR messages. |
 | <30 | [Registered Nurse - Ophthalmology (FT, day, 10am-7pm)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8808)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | One year’s experience in providing acute symptom triage via telephone and/or EMR messages. |
 | <30 | [Registered Nurse - IR (FT, 8hr day shift, Berkeley)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9089)<br>Full-time · Day | UCSF Health | San Francisco, CA | Acute care required | 2 years experience in either IR, ICU, ED, PACU, or procedural area. |
-| <30 | [Registered Nurse - Intensive Care Nursery (BCH-Mission Bay)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10016) | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum two (2) years of recent clinical RN experience in a level III Intensive Care Nursery with a surgical patient populati |
 | <30 | [Registered Nurse - PCICU - BCH (Mission Bay)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/7152)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: A minimum of two (2) years of recent RN experience in a Pediatric Cardiac ICU. |
 | <30 | [NURSE PRACT 2](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/7386)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | 3 years critical care nursing experience managing all MCS devices as a : impella, extracorporeal membrane oxygenation (ECMO), left ventricular assist  |
 | 30-60 | [Clinical Nurse II - 0.9 - Days - Critical Care Unit - CCU 3A @ MV](https://ech.wd5.myworkdayjobs.com/ech/job/Mountain-View-CA/Clinical-Nurse-II---09---Days---Critical-Care-Unit---CCU-3A---MV_R00017664)<br>Part-time · Days · $93.87–$122.62/hr | El Camino Health | Mountain View, CA | Level II role | Clinical Nurse II - 0.9 - Days - Critical Care Unit - CCU 3A @ MV |
@@ -232,7 +236,6 @@ Nothing sent yet.
 | 90-120 | [Staff Nurse II/III - Mother/Baby](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Mother-Baby_SVH-103252)<br>Per diem · Night · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Mother/Baby |
 | 90-120 | [Staff Nurse II/III - Labor & Delivery](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Labor---Delivery_SVH-102787)<br>Full-time · Night · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Labor & Delivery |
 | 90-120 | [Registered Nurse II/III](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Registered-Nurse-II-III_M323)<br>Full-time · Night | Salinas Valley Health | Salinas, CA | Level II role | Registered Nurse II/III |
-| 90-120 | [Registered Nurse II, Medical / Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Registered-Nurse-II--Medical---Surgical-Acute_R-142199)<br>Part-time · Nights · $78.31–$103.71/hr | Sutter Health | Roseville | Level II role | Registered Nurse II, Medical / Surgical Acute |
 | 90-120 | [Wound Care Nurse III](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Wound-Care-Nurse-III_R-143035)<br>Full-time · Days · $70.18–$94.39/hr | Sutter Health | Santa Rosa | Level II role | Wound Care Nurse III |
 | 90-120 | [Staff Nurse II, Intensive Care Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Intensive-Care-Unit_R-141989-1)<br>Part-time · Days · $80.00–$106.14/hr | Sutter Health | Santa Rosa | Level II role | Staff Nurse II, Intensive Care Unit |
 | 90-120 | [Staff Nurse II, Intensive Care Unit](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Intensive-Care-Unit_R-141986-1)<br>Full-time · Nights · $80.00–$106.14/hr | Sutter Health | Santa Rosa | Level II role | Staff Nurse II, Intensive Care Unit |
@@ -305,11 +308,18 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 6
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| <30 | [Registered Nurse - PACU (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10205) | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Eligible candidates include, but are not limited to: Internal UCSF RNs with two years’ experience in pediatric high-acuity se |
+| <30 | [Registered Nurse - Pediatric OR (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10221) | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Completion of AORN Periop 101 or 5 years experience in a level 3 or 4 acute care facility. |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10343)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10344)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
+| <30 | [Registered Nurse - C1 Children’s Neuroscience Specialty Unit](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10353)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
+| <30 | [Registered Nurse - Pediatric Allergy & Immunology](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9210)<br>Full-time | UCSF Health | Oakland, CA | Experience required, not acute | Required Qualifications: Minimum of four (3) years of recent allergy nursing experience in an outpatient setting. |
 
-## Watching — 157
+## Watching — 154
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -384,9 +394,6 @@ apply to today.
 | <30 | [Operating Room RN - Oakland Oncology Surgery Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Operating-Room-RN---Oakland-Oncology-Surgery-Center_R-142219)<br>Full-time · Day / Evening · $86.27–$120.77/hr | Sutter Health | Oakland | Experience required, not acute | 2 years recent relevant experience |
 | <30 | [Pre-Op / PACU RN - Oakland Oncology Surgery Center](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Oakland/Pre-Op---PACU-RN---Oakland-Oncology-Surgery-Center_R-136806)<br>Full-time · Day / Evening · $86.27–$120.77/hr | Sutter Health | Oakland | Experience required, not acute | 2 years recent relevant experience |
 | <30 | [Wound Care RN, Home Health](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Alameda/Wound-Care-RN--Home-Health_R-138459)<br>Full-time · Days · $73.11–$98.24/hr | Sutter Health | Alameda | Experience required, not acute | 2 Minimum of two years of recent home care experience. |
-| <30 | [Registered Nurse - Roving Community Health Initiative](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9409)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: 2 years recent (within the past five years) RN experience caring for adults with complex medical and/ or behavioral health ne |
-| <30 | [Registered Nurse PD - Roving Community Health Initiative](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9420)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: 2 years recent (within the past five years) RN experience caring for adults with complex medical and/ or behavioral health ne |
-| <30 | [Registered Nurse- Neurosurgery](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9804)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | · Three (3) years of recent ambulatory RN experience in neurology, neurosurgery, movement disorders, or other complex specialty clinics. |
 | <30 | [Registered Nurse - Primary Care and Multispecialty Ambulatory Clinic](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9948)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: Minimum of two (2) years’ recent experience in an outpatient setting and/or Emergency Room as a Registered Nurse. |
 | <30 | [Registered Nurse - Neurosurgery](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10027)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Two (2) years or more related RN experience within the last five years. |
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
@@ -478,7 +485,7 @@ apply to today.
 
 _Nothing closed out yet._
 
-## Location needs checking — 9
+## Location needs checking — 8
 
 - Ambulatory Services Nurse II — Sutter Health, 1801 Colorado Avenue Suite 140
 - Advice Nurse, Mental Health Work From Home — Sutter Health, Salt Lake City (+3 more)
@@ -488,7 +495,6 @@ _Nothing closed out yet._
 - On Call RN — PACS Group, Pine Creek Care Center
 - Registered Nurse - Part Time — PACS Group, Peninsula Post Acute
 - RN — PACS Group, Tice Valley Post Acute
-- Clinic RN - Internal Medicine — Providence, Tustin, CA
 
 ---
 
