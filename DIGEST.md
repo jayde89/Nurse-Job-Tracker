@@ -1,14 +1,14 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-17 18:10 UTC. 463 shown._
-_Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
+_Scanned 2026-10-17 23:24 UTC. 462 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, Napa County
 
-**306 worth your attention** — Level I or no experience required,
+**305 worth your attention** — Level I or no experience required,
 and not already in your pile. 157 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 306
+## Worth applying to now — 305
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
@@ -168,7 +168,6 @@ Nothing sent yet.
 | 30-60 | [Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Intensive-Care--Part-Time---36-Hour-Week---Nights_JR102132)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights |
 | 30-60 | [Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Intensive-Care--Part-Time---36-Hour-Week---Days_JR102101)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Days |
 | 30-60 | [Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Intensive-Care--Part-Time---36-Hour-Week---Nights_JR102021)<br>Part-time · Nights · $86.13–$110.25/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights |
-| 30-60 | [Clinical RN II, Medical and Surgical Care, Part-Time, (36 Hour Week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Medical-and-Surgical-Care--Part-Time---36-Hour-Week---Nights_JR102374)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Medical and Surgical Care, Part-Time, (36 Hour Week), Nights |
 | 30-60 | [Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Cardiac-Specialty-Care--Part-Time---36-Hour-Week---Nights_JR102372-1)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Nights |
 | 30-60 | [Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Cardiac-Specialty-Care--Part-Time---36-Hour-Week---Days_JR102371)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Days |
 | 30-60 | [Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Cardiac-Specialty-Care--Part-Time---36-Hour-Week---Days_JR102370)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), Days |
