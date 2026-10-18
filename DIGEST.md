@@ -1,18 +1,17 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-18 08:29 UTC. 442 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of Sonoma, Marin County, Napa County, Sacramento County, Solano County
+_Scanned 2026-10-18 18:14 UTC. 440 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: Contra Costa County, County of Monterey, County of San Mateo, County of Sonoma, Sacramento County, Solano County
 
-**298 worth your attention** — Level I or no experience required,
-and not already in your pile. 144 more need experience you do not
+**297 worth your attention** — Level I or no experience required,
+and not already in your pile. 143 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 298
+## Worth applying to now — 297
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 30-60 | [Perioperative Relief Nurse (Open)](https://www.governmentjobs.com/careers/sanmateo/jobs/5071603/perioperative-relief-nurse-open)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | The ideal candidate will possess the following: At least two years of experience in the Operating Room or PACU of an acute care hospital. |
 | 30-60 | [Clinical Nurse ll - 0.8 - Nights - Nursery - Intensive Care @ MV](https://ech.wd5.myworkdayjobs.com/ech/job/Mountain-View-CA/Clinical-Nurse-ll---08---Nights---Nursery---Intensive-Care---MV_R00017904)<br>Part-time · Nights · $93.87–$122.62/hr | El Camino Health | Mountain View, CA | Acute care required | Must have recent Level III NICU experience. |
 | 30-60 | [Clinical Nurse II - 0.8 - Days - Nursery - Intensive Care @ MV](https://ech.wd5.myworkdayjobs.com/ech/job/Mountain-View-CA/Clinical-Nurse-II---08---Days---Nursery---Intensive-Care---MV_R00017903)<br>Part-time · Days · $93.87–$122.62/hr | El Camino Health | Mountain View, CA | Acute care required | Must have recent Level III NICU experience. |
 | 30-60 | [Clinical Nurse II - 0.7 - Days - Nursery - Intensive Care @ MV](https://ech.wd5.myworkdayjobs.com/ech/job/Mountain-View-CA/Clinical-Nurse-II---07---Days---Nursery---Intensive-Care---MV_R00017719)<br>Part-time · Days · $93.87–$122.62/hr | El Camino Health | Mountain View, CA | Acute care required | Must have recent Level III NICU experience. |
@@ -243,7 +242,7 @@ Nothing sent yet.
 | 90-120 | [Staff Nurse II/III - Heart Center](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Heart-Center_SVH-103389)<br>Full-time · Day · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Heart Center |
 | 90-120 | [Staff Nurse II/III - ICU/CCU](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II_SVH-103363)<br>Full-time · Night · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - ICU/CCU |
 | 90-120 | [Staff Nurse II/III - Labor & Delivery](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Labor---Delivery_SVH-103386)<br>Full-time · Night · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Labor & Delivery |
-| 90-120 | [Staff Nurse II/III - Labor & Delivery](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Labor---Delivery_SVH-102787)<br>Full-time · Night · $73.62–$89.49/hr | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Labor & Delivery |
+| 90-120 | [Staff Nurse II/III - Labor & Delivery](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Staff-Nurse-II-III---Labor---Delivery_SVH-102787) | Salinas Valley Health | Salinas, CA | Level II role | Staff Nurse II/III - Labor & Delivery |
 | 90-120 | [Registered Nurse II/III](https://salinasvalleyhealth.wd5.myworkdayjobs.com/SalinasValleyHealth/job/Salinas-CA/Registered-Nurse-II-III_M323)<br>Full-time · Night | Salinas Valley Health | Salinas, CA | Level II role | Registered Nurse II/III |
 | 90-120 | [Registered Nurse II, Medical Surgical / Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Registered-Nurse-II--Medical-Surgical---Telemetry_R-142979)<br>Part-time · Nights · $78.31–$103.71/hr | Sutter Health | Roseville | Level II role | Registered Nurse II, Medical Surgical / Telemetry |
 | 90-120 | [Registered Nurse II, Medical Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--Medical-Telemetry_R-143568)<br>Part-time · Nights · $77.94–$103.74/hr | Sutter Health | Auburn | Level II role | Registered Nurse II, Medical Telemetry |
@@ -322,7 +321,7 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 144
+## Watching — 143
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -330,6 +329,7 @@ apply to today.
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN - BHC Adult Psychiatric Services-Inpatient - Per Diem - 8 Hour - Variable Shift](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---BHC-Adult-Psychiatric-Services-Inpatient---Per-Diem---8-Hour---Variable-Shift_JR0017918)<br>Per diem · Variable · $76.30–$103.85/hr | John Muir Health | Concord | Experience required, not acute | Nursing - Psychiatry - Required. |
+| 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [Nurse (RN), Cardiology, (Larkspur/Novato), Per Diem, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Larkspur-CA/Nurse--RN---Cardiology---Larkspur-Novato---Per-Diem--Days_JR102188)<br>Per diem · Days · $62.78–$78.47/hr | MarinHealth | Larkspur, CA (+1 more) | Experience required, not acute | Minimum of two-year cardiovascular clinic experience and/or hospital nursing experience. |
 | 30-60 | [CERT NURSE ASST](https://careers-ahmchealth.icims.com/jobs/28809/cert-nurse-asst/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Experience required, not acute | A minimum of six month experience performing similar duties is desired. |
@@ -398,8 +398,6 @@ apply to today.
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 | 30-60 | [RN, Part Time Regular, Dayshift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/73116)<br>Part-time · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
-| 30-60 | [Ambulatory Care Nurse (Bilingual Spanish/English Preferred) - Open & Promotional](https://www.governmentjobs.com/careers/sanmateo/jobs/3398393/ambulatory-care-nurse-bilingual-spanish-english-preferred-open-promotional)<br>San Mateo Medical Center · $59.49–$70.31/hr | County of San Mateo | San Mateo | Requirements unclear | The ideal candidate is a licensed Registered Nurse with at least one year of health care work experience preferred, ideally as a Registered Nurse (RN) |
-| 30-60 | [Correctional Health Nurse (Open & Promotional)](https://www.governmentjobs.com/careers/sanmateo/jobs/5488634/correctional-health-nurse-open-promotional)<br>Correctional Health Services | County of San Mateo | San Mateo | Requirements unclear | Current County of San Mateo and County of San Mateo Superior Court of California employees with at least six months (1040 hours) of continuous service |
 | 30-60 | [Registered Nurse I/II](https://laclinica.hrmdirect.com/employment/job-opening.php?req=3792972&req_loc=1440172&&nohd)<br>Medical · Community clinic | La Clínica de La Raza | Concord, CA | Requirements unclear | Possession of a valid RN license in the state of California supplemented by two to three years clinical experience in the areas of adult medicine, ped |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR183728)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred). |
 | 60-90 | [RN STAFF 1(ER - NOC)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/208619)<br>Full-time · NOC · $58.83–$58.83/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Requirements unclear | Experience: An RN I is an RN who has less than 6 months acute care experience. |
