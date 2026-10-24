@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-24 18:14 UTC. 475 shown._
+_Scanned 2026-10-24 23:17 UTC. 469 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
 **301 worth your attention** — Level I or no experience required,
-and not already in your pile. 174 more need experience you do not
+and not already in your pile. 168 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -325,7 +325,7 @@ _Nothing sent yet. Set Status to applied in applications.csv._
 
 _Nothing new this run._
 
-## Watching — 174
+## Watching — 168
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -397,7 +397,6 @@ apply to today.
 | <30 | [Registered Nurse - Plastic & Reconstructive Surgery](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8013)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Two years of recent RN experience in Plastic Surgery or surgical ambulatory patient care area. |
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
-| 30-60 | [RN, Part Time Regular, Evening Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/73691)<br>Part-time · Evening | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [RN, Per Diem, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74145)<br>Per diem · Variable | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [RN, Per Diem, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74146)<br>Per diem · Variable | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [Ambulatory Care Nurse (Bilingual Spanish/English Preferred) - Open & Promotional](https://www.governmentjobs.com/careers/sanmateo/jobs/3398393/ambulatory-care-nurse-bilingual-spanish-english-preferred-open-promotional)<br>San Mateo Medical Center · $59.49–$70.31/hr | County of San Mateo | San Mateo | Requirements unclear | The ideal candidate is a licensed Registered Nurse with at least one year of health care work experience preferred, ideally as a Registered Nurse (RN) |
@@ -486,14 +485,8 @@ apply to today.
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR186350)<br>Vasona Creek Healthcare Center · Skilled nursing · Full-time · NOC / Night · $48.00–$50.00/hr | PACS Group | Los Gatos | No experience required | Previous experience in a post-acute, skilled nursing (SNF), or long-term care setting is preferred, but motivated RNs looking to transition into post- |
 | 60-90 | [RN Part time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN-Part-time_JR186346)<br>Vasona Creek Healthcare Center · Skilled nursing · Part-time · Variable | PACS Group | Los Gatos | No experience required | Previous experience in skilled nursing, rehabilitation, or long-term care preferred. |
 | 60-90 | [Registered Nurse (RN) - Behavioral Health](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603024409)<br>Full-time · Days | Tenet Health | Modesto, CA | No experience required | Minimum Experience/Skills: Knowledge of psychodynamic principles and fundamentals of psychotherapy; |
-| 90-120 | [RN, Part Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74053)<br>Part-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
-| 90-120 | [RN, Per Diem, Variable Shift, Surgical ICU 1](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74655)<br>Per diem · Variable | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
-| 90-120 | [RN, Full Time Regular, Night Shift, Surgical ICU I](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74072)<br>Full-time · Night | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
-| 90-120 | [RN. Full Time Regular, Night Shift, Med/Surg Acute 2](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74074)<br>Full-time · Night | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN, Oncology (Outpatient), Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74131)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Oncology nurse experience in a radiation department: Preferred. |
-| 90-120 | [RN, Oncology (Outpatient), Per Diem, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74132)<br>Per diem · Day | Adventist Health | Saint Helena, CA | No experience required | Oncology nurse experience in a radiation department: Preferred. |
 | 90-120 | [RN, Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74656)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
-| 90-120 | [RN, Full Time Regular, Dayshift, Surgical ICU 1](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74387)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN, Tele/HVU, Full Time, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/L50048-2)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN Surgery - Full Time, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/61943)<br>Full-time · Variable | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN / Part Time Regular / Dayshift / Telemetry 1](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/64428)<br>Part-time | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
@@ -502,6 +495,7 @@ apply to today.
 | 90-120 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Lincoln-Post-Acute/RN_JR184088)<br>Skilled nursing · Part-time · $45.00/hr | PACS Group | Lincoln Post Acute | No experience required | Long-term care/skilled nursing experience preferred. |
 | 90-120 | [NOC RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Rock-Creek-Care-Center/Registered-Nurse_JR174365)<br>Rock Creek Care Center · Skilled nursing · Full-time · NOC · $47/hr | PACS Group | Auburn | No experience required | ✅ Previous experience in long-term care or skilled nursing preferred. |
 | <30 | [Registered Nurse NOC](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/335172)<br>Long-term acute care · Full-time · NOC · $55.50–$73.39/hr | Kentfield Hospital, SF campus (AAM) | San Francisco, CA 94117 | No experience required | Previous acute care experience is strongly preferred. |
+| <30 | [ICU - Registered Nurse - FT Days](https://jobs.scionhealth.com/job/san-leandro/icu-registered-nurse-ft-days/42238/100365277408)<br>Long-term acute care · Full-time · Days | Kindred / ScionHealth | San Leandro | No experience required | Kindred Hospitals aim to help our patients reach their highest potential for health and healing with intensive medical and rehabilitative care through |
 | <30 | [Registered Nurse (RN) - PRN](https://pacs.wd108.myworkdayjobs.com/pacs/job/St-Francis-Healthcare-Center/Registered-Nurse--RN----PRN_JR187084)<br>St Francis Healthcare Center · Skilled nursing · Per diem · AM / PM / NOC · $50.00/hr | PACS Group | Hayward | No experience required | Experience in skilled nursing, post-acute care, or long-term care is preferred but not required. |
 | <30 | [RN - On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Medical-Hill-Healthcare-Center/RN---On-Call_JR185741-1)<br>Medical Hill Healthcare Center · Skilled nursing · On-call / Per diem · AM / PM / NOC · $51.00–$52.50/hr | PACS Group | Oakland | No experience required | Previous skilled nursing, post-acute, or long-term care experience preferred. |
 | <30 | [Admission Nurse – RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/City-View-Post-Acute/Admission-Nurse---RN_JR181920)<br>City View Post Acute · Skilled nursing · Full-time · $50–$60.00/hr | PACS Group | San Francisco | No experience required | Previous skilled nursing or post-acute care experience preferred. |
