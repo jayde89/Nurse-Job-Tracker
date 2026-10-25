@@ -1,10 +1,10 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-10-25 08:50 UTC. 457 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, City of Oakland, Contra Costa County, County of Santa Clara, County of Sonoma, Marin County, Napa County, Solano County
+_Scanned 2026-10-25 18:36 UTC. 450 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, City of Oakland, Contra Costa County, County of Sonoma, Marin County, Napa County, Sacramento County, Solano County
 
 **294 worth your attention** — Level I or no experience required,
-and not already in your pile. 162 more need experience you do not
+and not already in your pile. 156 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
@@ -12,7 +12,6 @@ Nothing sent yet.
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 60-90 | [Staff Nurse II, PACU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Staff-Nurse-II--PACU_R-140817-1)<br>Full-time · Varied · $89.05–$119.50/hr | Sutter Health | Santa Cruz | Level II role | Staff Nurse II, PACU |
 | 30-60 | [Admin Nurse](https://www.commonspirit.careers/job/redwood-city/admin-nurse/35300/102355240128)<br>Cardiac Support Unit · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Acute care required | One year medical clerical experience orsuccessful completion of a hospitaltraining program., upon hire and. |
 | 30-60 | [Perioperative Relief Nurse (Open)](https://www.governmentjobs.com/careers/sanmateo/jobs/5071603/perioperative-relief-nurse-open)<br>San Mateo Medical Center | County of San Mateo | San Mateo | Acute care required | The ideal candidate will possess the following: At least two years of experience in the Operating Room or PACU of an acute care hospital. |
 | 30-60 | [Clinical Nurse II - NBMC NICU (Per Diem, Night)](https://erou.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/5878)<br>Per diem | NorthBay Health | Fairfield, CA | Acute care required | Experience, Knowledge, and Skills: At least six months of RN acute care experience or six months of same day surgical experience. |
@@ -210,6 +209,7 @@ Nothing sent yet.
 | 60-90 | [RN STAFF 4 (ER - FT)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/217668)<br>Full-time · $62.62–$83.84/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Level II role | RN STAFF 4 (ER - FT) |
 | 60-90 | [Staff Nurse II - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1102&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse II - Inpatient |
 | 60-90 | [Staff Nurse IV - Inpatient](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0326&R2=RH1104&R3=AC)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Level II role | Staff Nurse IV - Inpatient |
+| 60-90 | [Staff Nurse II, PACU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Staff-Nurse-II--PACU_R-140817-1)<br>Full-time · Varied · $89.05–$119.50/hr | Sutter Health | Santa Cruz | Level II role | Staff Nurse II, PACU |
 | 60-90 | [Registered Nurse II, Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--Surgical-Acute_R-143616-1)<br>Full-time · Nights · $82.48–$115.46/hr | Sutter Health | Sacramento | Level II role | Registered Nurse II, Surgical Acute |
 | 60-90 | [Registered Nurse II, OBGYN](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Registered-Nurse-II--OBGYN_R-142928-1)<br>Full-time · Days · $86.27–$120.77/hr | Sutter Health | Santa Cruz | Level II role | Registered Nurse II, OBGYN |
 | 60-90 | [Registered Nurse II, CVIU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Sacramento/Registered-Nurse-II--CVIU_R-144505)<br>Full-time · Nights · $82.48–$115.46/hr | Sutter Health | Sacramento | Level II role | Registered Nurse II, CVIU |
@@ -314,14 +314,11 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 2
+## New since last scan — 0
 
-| Drive | Role | Employer | Location | Requirements | Evidence |
-|---|---|---|---|---|---|
-| 60-90 | [Staff Nurse II, PACU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Cruz/Staff-Nurse-II--PACU_R-140817-1)<br>Full-time · Varied · $89.05–$119.50/hr | Sutter Health | Santa Cruz | Level II role | Staff Nurse II, PACU |
-| 90-120 | [RN, Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74657)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
+_Nothing new this run._
 
-## Watching — 162
+## Watching — 156
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -350,9 +347,6 @@ apply to today.
 | 60-90 | [RN - Rehab Unit - Part Time Evening](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/465915)<br>Part-time · Evening | Providence | Napa, CA | Experience required, not acute | 1 year of Nursing experience. |
 | 60-90 | [RN - Emergency Services - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/456920)<br>Full-time · Night | Providence | Napa, CA | Experience required, not acute | 1 year of nursing experience. |
 | 60-90 | [RN - Emergency Services - Full Time Evening](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/459308)<br>Full-time · Evening | Providence | Petaluma, CA | Experience required, not acute | National Provider ACLS - American Heart Association upon hire: National Provider PALS - American Heart Association upon hire: 1 year of Nursing experi |
-| 60-90 | [Senior Public Health Nurse](https://www.governmentjobs.com/careers/sacramento/jobs/3737132/senior-public-health-nurse)<br>County Wide | Sacramento County | Sacramento | Experience required, not acute | Either: One year of experience as a Public Health Nurse in Sacramento County service. |
-| 60-90 | [Supervising Public Health Nurse *Revised](https://www.governmentjobs.com/careers/sacramento/jobs/600083/supervising-public-health-nurse-revised)<br>DHHS - Health & Human Services | Sacramento County | Sacramento | Experience required, not acute | Either: One year of experience as a Senior Public Health Nurse in Sacramento County service. |
-| 60-90 | [Supervising Registered Nurse D/CF](https://www.governmentjobs.com/careers/sacramento/jobs/448883/supervising-registered-nurse-d-cf)<br>DHHS - Health & Human Services | Sacramento County | Sacramento | Experience required, not acute | Either : One (1) year of experience in Sacramento County service as a Registered Nurse or any class requiring registered nurse license. |
 | 60-90 | [Staff Nurse V - ADM - Inpt - NICU](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=0626&R2=RH1106&R3=A2)<br>S J General Hospital · $2550/yr | San Joaquin County | French Camp | Experience required, not acute | Candidates are required to read the Online Exam Guide for Test Takers prior to taking an online written exam. |
 | 60-90 | [Registered Nurse, Emergency - Limited Term](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Davis/Registered-Nurse--Emergency---Limited-Term_R-138280-1)<br>Full-time · Varied · $78.31–$103.71/hr | Sutter Health | Davis | Experience required, not acute | 2 years of recent relevant experience. |
 | 60-90 | [Registered Nurse Cardiac Telemetry](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Registered-Nurse-Cardiac-Telemetry_R-143370)<br>Full-time · Nights · $74.98–$104.96/hr | Sutter Health | Modesto | Experience required, not acute | 2 years of recent relevant experience |
@@ -390,7 +384,6 @@ apply to today.
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 | 30-60 | [RN, Per Diem, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74145)<br>Per diem · Variable | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
-| 30-60 | [RN, Per Diem, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74146)<br>Per diem · Variable | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [Ambulatory Care Nurse (Bilingual Spanish/English Preferred) - Open & Promotional](https://www.governmentjobs.com/careers/sanmateo/jobs/3398393/ambulatory-care-nurse-bilingual-spanish-english-preferred-open-promotional)<br>San Mateo Medical Center · $59.49–$70.31/hr | County of San Mateo | San Mateo | Requirements unclear | The ideal candidate is a licensed Registered Nurse with at least one year of health care work experience preferred, ideally as a Registered Nurse (RN) |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR183728)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred). |
 | 60-90 | [RN STAFF 1(ER - NOC)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/208619)<br>Full-time · NOC · $58.83–$58.83/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Requirements unclear | Experience: An RN I is an RN who has less than 6 months acute care experience. |
@@ -399,10 +392,6 @@ apply to today.
 | 60-90 | [Integrative Primary Care RN - NPIG (Full-Time, Day)](https://erou.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/5677)<br>Full-time · $70.69–$85.93/hr | NorthBay Health | Napa, CA | Requirements unclear | Minimum two (2) years RN experience. |
 | 60-90 | [Registered Nurse RN - Part Time On Call](https://pacs.wd108.myworkdayjobs.com/pacs/job/Ridgeway-Post-Acute/Registered-Nurse-RN---Part-Time-On-Call_JR186363)<br>Ridgeway Post Acute · Skilled nursing · Part-time / On-call · AM / PM / NOC · $45–$50/hr | PACS Group | Petaluma | Requirements unclear | 1 year of prior experience preferred. |
 | 60-90 | [Registered Nurse RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Ridgeway-Post-Acute/RN-Day-Shift_JR184392)<br>Ridgeway Post Acute · Skilled nursing · Full-time · AM / PM / NOC · $45–$50/hr | PACS Group | Petaluma | Requirements unclear | 1 year of prior experience preferred. |
-| 60-90 | [Psychiatric Nurse](https://www.governmentjobs.com/careers/sacramento/jobs/981663/psychiatric-nurse)<br>DHHS - Health & Human Services · On-call / Per diem · $1.00/hr | Sacramento County | Sacramento | Requirements unclear | The probationary period for this classification is six (6) months. |
-| 60-90 | [Public Health Nurse Level I/II](https://www.governmentjobs.com/careers/sacramento/jobs/980990/public-health-nurse-level-i-ii)<br>DHHS - Health & Human Services · On-call / Per diem | Sacramento County | Sacramento | Requirements unclear | (Level II) Six months of experience as a licensed/certified Public Health Nurse performing public health nursing duties. |
-| 60-90 | [Registered Nurse D/CF (Level I/II)](https://www.governmentjobs.com/careers/sacramento/jobs/454059/registered-nurse-d-cf-level-i-ii)<br>County Wide · $64.88–$78.87/hr | Sacramento County | Sacramento | Requirements unclear | Note: Interim Permittees and Temporary Licensees are expected to obtain full licensure within six months of appointment. |
-| 60-90 | [Registered Nurse Level I/II](https://www.governmentjobs.com/careers/sacramento/jobs/2579173/registered-nurse-level-i-ii)<br>Health Services · On-call · $47.87–$58.18/hr | Sacramento County | Sacramento | Requirements unclear | (Notes: Interim Permittees and Temporary Licensees are expected to obtain full licensure within six months of appointment. |
 | 60-90 | [Public Health Nurse I](https://www.jobapscloud.com/SJQ/sup/bulpreview.asp?b=&R1=1026&R2=RH1811&R3=AC)<br>Public Health Services · $2550/yr | San Joaquin County | Stockton | Requirements unclear | Life Insurance : The County provides eligible employees with life insurance coverage as follows: 1 but less than 3 years of continuous service: $1,000 |
 | 60-90 | [Acute RN (On Call) - Mental Health 194](https://recruiting2.ultipro.com/TEL1006/JobBoard/2fcbb6f4-e717-17cb-9327-3dd87a55b08d/OpportunityDetail?opportunityId=052e5992-1db8-4722-865f-0e3a9a74813f)<br>Nursing · Behavioral health · On-call · $65.45–$80.85/hr | Telecare | Santa Cruz, CA | Requirements unclear | Must be at least 18 years of age. |
 | 60-90 | [Registered Nurse (RN) - Interventional Radiology](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603007577)<br>Full-time | Tenet Health | Modesto, CA | Requirements unclear | Minimum Experience/Skills: 2 - 3 Years of experience. |
@@ -439,6 +428,7 @@ apply to today.
 | 30-60 | [STAFF NURSE I](https://careers-ahmchealth.icims.com/jobs/27190/staff-nurse-i/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Level I / new grad | ...ional nursing. Baccalaureate degree in Nursing preferred. EXPERIENCE: Staff Nurse I– New grad or less than six months as a Registered Nurse experie |
 | 30-60 | [STAFF NURSE I](https://careers-ahmchealth.icims.com/jobs/27189/staff-nurse-i/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Level I / new grad | ...ional nursing. Baccalaureate degree in Nursing preferred. EXPERIENCE: Staff Nurse I– New grad or less than six months as a Registered Nurse experie |
 | 60-90 | [Registered Nurse (R.N.)](https://recruiting.paylocity.com/recruiting/jobs/Details/3756510)<br>Long-term acute care · Full-time · Night · $50.00–$55.00/hr | Central Valley Specialty Hospital | Modesto, CA | Level I / new grad | ...ionate and dedicated Registered Nurses (RNs) to join our dynamic healthcare team. We encourage new RNs to apply, as we are committed to fostering a |
+| 60-90 | [Clinical Nurse III - Operating Room](https://www.governmentjobs.com/careers/santaclara/jobs/5514793/clinical-nurse-iii-operating-room)<br>County-Wide Recruitment | County of Santa Clara | San Jose | Level I / new grad | ...mental health hospitals and clinics providing psychiatric and nursing interventions. New Graduate Nurses do not meet the requirements for a Clinica |
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/White-Blossom-Care-Center/RN_JR185566)<br>White Blossom Care Center · Skilled nursing · Full-time · AM / PM · $46–$55/hr | PACS Group | San Jose | Level I / new grad | ...ite Blossom Care Center. Compensation: $46–$55 per hour. Shift: AM AND PM SHIFTS- NO NEW GRADS AT THIS TIME. * various shifts, experienced RN only  |
 | 60-90 | [Clinical Nurse Resident, Emergency Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Clinical-Nurse-Resident--Emergency-Room_R-142610)<br>Full-time · Varied · $71.40–$71.40/hr | Sutter Health | Modesto | Level I / new grad | Clinical Nurse Resident, Emergency Room |
 | 60-90 | [Clinical Nurse Resident, Cardiac Telemetry 3](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Modesto/Clinical-Nurse-Resident--Cardiac-Telemetry-3_R-142423-1)<br>Full-time · Varied · $0.00–$0.00/hr | Sutter Health | Modesto | Level I / new grad | Clinical Nurse Resident, Cardiac Telemetry 3 |
@@ -476,6 +466,7 @@ apply to today.
 | 60-90 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN_JR186350)<br>Vasona Creek Healthcare Center · Skilled nursing · Full-time · NOC / Night · $48.00–$50.00/hr | PACS Group | Los Gatos | No experience required | Previous experience in a post-acute, skilled nursing (SNF), or long-term care setting is preferred, but motivated RNs looking to transition into post- |
 | 60-90 | [RN Part time](https://pacs.wd108.myworkdayjobs.com/pacs/job/Vasona-Creek-Healthcare-Center/RN-Part-time_JR186346)<br>Vasona Creek Healthcare Center · Skilled nursing · Part-time · Variable | PACS Group | Los Gatos | No experience required | Previous experience in skilled nursing, rehabilitation, or long-term care preferred. |
 | 60-90 | [Registered Nurse (RN) - Behavioral Health](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603024409)<br>Full-time · Days | Tenet Health | Modesto, CA | No experience required | Minimum Experience/Skills: Knowledge of psychodynamic principles and fundamentals of psychotherapy; |
+| 90-120 | [RN, Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74657)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN, Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74656)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN, Tele/HVU, Full Time, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/L50048-2)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 90-120 | [RN Surgery - Full Time, Variable Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/61943)<br>Full-time · Variable | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
