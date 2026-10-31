@@ -18,14 +18,29 @@ import csv
 import os
 import sys
 
+import mobile_page as MP
 import run_scan as R
 
 LEDGER = "applications.csv"
 ALERT = os.path.join("state", "alert.md")
 TITLE = os.path.join("state", "alert_title.txt")
 
-# The buckets that mean "you are eligible for this today".
+# "You can apply to this today" is the phone page's rule, read from the
+# Tier column the scan writes, so the email, the digest and the phone page
+# all count the same jobs. Reachable soon (B_soon) is deliberately out: it
+# is its own group, and not today's list (Jayde, 2026-10-31).
+APPLY_NOW = MP.APPLY_NOW
+
+# Only for a row written before the Tier column existed. Every row the
+# scan touches gets a tier, so this matters for at most one scan.
 WORTH_APPLYING = {"Level I / new grad", "No experience required"}
+
+
+def applicable(r) -> bool:
+    tier = (r.get("Tier") or "").strip()
+    if tier:
+        return tier in APPLY_NOW
+    return r.get("Bucket") in WORTH_APPLYING
 
 # Nearest first. Anything not listed sorts last.
 DRIVE_ORDER = {"<30": 0, "30-60": 1, "60-90": 2, "90-120": 3}
@@ -46,7 +61,7 @@ def new_and_applicable(rows):
         # can never disagree about what "already handled" means.
         if not R.is_open(r.get("Status")):
             continue
-        if r.get("Bucket") not in WORTH_APPLYING:
+        if not applicable(r):
             continue
         first, last = r.get("First seen", ""), r.get("Last seen", "")
         if first and first == last:
@@ -81,8 +96,8 @@ def body(rows, repo):
             f"{r.get('Employer')} | {r.get('Location')} | {ev} |")
     lines += [
         "",
-        f"Full list, including the roles needing experience you do not have "
-        f"yet: [DIGEST.md](https://github.com/{repo}/blob/main/DIGEST.md)",
+        f"Full list, including the jobs reachable soon and the ones needing "
+        f"acute experience: [DIGEST.md](https://github.com/{repo}/blob/main/DIGEST.md)",
         "",
         "When you apply, change **Status** from `unapplied` to `applied` in "
         f"[applications.csv](https://github.com/{repo}/blob/main/"

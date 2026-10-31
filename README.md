@@ -125,8 +125,10 @@ needs neither.
 Three scans a day, at 7am, 1pm and 7pm Pacific.
 
 **Read `DIGEST.md`.** The first section, *Worth applying to now*, is the one
-that matters: Level I roles and postings with no experience requirement.
-That is usually a couple of dozen out of a few hundred tracked.
+that matters: Level I, new grad and residency roles, postings with no
+experience requirement, and basic experience that is not acute care.
+Hospital roles come before skilled nursing. The phone page and the alert
+email count exactly the same jobs.
 
 Under each job title is a line of detail the posting itself states — the
 facility, the kind of nursing, full-time or per diem, the shift, the pay:
@@ -142,9 +144,12 @@ same rule applies to it as to the requirement quote: **everything on that
 line is stated by the posting.** A blank where the shift should be means
 the posting never said, not that it's flexible.
 
-The rest are in *Watching* on purpose. They require experience you don't
-have yet. They're there so you can see them coming, not so you apply to
-them. Postings that require acute-care experience are hidden entirely.
+Two groups sit further down on purpose. *Reachable soon* is postings asking
+for 6 to 12 months of general (not acute) experience: close, but not
+today's list. *Needs acute experience* is acute or specialty-unit
+experience, Level II and higher grades, and multi-year requirements.
+They're recorded and shown so you can see them coming, not so you apply
+to them.
 
 **When you apply**, open `applications.csv`, find the row, change **Status**
 from `unapplied` to `applied`. Commit. On the next scan the job moves to
