@@ -44,16 +44,16 @@ HIDE = set()
 
 # Rank for sorting the digest — lower is more interesting to you.
 #
-# 2026-09-19: the user is no longer a new graduate. He is a BSN RN working
-# at San Francisco Post Acute since June 2026 and is hunting for an ACUTE
-# CARE hospital role. The old ranking optimised for the opposite person, so
-# the two buckets that now matter most — a posting that requires acute
-# experience, and a graded Level II title — are ranked first rather than
-# suppressed. Nothing is hidden any more: he has experience to argue with,
-# so a requirement he doesn't perfectly meet is a judgement call for him to
-# make, not one for the scanner to make silently.
-RANK = {"ACUTE_REQUIRED": 0, "LEVEL_II_TITLE": 1, "GENERAL_EXPERIENCE": 2,
-        "UNCLEAR": 3, "STAFF_NURSE_I": 4, "NO_EXPERIENCE": 5}
+# 2026-09-19 put ACUTE_REQUIRED and LEVEL_II_TITLE first, on the reading
+# that the search had become an acute-care hunt. 2026-10-31: Jayde set
+# the target in their own words. The goal is a hospital job, and the roles
+# worth applying to are the ones that do NOT need acute experience yet: Staff Nurse I / Level I, new grad and residency, no experience
+# required, and basic non-acute experience. The order is back to that, and
+# acute and Level II sort last. They are still shown (HIDE stays empty) so
+# that every posting reaches the ledger; they are just not the action list.
+# Do not flip this again without asking Jayde — see CLAUDE.md.
+RANK = {"STAFF_NURSE_I": 0, "NO_EXPERIENCE": 1, "UNCLEAR": 2,
+        "GENERAL_EXPERIENCE": 3, "ACUTE_REQUIRED": 4, "LEVEL_II_TITLE": 5}
 
 
 @dataclass
