@@ -1,18 +1,23 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-11-01 10:45 UTC. 495 shown._
-_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Oakland, Contra Costa County, County of Monterey, County of San Mateo, County of Santa Clara, County of Sonoma, Sacramento County
+_Scanned 2026-11-01 19:54 UTC. 505 shown._
+_Sources: 27/29 ok_ — failed: US Dept of Veterans Affairs — not read this scan: City of Berkeley, City of Oakland, County of Monterey, County of San Mateo, County of Santa Clara, Marin County, Napa County, Sacramento County
 
-**330 worth your attention** — Level I or no experience required,
-and not already in your pile. 164 more need experience you do not
+**336 worth your attention** — Level I or no experience required,
+and not already in your pile. 165 more need experience you do not
 have yet; they are here to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 330
+## Worth applying to now — 336
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN Emergency](https://www.commonspirit.careers/job/redwood-city/rn-emergency/35300/102484729552)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Acute care required | Required: Minimum of one year Emergency or critical care experience and. |
+| 30-60 | [Registered Nurse ( Emergency, Perianesthesia, GI Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996127/registered-nurse-emergency-perianesthesia-gi-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse ( Inpatient Psych, Psych Emergency Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996170/registered-nurse-inpatient-psych-psych-emergency-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Critical Care, Intermediate Care, Telemetry, Surgical, and Medical Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4971428/registered-nurse-critical-care-intermediate-care-telemetry-surgical-and-medi)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Labor & Delivery, Nursery, and Postpartum Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4996104/registered-nurse-labor-delivery-nursery-and-postpartum-assignments)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in an acute care setting obtained in the United State |
+| 30-60 | [Registered Nurse (Operating Room Assignment)](https://www.governmentjobs.com/careers/contracosta/jobs/4996178/registered-nurse-operating-room-assignment)<br>Health Services - Continuous | Contra Costa County | Martinez | Acute care required | Two (2) years of full-time, or its equivalent, experience performing duties as a Registered Nurse in an acute care setting, one (1) year of which must |
 | 30-60 | [RN - CMC Emergency Services - Full Time - 12 Hour - Nights - CNA](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---CMC-Emergency-Services---Full-Time---12-Hour---Nights---CNA_JR0017830-1)<br>Full-time · Nights · $85.34–$116.28/hr | John Muir Health | Concord | Acute care required | Experience: 1 year - Nursing - Acute Care - Required. |
 | 30-60 | [Clinical Nurse II - NBMC ICU (Per Diem, Night)](https://erou.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/5915)<br>Per diem | NorthBay Health | Fairfield, CA | Acute care required | Experience, Knowledge, and Skills: At least six months of RN acute care experience or six months of same day surgical experience. |
 | 30-60 | [Clinical Nurse II - NBMC NICU (Per Diem, Night)](https://erou.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/5878)<br>Per diem | NorthBay Health | Fairfield, CA | Acute care required | Experience, Knowledge, and Skills: At least six months of RN acute care experience or six months of same day surgical experience. |
@@ -167,6 +172,7 @@ Nothing sent yet.
 | <30 | [Staff Nurse II, Nursery](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--Nursery_R-139683-1)<br>Part-time · Nights · $81.26–$109.95/hr | Sutter Health | Castro Valley | Acute care required | 2 years previous clinical experience in neonatal ICU and obstetrical nursing. |
 | <30 | [Staff Nurse II - Emergency Department](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II---Emergency-Department_R-139962)<br>Part-time · Varied · $89.55–$104.14/hr | Sutter Health | San Francisco | Acute care required | 2 years of recent ED experience |
 | <30 | [Staff Nurse II, MSICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/San-Francisco/Staff-Nurse-II--MSICU_R-136559-1)<br>Part-time · Days · $84.50–$114.34/hr | Sutter Health | San Francisco | Acute care required | 2 years of recent relevant experience as an RN in ICU Setting |
+| <30 | [Registered Nurse -Nuclear Medicine (MI&T) Nurse - FT, 8hr day shift](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8983)<br>Full-time · Day | UCSF Health | San Francisco, CA | Acute care required | Recent five (5) years of experience as a clinical nurse in hospital setting . |
 | <30 | [Registered Nurse - Pediatric Critical Care Float Pool (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9743) | UCSF Health | Oakland, CA | Acute care required | Required qualifications: At least 5 years of pediatric critical care (PICU) neonatal critical care will be considered (NICU) RN experience required. |
 | <30 | [Registered Nurse - Pediatric OR (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10217)<br>Full-time | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Completion of AORN Periop 101 or 5 years experience in a level 3 or 4 acute care facility. |
 | <30 | [Registered Nurse - Acute Rehab (Hyde)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/10478) | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: 2–3-years of recent RN experience in Acute Care Hospital Setting. |
@@ -350,13 +356,16 @@ posting, and they no longer appear in the lists above.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 1
+## New since last scan — 4
 
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
-| 30-60 | [RN, Per Diem, Night Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74566)<br>Per diem · Night | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
+| 30-60 | [RN, Part Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74568)<br>Part-time · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
+| 30-60 | [RN, Full Time Regular, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74572)<br>Full-time · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
+| 90-120 | [RN, Full Time Regular, Night Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74550)<br>Full-time · Night | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
+| 90-120 | [RN, Full Time Regular, Night Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74557)<br>Full-time · Night | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 
-## Watching — 164
+## Watching — 165
 
 Experience you do not have yet. Here so you can see them coming, not to
 apply to today.
@@ -364,8 +373,8 @@ apply to today.
 | Drive | Role | Employer | Location | Requirements | Evidence |
 |---|---|---|---|---|---|
 | 30-60 | [RN Labor and Delivery EXPERIENCED](https://www.commonspirit.careers/job/redwood-city/rn-labor-and-delivery-experienced/35300/97928963264)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Redwood City, CA | Experience required, not acute | Graduation from an accredited school of professional nursing, and One to two years clinical nursing experience, upon hire. |
+| 30-60 | [Registered Nurse (Public Health, Behav Health, CC Health Plan, Ambulatory, & Detention Assignments)](https://www.governmentjobs.com/careers/contracosta/jobs/4994598/registered-nurse-public-health-behav-health-cc-health-plan-ambulatory-dete)<br>Health Services - Continuous | Contra Costa County | Martinez | Experience required, not acute | One (1) year of full time experience, or its equivalent, performing duties of a registered nurse in a hospital, medical facility or ambulatory care se |
 | 30-60 | [RN - CMC Endoscopy - Per Diem - 8 Hour - Days  - CNA](https://jmh.wd5.myworkdayjobs.com/JohnMuirHealthCareers/job/Concord/RN---CMC-Endoscopy---Per-Diem---8-Hour---Days----CNA_JR0017950-1)<br>Per diem · Days · $85.34–$116.28/hr | John Muir Health | Concord | Experience required, not acute | 2000 hours Nursing - Endoscopy Must be Obtained within last 3 years - Core Requirement |
-| 30-60 | [Mental Health Registered Nurse (CSU) (Temporary/Per Diem)](https://www.governmentjobs.com/careers/marincounty/jobs/5472541/mental-health-registered-nurse-csu-temporary-per-diem)<br>Health & Human Services · Temporary / Per diem | Marin County | San Rafael | Experience required, not acute | One year of professional nursing experience OR successful completion of a 6 month mental health preceptorship. |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [CERT NURSE ASST](https://careers-ahmchealth.icims.com/jobs/28809/cert-nurse-asst/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Experience required, not acute | A minimum of six month experience performing similar duties is desired. |
 | 30-60 | [Public Health Nurse (Senior)](https://www.governmentjobs.com/careers/solanocounty/jobs/5302587/public-health-nurse-senior)<br>Health & Social Services Dept | Solano County | Fairfield | Experience required, not acute | Five (5) years public health and clinical nursing experience that demonstrates possession of and competency in requisite knowledge and abilities. |
@@ -439,6 +448,7 @@ apply to today.
 | <30 | [Per-Diem Nurse- OHNS](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8269)<br>Per diem | UCSF Health | Berkeley, CA | Experience required, not acute | Minimum two years of recent Registered Nurse clinical experience in an Ambulatory Clinic Setting. |
 | <30 | [Registered Nurse - Pediatric Neurology](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8763) | UCSF Health | San Francisco, CA | Experience required, not acute | Required Qualifications: Minimum of three (3) years of RN clinical employment experience in pediatric neurology and care coordination experience eithe |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
+| 30-60 | [RN, Per Diem, Night Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/74566)<br>Per diem · Night | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR183728)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred). |
 | 60-90 | [RN STAFF 1(ER - NOC)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/208619)<br>Full-time · NOC · $58.83–$58.83/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Requirements unclear | Experience: An RN I is an RN who has less than 6 months acute care experience. |
 | 60-90 | [RN STAFF 1(MED/SURG - NOC) ](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/216979)<br>Full-time · NOC · $58.83–$58.83/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Requirements unclear | Experience: An RN I is an RN who has less than 6 months acute care experience. |
