@@ -173,6 +173,8 @@ CONFIDENCE = {
     "D_specialty":  ("no",     0.0),
     "E_acute_req":  ("no",     0.0),
     "F_tenure":     ("no",     0.0),
+    "D_unit":       ("no",     0.0),
+    "G_no_newgrads": ("no",    0.0),
 }
 
 # Bands that belong on the shortlist at all. "later" is deliberately out:

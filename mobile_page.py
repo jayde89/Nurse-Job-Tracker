@@ -32,6 +32,7 @@ import re
 # ranking owns the "can he have this job" bands. mobile_page imports
 # ranking and never the reverse, so there is no cycle: ranking knows
 # nothing about HTML.
+import classifier
 import ranking
 
 # Tier order is reading order, and it follows one rule: how sure the
@@ -61,6 +62,12 @@ TIER_HEADING = {
     "D_specialty":  "Specialty unit, wants experience",
     "E_acute_req":  "Acute experience required",
     "F_tenure":     "Wants multiple years",
+    # 2026-11-03, Jayde: "the tenet healthcare jobs in Modesto require unit
+    # specific experience. This is the kind of noise I am trying to
+    # eliminate." A specialty floor whose posting gives no sign it takes
+    # new grads, and a posting that says outright it does not.
+    "D_unit":       "Specialty unit, no sign it takes new grads",
+    "G_no_newgrads": "Says no new grads",
 }
 TIER_ORDER = list(TIER_HEADING)
 TIER_RANK = {t: i for i, t in enumerate(TIER_ORDER)}
@@ -75,7 +82,8 @@ TIER_RANK = {t: i for i, t in enumerate(TIER_ORDER)}
 APPLY_NOW = frozenset({"A_open", "A_newgrad", "A_pref", "A_spec_entry",
                        "B_bridge", "C_unclear"})
 REACHABLE_SOON = frozenset({"B_soon"})
-NOT_YET = frozenset({"D_specialty", "E_acute_req", "F_tenure"})
+NOT_YET = frozenset({"D_specialty", "E_acute_req", "F_tenure",
+                     "D_unit", "G_no_newgrads"})
 # Kept under its old name: "eligible" has always meant "apply to today".
 ELIGIBLE = APPLY_NOW
 
@@ -124,9 +132,16 @@ _YEARS = re.compile(
     r"(year|yr|month|mo)", re.I)
 _WORD_YEARS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
                "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10}
+# "Two or more years" and "One to two years" are the same figures as "2+"
+# and "1-2" written out. Without the middle words the first was invisible
+# and the second read as two years, when the smallest number is the bar.
+_NUM_WORD = r"(?:one|two|three|four|five|six|seven|eight|nine|ten)"
 _WORD_RE = re.compile(
     r"\b(one|two|three|four|five|six|seven|eight|nine|ten)\s*"
-    r"(?:\(\d+\)\s*)?(year|yr|month|mo)", re.I)
+    r"(?:\(\d+\)\s*)?"
+    r"(?:(?:to|-|\u2013|or)\s*" + _NUM_WORD + r"\s*(?:\(\d+\)\s*)?"
+    r"|(?:\+|or more|plus)\s*)?"
+    r"(year|yr|month|mo)", re.I)
 
 
 def required_months(evidence: str) -> int | None:
@@ -139,7 +154,12 @@ def required_months(evidence: str) -> int | None:
     of helping.
     """
     text = _strip_non_requirements(evidence or "")
-    if _PREFERRED_ONLY.search(text) and not _states_a_hard_requirement(text):
+    # "2 years or more experience preferably in a long-term care facility"
+    # prefers WHERE the years were earned, not the years. Reading the
+    # "prefer" in "preferably" as softening the whole sentence listed
+    # fifteen PACS postings wanting two years as jobs to apply to today.
+    if (_PREFERRED_ONLY.search(_SETTING_PREFERENCE.sub(" ", text))
+            and not _states_a_hard_requirement(text)):
         return None
     found = []
     for m in _YEARS.finditer(text):
@@ -209,6 +229,12 @@ def _strip_non_requirements(text: str) -> str:
 # premise of this search — most postings he can actually get say the
 # experience is preferred.
 _PREFERRED_ONLY = re.compile(r"prefer", re.I)
+# A preference about the setting, not the experience: "preferably in
+# skilled nursing", "(SNF preferred)". The years in that sentence are
+# still the requirement.
+_SETTING_PREFERENCE = re.compile(
+    r"\bpreferabl[ey]\s+(?:in|at|within|with|from)\b"
+    r"|\([^()]{0,40}\bprefer(?:red)?\)", re.I)
 # A negated requirement is the opposite of a requirement. "Preferred, not
 # required" contains the word "required" and must not read as one — that
 # sentence is the single most common way a posting says he qualifies.
@@ -340,7 +366,78 @@ _SENIOR_GRADE = re.compile(
 
 def tier_for(bucket: str, *, setting: str = "", evidence: str = "",
              title: str = "") -> str:
-    """Which section of his list this posting belongs in."""
+    """Which section of the list this posting belongs in."""
+    tier = _tier_from_bucket(bucket, setting=setting, evidence=evidence,
+                             title=title)
+    if tier not in APPLY_NOW:
+        return tier
+    ev = evidence or ""
+    title = title or ""
+    # A posting that says it does not want new grads is not one to apply
+    # to today, whatever else it says. PACS San Jose: "NO NEW GRADS AT THIS
+    # TIME ... experienced RN only".
+    if _NO_NEW_GRADS.search(ev):
+        return "G_no_newgrads"
+    # A specialty floor is open to Jayde only when the posting gives some
+    # sign it trains new grads: an entry grade in the title, a new-grad or
+    # residency title, or a sentence welcoming them. Without one it is the
+    # noise Jayde reported on 2026-11-03. Skilled nursing is kept either
+    # way: it is the lateral move, judged on its own sentence above.
+    if tier != "B_bridge" and _unit_without_entry_path(title, ev):
+        return "D_unit"
+    return tier
+
+
+# Specialty floors that hire for unit experience. Narrower than _SPECIALTY
+# on purpose: telemetry, step-down and psych floors routinely take new
+# grads, so a title naming one is not by itself a closed door.
+_UNIT_TITLE = re.compile(
+    r"\bicu\b|intensive care|critical care|\bccu\b|\bcvicu\b|\bsicu\b"
+    r"|emergency|trauma|\bed\b|\ber\b|l&d|labor and delivery|obstetric"
+    r"|\bob\b|\bnicu\b|\bpicu\b|pediatric|oncolog|cath lab|operating room"
+    r"|periop|\bpacu\b|endoscopy|dialysis|infusion|anesthesia|wound", re.I)
+
+# A title that is itself the new-grad path.
+_NEW_GRAD_TITLE = re.compile(
+    r"new grad|graduate|residen|fellowship|transition to practice|trainee",
+    re.I)
+
+# A sentence that welcomes new grads. A certification deadline that names
+# them ("ACLS within 6 months of hire for new grads only") is not one:
+# that sentence put five Tenet Modesto ER and ICU jobs, which want one to
+# two years of ED or ICU, in the list as open to new grads. Nor is "will
+# accept nurse residency program as experience", which still asks for
+# experience.
+_NEW_GRAD_WELCOME = re.compile(
+    r"new grad(?:uate)?s?\s+(?:rn\s+|nurse\s+)?"
+    r"(?:qualifications|requirements|program|residency|applicants"
+    r"|position|may apply|are eligible|will be considered)"
+    r"|encourage new (?:rn|nurse|grad)", re.I)
+
+# The posting says it does not want new grads.
+_NO_NEW_GRADS = re.compile(
+    r"\bno new grad(?:uate)?s?\b"
+    r"|\bnew grad(?:uate)?s?\s+(?:are\s+|will\s+)?not\s+(?:be\s+)?"
+    r"(?:accepted|considered|eligible)"
+    r"|\bnot (?:open to|accepting|hiring) new grad"
+    r"|\bexperienced (?:rn|nurse|registered nurse)s?\s+only\b", re.I)
+
+
+def _unit_without_entry_path(title: str, evidence: str) -> bool:
+    if not _UNIT_TITLE.search(title):
+        return False
+    if (_NEW_GRAD_TITLE.search(title)
+            or classifier.TITLE_LEVEL_I.search(title)
+            or classifier.TITLE_LEVEL_I_COMBINED.search(title)):
+        return False
+    if _NO_BAR.search(evidence) or _NEW_GRAD_WELCOME.search(evidence):
+        return False
+    return True
+
+
+def _tier_from_bucket(bucket: str, *, setting: str = "", evidence: str = "",
+                      title: str = "") -> str:
+    """The section the classifier's bucket and the evidence point to."""
     bucket = (bucket or "").strip()
     setting = (setting or "").lower()
     title = title or ""

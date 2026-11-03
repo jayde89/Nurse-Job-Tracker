@@ -150,6 +150,9 @@ EXCLUDE_TITLE = re.compile(
     # roles are the CNA ladder under a different name.
     r"|nurse aide|nursing aide|nurse tech(?:nician)?|nursing tech(?:nician)?"
     r"|nursing assistant|nurse assistant|medical assistant|nurse practitioner"
+    # Abbreviated forms. Seton posts its CNA openings as "CERT NURSE ASST",
+    # and five sat in the list of RN jobs to apply to.
+    r"|nurs(?:e|ing) asst|cert(?:ified)? nurs(?:e|ing) asst"
     # The four APRN roles all need a master's or doctorate plus national
     # certification. Three were already named here; midwife was not, and
     # five midwife postings sat in his live list because "nurse midwife"
@@ -160,7 +163,10 @@ EXCLUDE_TITLE = re.compile(
     # A CRNA is a master's-level APRN role, exactly the category he asked
     # to never see, so the pattern tolerates the misspelling rather than
     # trusting employers to spell their own job titles.
-    r"|CRNA|nurse anesthe[a-z]*|clinical nurse specialist"
+    # Word order varies: UCSF titles a CRNA "ANESTHETIST NURSE SR NEX".
+    # "Anesthetist" is the CRNA's own word; an RN on an anesthesia unit is
+    # posted as "anesthesia", which this does not touch.
+    r"|CRNA|nurse anesthe[a-z]*|anesthetist|clinical nurse specialist"
     r"|midwife|\bCNM\b"
     # RNFA is an RN, but only after a perioperative program and CNOR-track
     # certification. The posting names the credential; he does not hold it.

@@ -2000,9 +2000,16 @@ check("a I/II range is open at the bottom",
 # An entry post on a specialty floor is a real chance, but it should not
 # outrank a job with no bar at all.
 check("entry grade on a specialty floor ranks below a fully open post",
-      MP.tier_for("Level I / new grad", title="Registered Nurse (RN) - Neuro ICU",
+      MP.tier_for("Level I / new grad", title="Clinical Nurse I - Neuro ICU",
                   evidence="California RN license, BLS, ACLS within 6 months of hire for new grads"),
       "A_spec_entry")
+# 2026-11-03, Jayde: the Tenet Modesto unit jobs are noise. The same title
+# with no entry grade has only a certification deadline that names new
+# grads, which is not a welcome; the real postings want ED or ICU years.
+check("a cert deadline naming new grads does not open a specialty floor",
+      MP.tier_for("Level I / new grad", title="Registered Nurse (RN) - Neuro ICU",
+                  evidence="California RN license, BLS, ACLS within 6 months of hire for new grads"),
+      "D_unit")
 check("LTAC is NOT demoted - it is the acute experience he is hunting",
       MP.tier_for("No experience required", setting="Long-term acute care hospital",
                   evidence="No experience required"),
@@ -2569,9 +2576,14 @@ check("'up to 12 months' is an upper bound too",
 _junk = "Job board lists (not stated as required): Minimum 2 Years."
 check("a field marked not-required is not parsed as a requirement",
       MP.required_months(_junk), None)
-check("the ED job stays reachable",
+check("the job stays reachable",
       MP.tier_for("Requirements unclear", setting="", evidence=_junk,
-                  title="RN - Emergency 334"), "C_unclear")
+                  title="RN - Med Surg 334"), "C_unclear")
+# Since 2026-11-03 an ED title with no sign it takes new grads is moved,
+# but for that reason, not as a two-year bar.
+check("the ED job is moved for its unit, not for years",
+      MP.tier_for("Requirements unclear", setting="", evidence=_junk,
+                  title="RN - Emergency 334"), "D_unit")
 check("a real bar in the same evidence still bites",
       MP.tier_for("Requirements unclear", setting="",
                   evidence=_junk + " Two years of ICU experience required.",
@@ -2641,6 +2653,89 @@ check("the shipped applications list has no Kaiser or Stanford",
 with open("marks.json") as _f:
     check("marks.json is a JSON object", isinstance(json.load(_f), dict), True)
 
+
+
+# ── noise rule (2026-11-03) ──────────────────────────────────────────
+# Jayde: "There are so many jobs that done apply to me. For example, the
+# tenet healthcare jobs in Modesto require unit specific experience. This
+# is the kind of noise I am trying to eliminate." Skilled nursing stays.
+check("CNA in abbreviated form is not an RN job",
+      A.title_passes("CERT NURSE ASST"), False)
+check("anesthetist in reversed word order is not an RN job",
+      A.title_passes("ANESTHETIST NURSE SR NEX"), False)
+check("an RN on an anesthesia unit is still an RN job",
+      A.title_passes("Registered Nurse Diagnostic Imaging - Pediatric Anesthesia"), True)
+check("'preferably in' prefers the setting, not the years",
+      MP.required_months("2 years or more experience preferably in a long-term care facility."), 24)
+check("'(SNF preferred)' prefers the setting, not the years",
+      MP.required_months("2+ years of nursing experience (SNF preferred)."), 24)
+check("'Two or more years' is read",
+      MP.required_months("Two or more years of nursing experience, preferably in skilled nursing or long-term care."), 24)
+check("'One to two years' is one year, the smaller figure",
+      MP.required_months("One to two years of acute experience required."), 12)
+check("experience that is itself preferred is still not a bar",
+      MP.required_months("1 year of prior experience preferred, preferably in SNF."), None)
+check("plain 'preferred' years are still not a bar",
+      MP.required_months("One to two years of experience in a hospital acute care setting within the last three years is preferred."), None)
+check("a SNF wanting two years is not one to apply to today",
+      MP.tier_for("Requirements unclear", setting="Skilled nursing",
+                  evidence="2 years or more experience preferably in a long-term care facility.",
+                  title="RN"), "F_tenure")
+check("a SNF with no years bar stays a lateral bridge",
+      MP.tier_for("Experience required, not acute", setting="Skilled nursing",
+                  evidence="Previous skilled nursing or post-acute experience preferred.",
+                  title="RN"), "B_bridge")
+check("a SNF welcoming new grads stays",
+      MP.group_for(MP.tier_for("Requirements unclear", setting="Skilled nursing",
+                  evidence="...long-term care facility is preferred, but new graduates are welcome to apply.",
+                  title="RN")), "now")
+check("'NO NEW GRADS' is not one to apply to",
+      MP.tier_for("Requirements unclear", setting="Skilled nursing",
+                  evidence="Shift: AM AND PM SHIFTS- NO NEW GRADS AT THIS TIME. * various shifts, experienced RN only at this time.",
+                  title="RN"), "G_no_newgrads")
+check("'experienced RN only' is not one to apply to",
+      MP.tier_for("Requirements unclear", evidence="Various shifts, experienced RN only.",
+                  title="RN"), "G_no_newgrads")
+check("a sign-on bonus for experienced RNs is not a refusal",
+      MP.tier_for("Requirements unclear", evidence="Up to $20,000 Sign-On bonus for experienced Registered Nurse / RN!",
+                  title="Registered Nurse (RN) - Med Surg"), "C_unclear")
+check("Tenet ER cert deadline is not a new-grad welcome",
+      MP.tier_for("Level I / new grad",
+                  evidence="California RN license; ACLS and PALS (New Grad only - within 6 months of hire/transfer), TNCC (New Grad or new to the ED - within m",
+                  title="Registered Nurse (RN) - ER"), "D_unit")
+check("'residency program as experience' is not a new-grad welcome",
+      MP.tier_for("Level I / new grad",
+                  evidence="Experience in Medical-Surgical nursing, critical care or dialysis preferred. Will except nurse residency program as experience.",
+                  title="Dialysis Registered Nurse"), "D_unit")
+check("a specialty floor with acute merely preferred and no welcome is moved",
+      MP.tier_for("No experience required", evidence="Acute care facility experience: Preferred.",
+                  title="RN - CV ICU, Full-time, Night Shift"), "D_unit")
+check("an ICU posting with new-grad qualifications stays",
+      MP.group_for(MP.tier_for("Level I / new grad",
+                  evidence="New Grad RN Qualifications : Current California Registered Nursing (RN) License",
+                  title="Staff RN - ICU")), "now")
+check("an entry grade on an ER floor stays",
+      MP.group_for(MP.tier_for("Requirements unclear",
+                  evidence="Experience: An RN I is an RN who has less than 6 months acute care experience.",
+                  title="RN STAFF 1(ER - NOC)")), "now")
+check("a new-grad residency title on a specialty floor stays",
+      MP.group_for(MP.tier_for("Level I / new grad", evidence="",
+                  title="New Grad RN Residency - Emergency Department")), "now")
+check("a specialty floor saying new grads welcome stays",
+      MP.group_for(MP.tier_for("No experience required",
+                  evidence="New grads are welcome to apply.", title="RN - ICU")), "now")
+check("telemetry with acute preferred stays",
+      MP.group_for(MP.tier_for("No experience required", evidence="Acute care facility experience: Preferred.",
+                  title="RN | Part Time Regular | Dayshift | Telemetry")), "now")
+check("a general floor with acute preferred stays",
+      MP.group_for(MP.tier_for("No experience required", evidence="Acute care facility experience: Preferred.",
+                  title="RN - Med Surg, Full-time")), "now")
+check("the moved groups are not counted as jobs to apply to",
+      ("D_unit" in MP.APPLY_NOW, "G_no_newgrads" in MP.APPLY_NOW), (False, False))
+check("the moved groups have headings",
+      ("D_unit" in MP.TIER_HEADING, "G_no_newgrads" in MP.TIER_HEADING), (True, True))
+check("the moved groups are ranked as not eligible",
+      (RK.confidence("D_unit"), RK.confidence("G_no_newgrads")), ("no", "no"))
 
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
