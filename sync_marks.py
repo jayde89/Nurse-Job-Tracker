@@ -58,6 +58,8 @@ STATUS_OF = {
     "p": "not relevant",
     "pass": "not relevant",
     "not-relevant": "not relevant",
+    "not relevant": "not relevant",
+    "not interested": "not relevant",
 }
 
 # A row in any of these states was set deliberately and is never moved.

@@ -87,6 +87,22 @@ Select **rn-scan** in the left sidebar → **Run workflow** → **Run workflow**
 It takes 8–10 minutes, most of which is a one-second pause between requests
 so the scan stays polite. Green check means it worked.
 
+### Your master list
+
+The phone page at **https://jayde89.github.io/Nurse-Job-Tracker/** is the
+one place to look. Every scan rebuilds it. On it:
+
+* **NEW** marks a job the tracker first saw in the last three days.
+  **New only** in the filter row shows just those.
+* **Your applications** at the top lists where you've applied: employer
+  and role only, because the page is public. It comes from rows marked
+  `applied` in `applications.csv` plus `other_applications.json`, which
+  holds applications the scan can't see (civil-service lists, state jobs).
+* **Applied / Pass** buttons save on the phone you tap them on. To record
+  one everywhere, tell Claude in your job-tracker chat. Claude adds the
+  job to `marks.json`, and the next scan moves it into `applications.csv`,
+  so it drops off every list on every device.
+
 ### 5. Bookmark the digest
 
 Open `DIGEST.md` in the repo. That page is your dashboard — GitHub renders

@@ -2578,6 +2578,70 @@ check("a real bar in the same evidence still bites",
                   title="RN - Emergency 334"), "E_acute_req")
 
 
+# ── the master list: NEW badge, your applications, marks from chat ──
+# 2026-11-03, Jayde: "I need a master reference point for these jobs."
+# The phone page is that place. These keep its three additions honest.
+def _nj(key, seen_days):
+    return {"key": key, "title": "Staff Nurse I", "employer": "Seton",
+            "location": "Daly City", "drive": "30-60", "details": "",
+            "evidence": "new grad", "url": "https://x.invalid",
+            "tier": "A_newgrad", "seen_days": seen_days}
+
+_np = MP.render_page([_nj("Seton::1", 0), _nj("Seton::2", 9)], "now")
+check("a job first seen today is tagged NEW",
+      '<span class="n">NEW</span>' in _np.split("Seton::2")[0], True)
+check("a job first seen nine days ago is not NEW",
+      _np.count('<span class="n">NEW</span>'), 1)
+check("the header counts the new jobs", "1 new &middot;" in _np, True)
+check("there is a New only filter", 'onclick="tn(this)"' in _np, True)
+check("three days is the cutoff",
+      [MP.is_new({"seen_days": d}) for d in (0, 2, 3, None)],
+      [True, True, False, False])
+
+_ap = MP.render_page([_nj("Seton::1", 0)], "now", applications=[
+    {"employer": "CCHCS, San Quentin", "role": "Registered Nurse"}])
+check("your applications box shows employer and role",
+      "Your applications" in _ap and "CCHCS, San Quentin" in _ap, True)
+check("no applications box when there are none",
+      "Your applications" in _np, False)
+check("applications box is escaped",
+      "&lt;b&gt;" in MP.render_page([], "now", applications=[
+          {"employer": "<b>", "role": "x"}]), True)
+
+check("a passed job never comes back as one to apply to",
+      [S.is_open(x) for x in ("not relevant", "pass", "Not Interested")],
+      [False, False, False])
+check("chat words map to the ledger's status",
+      [SM.STATUS_OF.get(x) for x in ("applied", "pass", "not interested")],
+      ["applied", "not relevant", "not relevant"])
+
+_tmpd = tempfile.mkdtemp()
+_oa = os.path.join(_tmpd, "o.json")
+with open(_oa, "w") as _f:
+    _f.write("not json")
+check("a broken other_applications.json is an empty list, not a crash",
+      S.load_other_applications(_oa), [])
+with open(_oa, "w") as _f:
+    json.dump([{"employer": "SF DPH", "role": "2320 RN"}, "junk"], _f)
+check("other_applications.json keeps employer and role only",
+      S.load_other_applications(_oa), [{"employer": "SF DPH", "role": "2320 RN"}])
+check("ledger applications come first and repeats are dropped",
+      S.page_applications(
+          {"k": {"Status": "applied", "Employer": "SF DPH", "Title": "2320 RN"}},
+          other=[{"employer": "SF DPH", "role": "2320 RN"},
+                 {"employer": "CCHCS", "role": "RN"}]),
+      [{"employer": "SF DPH", "role": "2320 RN"},
+       {"employer": "CCHCS", "role": "RN"}])
+shutil.rmtree(_tmpd)
+with open("other_applications.json") as _f:
+    _real = json.load(_f)
+check("the shipped applications list has no Kaiser or Stanford",
+      any(re.search(r"kaiser|stanford", json.dumps(a), re.I) for a in _real),
+      False)
+with open("marks.json") as _f:
+    check("marks.json is a JSON object", isinstance(json.load(_f), dict), True)
+
+
 if __name__ == "__main__":
     failed = [(n, d) for n, ok, d in CASES if not ok]
     for name, ok, detail in CASES:

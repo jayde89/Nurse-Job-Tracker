@@ -70,7 +70,12 @@ LEDGER_FIELDS = ["Key", "Status", "Applied On", "Notes", "Bucket", "Tier",
 # Anything unrecognised is treated as OPEN, so a typo in the CSV shows the
 # job to you again rather than silently swallowing it.
 ACTIVE_STATUS = {"applied", "pending", "interviewing", "offer"}
-ARCHIVED_STATUS = {"rejected", "declined", "withdrawn", "closed"}
+# "not relevant" is what the phone page's Pass button and sync_marks.py
+# write; "pass" and "not interested" are the words he uses in chat. Before
+# these were listed here a passed job counted as OPEN (unrecognised) and
+# came straight back as a job to apply to.
+ARCHIVED_STATUS = {"rejected", "declined", "withdrawn", "closed",
+                   "not relevant", "pass", "not interested"}
 
 # Most-advanced first, so an offer never sorts below a bare "applied".
 ACTIVE_ORDER = {"offer": 0, "interviewing": 1, "pending": 2, "applied": 3}
@@ -128,6 +133,52 @@ def active_applications(ledger) -> list:
         r.get("Applied On") or r.get("Marked active") or "",
         r.get("Employer") or ""))
     return rows
+
+
+OTHER_APPLICATIONS_PATH = "other_applications.json"
+
+
+def load_other_applications(path: str = OTHER_APPLICATIONS_PATH) -> list:
+    """
+    Applications the scan cannot see: civil-service lists, state jobs,
+    anything not on a board this repo reads. Kept by hand (or by Claude,
+    when he says he applied somewhere) as a JSON list of
+    {"employer": ..., "role": ...}.
+
+    A missing or broken file is an empty list, never a failed scan: this
+    is a convenience box, and the job list matters more.
+    """
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return []
+    if not isinstance(data, list):
+        return []
+    out = []
+    for d in data:
+        if isinstance(d, dict) and (d.get("employer") or d.get("role")):
+            out.append({"employer": str(d.get("employer") or ""),
+                        "role": str(d.get("role") or "")})
+    return out
+
+
+def page_applications(ledger, other=None) -> list:
+    """
+    The phone page's "Your applications" box: employer and role only,
+    because the page is public. Ledger rows in flight first, then the
+    hand-kept ones, with exact repeats dropped.
+    """
+    rows = [{"employer": r.get("Employer") or "", "role": r.get("Title") or ""}
+            for r in active_applications(ledger)]
+    rows += load_other_applications() if other is None else other
+    seen, out = set(), []
+    for r in rows:
+        k = (r["employer"].strip().lower(), r["role"].strip().lower())
+        if k not in seen:
+            seen.add(k)
+            out.append(r)
+    return out
 
 
 def finished_applications(ledger) -> list:
@@ -523,13 +574,16 @@ def build(rows, review, quick=False):
         "url": p.url,
         "tier": ledger[p.key]["Tier"],
         "age_days": _age_days(ledger[p.key].get("Posted", "")),
+        # Days since the TRACKER first saw it. Drives the NEW badge.
+        "seen_days": _age_days(ledger[p.key].get("First seen", "")),
     } for p in open_shown]
     # Ranking runs over the same rows the page renders, so the score and
     # the card can never disagree. It only reorders jobs he is already
     # eligible for; it never decides what he may apply to.
     ranking.rank(mobile_rows)
     with open("index.html", "w") as f:
-        f.write(mobile_page.render_page(mobile_rows, now[:16].replace("T", " ")))
+        f.write(mobile_page.render_page(mobile_rows, now[:16].replace("T", " "),
+                                        applications=page_applications(ledger)))
 
     # DIGEST.md still matters: GitHub renders Markdown on mobile without
     # waiting for a Pages build, and it is what the commit history shows as
