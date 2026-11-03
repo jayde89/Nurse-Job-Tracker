@@ -64,8 +64,33 @@ TIER_HEADING = {
 }
 TIER_ORDER = list(TIER_HEADING)
 TIER_RANK = {t: i for i, t in enumerate(TIER_ORDER)}
-ELIGIBLE = {"A_open", "A_newgrad", "A_pref", "A_spec_entry", "C_unclear",
-            "B_soon", "B_bridge"}
+# The three groups every page and the alert share. One rule, in one place:
+# the digest, the phone page and the email all read these sets, so they
+# can never disagree about how many jobs there are to apply to.
+#
+# 2026-10-31, Jayde's call: a posting asking for 6-12 months of general
+# (non-acute) experience is "Reachable soon", its own group, and NOT part
+# of the count of jobs to apply to today. It used to be counted in
+# ELIGIBLE, which is why the phone page said 137.
+APPLY_NOW = frozenset({"A_open", "A_newgrad", "A_pref", "A_spec_entry",
+                       "B_bridge", "C_unclear"})
+REACHABLE_SOON = frozenset({"B_soon"})
+NOT_YET = frozenset({"D_specialty", "E_acute_req", "F_tenure"})
+# Kept under its old name: "eligible" has always meant "apply to today".
+ELIGIBLE = APPLY_NOW
+
+
+def group_for(tier: str) -> str:
+    """'now', 'soon' or 'notyet' — which of the three groups a tier is in.
+
+    An unknown tier is 'notyet': a posting the rule cannot place is never
+    promoted into the list of jobs to apply to.
+    """
+    if tier in APPLY_NOW:
+        return "now"
+    if tier in REACHABLE_SOON:
+        return "soon"
+    return "notyet"
 DRIVE_RANK = {"<30": 0, "30-60": 1, "60-90": 2, "90-120": 3}
 
 # A posting that says in so many words that it wants no experience. The
@@ -496,7 +521,7 @@ function ex(){
 }
 function ap(){
   const q=(document.getElementById('q').value||'').toLowerCase();
-  let shown=0;
+  let shown=0,any=0;
   document.querySelectorAll('.c').forEach(c=>{
     const mark=M[c.dataset.k];
     let vis=true;
@@ -509,7 +534,8 @@ function ap(){
     // A Best-bets card is a second copy of a job that also appears in its
     // own tier below. Counting both would report 119 jobs where there are
     // 111, so the pinned copy is shown but never counted.
-    if(vis&&c.dataset.elig!=='0'&&!c.classList.contains('pin'))shown++;
+    if(vis&&c.dataset.elig==='1'&&!c.classList.contains('pin'))shown++;
+    if(vis)any++;
   });
   document.querySelectorAll('.gh').forEach(h=>{
     const g=h.dataset.gh;
@@ -517,7 +543,7 @@ function ap(){
       c=>c.dataset.g===g&&!c.classList.contains('hid')));
   });
   const e=document.getElementById('empty');
-  if(e)e.style.display=shown?'none':'block';
+  if(e)e.style.display=any?'none':'block';
   const n=document.getElementById('cnt');
   if(n)n.textContent=shown;
 }
@@ -545,7 +571,9 @@ def _echoes_title(evidence: str, title: str) -> bool:
 
 
 def _card(j: dict, pinned: bool = False) -> str:
-    elig = "1" if j["tier"] in ELIGIBLE else "0"
+    # "1" counts as a job to apply to; "s" is Reachable soon, always shown
+    # but never counted; "0" is not yet eligible, behind the toggle.
+    elig = {"now": "1", "soon": "s"}.get(group_for(j["tier"]), "0")
     blob = f"{j['title']} {j['employer']} {j['location']} {j.get('key','')}".lower()
     badge = '<span class="v">VERIFIED</span>' if j["tier"] == "A_open" else ""
     det = f'<div class="det">{esc(j["details"])}</div>' if j.get("details") else ""
@@ -608,6 +636,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
                                        DRIVE_RANK.get(j.get("drive", ""), 9),
                                        j.get("employer", "")))
     elig = [j for j in jobs if j["tier"] in ELIGIBLE]
+    soon = [j for j in jobs if j["tier"] in REACHABLE_SOON]
     near = sum(1 for j in elig if DRIVE_RANK.get(j.get("drive", ""), 9) <= 2)
 
     out = [
@@ -623,6 +652,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
         f'<style>{_CSS}</style></head><body>',
         '<header><h1>RN Jobs</h1>',
         f'<div class="sub"><b id="cnt">{len(elig)}</b> to apply to &middot; '
+        f'{len(soon)} reachable soon &middot; '
         f'{near} within 90 min &middot; scanned {esc(scanned_at)}</div>',
         '<div class="f">',
         '<button class="fd on" onclick="fd(this,\'\')">All</button>',

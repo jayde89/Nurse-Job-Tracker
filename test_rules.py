@@ -149,16 +149,21 @@ check("a Level II role now reaches you",
       C.should_show(C.classify("Staff Nurse II, ICU/CPU",
                                "EDUCATION: Graduate of nursing school.")),
       True)
-# 2026-09-19: nothing is suppressed any more. The user is an experienced RN
-# hunting acute care, so both formerly-hidden buckets must reach him, and
-# they lead the digest rather than trailing it.
+# 2026-09-19: nothing is suppressed any more, so every posting reaches the
+# ledger. 2026-10-31: they are still shown, but they trail the digest — the
+# action list is jobs open to Jayde now, not jobs needing acute experience.
 check("an acute-required role now reaches you",
       C.should_show(C.classify("Staff Nurse, ICU",
                                "TYPICAL EXPERIENCE: 2 years acute care "
                                "hospital experience required.")),
       True)
-check("acute outranks every non-acute bucket in the digest",
-      min(C.RANK, key=C.RANK.get), "ACUTE_REQUIRED")
+check("Level I leads the digest order",
+      min(C.RANK, key=C.RANK.get), "STAFF_NURSE_I")
+check("acute and Level II sort below every bucket open to you",
+      min(C.RANK["ACUTE_REQUIRED"], C.RANK["LEVEL_II_TITLE"])
+      > max(C.RANK[b] for b in ("STAFF_NURSE_I", "NO_EXPERIENCE",
+                                "UNCLEAR", "GENERAL_EXPERIENCE")), True)
+check("every shown bucket has a rank", set(C.RANK) == C.SHOW, True)
 # The grade is read off the nurse noun, never a bare numeral. These three
 # carry no grade at all and were staff postings.
 for _t in ("RN, 2 West Medical", "Registered Nurse - Unit 4 South",
@@ -2148,11 +2153,52 @@ check("'must have' is never softened",
 
 
 # The eligible set is what the page counts as "you can apply to today".
+# 2026-10-31: B_soon (6-12 months of general experience) is its own
+# "Reachable soon" group, not counted as a job to apply to today.
 for _t in ("A_open", "A_newgrad", "A_pref", "A_spec_entry", "C_unclear",
-           "B_soon", "B_bridge"):
+           "B_bridge"):
     check(f"{_t} is actionable", _t in MP.ELIGIBLE, True)
-for _t in ("D_specialty", "E_acute_req", "F_tenure"):
+for _t in ("B_soon", "D_specialty", "E_acute_req", "F_tenure"):
     check(f"{_t} is not actionable", _t in MP.ELIGIBLE, False)
+
+# ── one rule, three groups (2026-10-31) ──────────────────────────────
+# The digest, the phone page and the alert all read these sets. Every tier
+# lands in exactly one group, so nothing can fall off every page.
+check("every tier is in exactly one group",
+      all(sum(t in g for g in (MP.APPLY_NOW, MP.REACHABLE_SOON, MP.NOT_YET))
+          == 1 for t in MP.TIER_ORDER), True)
+check("the groups cover every tier",
+      MP.APPLY_NOW | MP.REACHABLE_SOON | MP.NOT_YET == set(MP.TIER_ORDER),
+      True)
+check("Reachable soon is B_soon", MP.group_for("B_soon"), "soon")
+check("acute-required is not yet", MP.group_for("E_acute_req"), "notyet")
+check("new grad is now", MP.group_for("A_newgrad"), "now")
+check("an unknown tier is never promoted", MP.group_for("Z_new"), "notyet")
+check("12 months general experience is reachable soon",
+      MP.group_for(MP.tier_for("Experience required, not acute",
+                               evidence="Minimum 12 months of RN "
+                                        "experience required.",
+                               title="Registered Nurse")), "soon")
+check("6 months general experience is reachable soon",
+      MP.group_for(MP.tier_for("Experience required, not acute",
+                               evidence="Six months of nursing experience "
+                                        "required.",
+                               title="Registered Nurse")), "soon")
+check("1 year of acute care is not yet",
+      MP.group_for(MP.tier_for("Acute care required",
+                               evidence="1 year acute care experience "
+                                        "required.",
+                               title="Staff Nurse")), "notyet")
+check("a Level II role is not yet",
+      MP.group_for(MP.tier_for("Level II role", title="Staff Nurse II")),
+      "notyet")
+check("no experience required is apply now",
+      MP.group_for(MP.tier_for("No experience required",
+                               evidence="No experience required.",
+                               title="Registered Nurse")), "now")
+check("skilled nursing with no bar is apply now, below hospital",
+      (MP.group_for("B_bridge"),
+       MP.TIER_RANK["A_newgrad"] < MP.TIER_RANK["B_bridge"]), ("now", True))
 
 # The page itself must not break in ways that are invisible.
 _page = MP.render_page([{

@@ -34,7 +34,7 @@ import csv
 import json
 import os
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 
 import adapters
@@ -156,20 +156,28 @@ def still_listed(row, now) -> bool:
     """Was this posting in the scan that just ran?"""
     return (row.get("Last seen") or "") == now
 
-# The buckets that are the day's action list. 2026-09-19: these were
-# ("STAFF_NURSE_I", "NO_EXPERIENCE") — the two a new grad could act on.
-# The user is now an experienced RN targeting acute care, so the action
-# list is the acute and graded-II roles he is actually hunting.
-ENTRY_LEVEL = ("ACUTE_REQUIRED", "LEVEL_II_TITLE")
+# Which postings are the day's action list is decided by the phone page's
+# tier rule (mobile_page.group_for), not by the bucket alone, so that the
+# digest, the phone page and the alert email always agree.
+#
+# History: until 2026-09-19 the action list was the buckets
+# ("STAFF_NURSE_I", "NO_EXPERIENCE"). That day it was flipped to
+# ("ACUTE_REQUIRED", "LEVEL_II_TITLE") on the reading that the search had
+# become an acute-care hunt, which put 344 jobs needing acute experience
+# under a heading that still said "Level I or no experience required".
+# 2026-10-31: Jayde confirmed the target is jobs open to them now — Level I,
+# new grad or residency, no experience required, basic non-acute
+# experience — with 6-12 months of general experience as "Reachable soon".
+# See "Who this is for" in CLAUDE.md before changing this again.
 
 
 @dataclass
 class Digest:
     """Everything the two renderers draw, decided once in build()."""
     shown: list
-    top: list           # entry-level and unapplied — the day's action list
+    top: list           # open to you now and unapplied — the action list
     new: list           # new since last scan, unapplied
-    watch: list         # needs experience you do not have yet
+    watch: list         # not yet: needs acute experience or more years
     active: list        # ledger rows: applications in flight
     finished: list      # ledger rows: rejected / declined / withdrawn
     review: list
@@ -177,6 +185,7 @@ class Digest:
     now: str
     sources: dict        # state/sources.json as of this scan
     quick: bool = False
+    soon: list = field(default_factory=list)   # reachable soon (B_soon)
 
 
 BUCKET_LABEL = {
@@ -356,6 +365,9 @@ def build(rows, review, quick=False):
             setting=getattr(p, "setting", "") or "",
             evidence=p.evidence or "",
             title=p.title)
+        # Kept on the posting too: the digest groups by it below, and it
+        # must be the same value the ledger and the phone page carry.
+        p.tier = p_tier
         row = ledger.get(p.key)
         if row is None:
             ledger[p.key] = {
@@ -451,18 +463,33 @@ def build(rows, review, quick=False):
     # A job you have applied to is not a job to apply to. Everything you
     # have marked — active or finished — comes off the lists below and
     # lives in its own section, which is what "remove it from the main
-    # page" means. ACUTE_REQUIRED and graded Level II titles are hidden
-    # outright; nothing else here is ever dropped, only moved.
+    # page" means. Nothing here is ever dropped, only moved.
     open_shown = [p for p in shown if is_open(getattr(p, "status", ""))]
     new_open = [p for p in new if is_open(getattr(p, "status", ""))]
-    top = [p for p in open_shown if p.bucket in ENTRY_LEVEL]
-    # "Watching" is the roles needing experience you do not have yet, as
-    # the README has always described it. It used to be every unapplied
-    # posting that was not new, so an entry-level job appeared in both
-    # "Worth applying to now" and here, in the same digest, twice.
-    watch = [p for p in open_shown if p not in top and p not in new_open]
 
-    d = Digest(shown=shown, top=top, new=new_open, watch=watch,
+    # Three groups, the same three the phone page uses, so the counts on
+    # both pages and in the alert email match:
+    #   top   — open to you now (Level I, new grad, no experience, basic
+    #           non-acute experience; skilled nursing ranks below hospital)
+    #   soon  — reachable soon: 6-12 months of general experience
+    #   watch — not yet: acute or specialty experience, or years of it
+    # Each group is complete. A new posting is in its group AND in "New
+    # since last scan", so a group's count never depends on when the
+    # posting first appeared.
+    def by_tier(items):
+        return sorted(items, key=lambda p: (
+            mobile_page.TIER_RANK.get(getattr(p, "tier", ""), 99),
+            not getattr(p, "is_new", False),
+            p.drive_time_bucket or "zz", p.employer))
+
+    def group(p):
+        return mobile_page.group_for(getattr(p, "tier", ""))
+
+    top = by_tier([p for p in open_shown if group(p) == "now"])
+    soon = by_tier([p for p in open_shown if group(p) == "soon"])
+    watch = by_tier([p for p in open_shown if group(p) == "notyet"])
+
+    d = Digest(shown=shown, top=top, new=new_open, watch=watch, soon=soon,
                active=active_applications(ledger),
                finished=finished_applications(ledger),
                review=review, hidden=hidden, now=now,
@@ -592,20 +619,25 @@ def render_md(d):
 _Scanned {d.now.replace('T', ' ')[:16]} UTC. {len(d.shown)} shown._
 {sources_line}
 
-**{len(d.top)} worth your attention** — Level I or no experience required,
-and not already in your pile. {len(d.watch)} more need experience you do not
-have yet; they are here to watch, not to apply to.
+**{len(d.top)} you can apply to now** — Level I, new grad or residency, no
+experience required, or basic experience that is not acute care, and not
+already in your pile. {len(d.soon)} more are reachable soon (6 to 12 months
+of general experience). {len(d.watch)} need acute experience or more years;
+they are at the bottom, to watch, not to apply to.
 {f"You have {len(d.active)} application{'s' if len(d.active) != 1 else ''} in progress."
  if d.active else "Nothing sent yet."}
 
 ## Worth applying to now — {len(d.top)}
 
-{table(d.top, 'Nothing entry-level open right now.')}
+Open to you today. Hospital roles come first; skilled nursing sits below
+them, and postings that state no requirement come last.
+
+{table(d.top, 'Nothing open to you right now.')}
 
 ## In progress — {len(d.active)}
 
 Applications you have marked. These are kept here whatever happens to the
-posting, and they no longer appear in the lists above.
+posting, and they no longer appear in the other lists.
 
 {app_table(d.active, 'Nothing sent yet. Set Status to applied in applications.csv.')}
 
@@ -613,10 +645,17 @@ posting, and they no longer appear in the lists above.
 
 {table(d.new, 'Nothing new this run.')}
 
-## Watching — {len(d.watch)}
+## Reachable soon — {len(d.soon)}
 
-Experience you do not have yet. Here so you can see them coming, not to
-apply to today.
+These ask for 6 to 12 months of general (not acute) nursing experience.
+You reach a year in 2027, so they are close, but not today's list.
+
+{table(d.soon, 'Nothing in reach soon.')}
+
+## Needs acute experience — {len(d.watch)}
+
+Acute or specialty-unit experience, a Level II or higher grade, or years
+of experience. Kept here so every posting is recorded, not to apply to.
 
 {table(d.watch, 'Nothing waiting.')}
 
@@ -640,7 +679,7 @@ project. Read the quote before trusting the label.
 
 | Set it to | What happens |
 |---|---|
-| `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress** and off every list above |
+| `applied`, `pending`, `interviewing`, `offer` | Moves to **In progress** and off every other list |
 | `rejected`, `declined`, `withdrawn` | Moves to **Closed out** |
 | `unapplied` | Comes back to the main lists |
 
@@ -760,23 +799,35 @@ def render(d):
      {len(shown)} shown
      {f' &middot; {len(d.active)} application' + ('s' if len(d.active) != 1 else '') + ' in progress' if d.active else ''}
      {' &middot; quick mode, requirements not analysed' if quick else ''}</p>
+  <p class="sub"><strong>{len(d.top)}</strong> to apply to now &middot;
+     {len(d.soon)} reachable soon &middot; {len(d.watch)} need acute
+     experience</p>
   <p class="tallies">{tally}</p>
 </header>
 
 <h2>Worth applying to now &mdash; {len(d.top)}</h2>
-<ul>{''.join(card(p) for p in d.top) or '<li class="empty">Nothing entry-level open right now.</li>'}</ul>
+<p class="note">Open to you today. Hospital roles first, then skilled
+nursing, then postings that state no requirement.</p>
+<ul>{''.join(card(p) for p in d.top) or '<li class="empty">Nothing open to you right now.</li>'}</ul>
 
 <h2>In progress &mdash; {len(d.active)}</h2>
 <p class="note">Applications you have marked. Kept here whatever happens to
-the posting, and gone from every list above.</p>
+the posting, and gone from every other list.</p>
 <ul>{''.join(acard(r) for r in d.active) or '<li class="empty">Nothing sent yet. Set Status in applications.csv once you apply.</li>'}</ul>
 
 <h2>New since last scan &mdash; {len(new)}</h2>
 <ul>{''.join(card(p) for p in new) or '<li class="empty">Nothing new this run.</li>'}</ul>
 
-<h2>Watching &mdash; {len(d.watch)}</h2>
-<p class="note">Experience you do not have yet. Here so you can see them
-coming, not to apply to today.</p>
+<h2>Reachable soon &mdash; {len(d.soon)}</h2>
+<p class="note">These ask for 6 to 12 months of general (not acute) nursing
+experience. You reach a year in 2027, so they are close, but not today&rsquo;s
+list.</p>
+<ul>{''.join(card(p) for p in d.soon) or '<li class="empty">Nothing in reach soon.</li>'}</ul>
+
+<h2>Needs acute experience &mdash; {len(d.watch)}</h2>
+<p class="note">Acute or specialty-unit experience, a Level II or higher
+grade, or years of experience. Kept here so every posting is recorded, not
+to apply to.</p>
 <ul>{''.join(card(p) for p in d.watch) or '<li class="empty">Nothing waiting.</li>'}</ul>
 
 <h2>Closed out &mdash; {len(d.finished)}</h2>
@@ -788,7 +839,7 @@ coming, not to apply to today.</p>
 <footer>Set <strong>Status</strong> in applications.csv to
 <code>applied</code>, <code>pending</code>, <code>interviewing</code> or
 <code>offer</code> and the job moves to <strong>In progress</strong> and off
-every list above; <code>rejected</code>, <code>declined</code> or
+every other list; <code>rejected</code>, <code>declined</code> or
 <code>withdrawn</code> moves it to <strong>Closed out</strong>;
 <code>unapplied</code> brings it back. The scanner never writes Status,
 Applied On or Notes. <em>Since</em> is your Applied On where you filled it
@@ -809,7 +860,6 @@ if __name__ == "__main__":
     rows, review = scan(fetch_details=not quick)
     shown, new = build(rows, review, quick)
     print(f"\n{len(shown)} shown, {len(new)} new, "
-          f"{len(rows) - len(shown)} hidden "
-          f"(acute-required or graded Level II)")
+          f"{len(rows) - len(shown)} hidden")
     print("wrote DIGEST.md, digest.html, index.html, applications.csv, "
           "state/seen.json")

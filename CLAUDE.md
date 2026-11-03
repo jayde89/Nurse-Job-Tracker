@@ -34,6 +34,26 @@ away from it. A posting belongs on the list when it is one of:
 - **new graduate nurse** or an RN residency
 - experience stated as **basic RN experience that is not acute care**
 
+**Reaffirmed by Jayde on 2026-10-31, after the 2026-09-19 change had
+aimed the digest at the opposite set.** That change ranked
+`ACUTE_REQUIRED` and `LEVEL_II_TITLE` first and made them the digest's
+"Worth applying to now" list (344 roles, every one needing acute
+experience, under a heading that still said "Level I or no experience").
+The four kinds above are the action list. Jayde also decided:
+
+- A posting asking for **6 to 12 months of general (non-acute)
+  experience** is its own **"Reachable soon"** group, not part of the
+  count of jobs to apply to today.
+- Acute-required and Level II roles stay **visible and recorded**, in a
+  "Needs acute experience" section at the bottom. They are not hidden.
+
+One rule decides this for every output: `mobile_page.tier_for()` gives
+each posting a tier, and `mobile_page.group_for()` puts the tier in one
+of three groups (`APPLY_NOW`, `REACHABLE_SOON`, `NOT_YET`). The digest,
+the phone page and the alert email all read those groups, so their
+counts agree. Do not give any of them its own rule again, and do not
+change who the list is for without asking Jayde first.
+
 And it does **not** belong when the title is a rung above a new graduate:
 charge, lead, supervisor, manager, director, coordinator, navigator,
 consultant, specialist, educator, preceptor. `EXCLUDE_TITLE` in
@@ -46,10 +66,12 @@ the same way he asked for the graded Level II rule.
 The two principles are not in tension. Show too much *within* the roles a
 new graduate can be hired into; show nothing from the roles above them.
 
-Bias toward showing too much. `UNCLEAR` reaches the user. Two buckets are
-suppressed: `ACUTE_REQUIRED`, and `LEVEL_II_TITLE` — a title carrying a
-graded Level II+ rung, which is the grade above the one a new graduate is
-hired into. Do not widen suppression past those two to tidy the list.
+Bias toward showing too much. `UNCLEAR` reaches the user. Nothing is
+suppressed any more (since 2026-09-19), so every posting reaches the
+ledger; `ACUTE_REQUIRED` and `LEVEL_II_TITLE` — a title carrying a graded
+Level II+ rung, the grade above the one a new graduate is hired into —
+are shown in the "Needs acute experience" group at the bottom rather
+than hidden.
 
 **The Level II rule is an exception the user asked for on 2026-09-04**, so
 don't "fix" it back. Graded roles were 66 of 122 open rows and were
