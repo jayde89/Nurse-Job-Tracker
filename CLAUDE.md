@@ -283,6 +283,14 @@ own budget on a bad day.
   longest first. Splitting on whitespace once put "creek" (from Sutter
   Creek) in the out-of-range set and silently rejected every Walnut Creek
   job.
+- **`marks.json` and `other_applications.json` are how chat reaches the
+  page.** When Jayde says in chat that they applied to, or passed on, a
+  tracked job, add `"<ledger Key>": "applied"` or `"pass"` to
+  `marks.json`; the workflow runs `sync_marks.py marks.json` before every
+  scan, and it only moves rows that are still open. An application the
+  scan cannot see goes in `other_applications.json` as
+  `{"employer", "role"}`, nothing more: the page is public, so never add
+  dates, exam ranks, notes or anything from their mail.
 - **Kaiser Permanente and Stanford are excluded by request.** Don't add
   them, including through any aggregator.
 - Adapters fail independently. One broken source prints a line and the scan

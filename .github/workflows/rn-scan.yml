@@ -36,6 +36,14 @@ jobs:
       - name: Rule regression tests
         run: python3 test_rules.py
 
+      # marks.json is how "I applied" or "not interested" said in chat
+      # reaches every device: Claude adds the ledger Key and a mark
+      # ("applied" or "pass"), and this folds it into applications.csv
+      # before the scan renders anything. sync_marks.py only moves rows
+      # still open, so re-applying the same file every run is harmless.
+      - name: Fold chat marks into the ledger
+        run: python3 sync_marks.py marks.json
+
       - name: Run scan
         env:
           USAJOBS_KEY: ${{ secrets.USAJOBS_KEY }}

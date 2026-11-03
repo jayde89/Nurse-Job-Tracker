@@ -442,6 +442,37 @@ def esc(s) -> str:
     return html.escape(str(s or ""), quote=True)
 
 
+# A job is "New" when the tracker first saw it within the last three days:
+# today, yesterday or the day before. Read from the ledger's First seen
+# column, not the employer's Posted date. Employers repost and backdate,
+# and "new to you" is the question he is asking when he opens the page.
+NEW_WITHIN_DAYS = 2
+
+
+def is_new(j: dict) -> bool:
+    """First seen by the tracker in the last three days."""
+    d = j.get("seen_days")
+    return d is not None and 0 <= d <= NEW_WITHIN_DAYS
+
+
+def _apps_box(applications) -> str:
+    """
+    "Your applications": employer and role only.
+
+    The repo and this page are public, so this box says where he applied
+    and nothing else: no dates, no exam ranks, no notes. It is built from
+    the ledger's in-flight rows plus other_applications.json, which holds
+    applications the scan cannot see (civil-service lists, state jobs).
+    """
+    if not applications:
+        return ""
+    items = "".join(
+        f'<li><b>{esc(a.get("employer"))}</b> &middot; {esc(a.get("role"))}</li>'
+        for a in applications)
+    return ('<div class="apps"><div class="gh">Your applications</div>'
+            f'<ul>{items}</ul></div>')
+
+
 _CSS = """
 *{box-sizing:border-box}
 body{font:15px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
@@ -482,10 +513,17 @@ main{padding:12px 16px;max-width:880px;margin:0 auto}
   -webkit-tap-highlight-color:transparent}
 .b button:active{background:#eef1f3}
 .empty{color:#63727e;font-size:14px;padding:22px 0;text-align:center}
+.n{background:#d9480f;color:#fff;font-size:10px;padding:2px 6px;
+  border-radius:4px;margin-left:7px;vertical-align:2px;letter-spacing:.4px}
+.apps{background:#fff;border:1px solid #e3e7ea;border-left:3px solid #0a7;
+  border-radius:11px;padding:11px 15px;margin-top:12px}
+.apps .gh{margin:0 0 6px}
+.apps ul{margin:0;padding-left:18px;font-size:13.5px}
+.apps li{margin:2px 0}
 footer{color:#8996a2;font-size:11.5px;padding:24px 16px;text-align:center}
 @media(prefers-color-scheme:dark){
   body{background:#11171d;color:#e6ecf1}
-  header,.c{background:#1a222b;border-color:#2b3945}
+  header,.c,.apps{background:#1a222b;border-color:#2b3945}
   .f button,.b button{background:#222c37;border-color:#33434f;color:#e6ecf1}
   input{background:#222c37;border-color:#33434f;color:#e6ecf1}
   .h a{color:#6cb0ff} .w{color:#c3ced8;border-left-color:#2b3945}
@@ -497,7 +535,7 @@ footer{color:#8996a2;font-size:11.5px;padding:24px 16px;text-align:center}
 # survive every rebuild. Changing this key silently wipes them.
 _JS = """
 const K='rnjobs.marks.v2';
-let M={},D='',H=true,L=false;
+let M={},D='',H=true,L=false,N=false;
 try{M=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){M={}}
 function sv(){try{localStorage.setItem(K,JSON.stringify(M))}catch(e){}}
 function mk(k,s){M[k]=M[k]===s?undefined:s;if(!M[k])delete M[k];sv();ap()}
@@ -506,6 +544,7 @@ function fd(b,d){D=d;document.querySelectorAll('.fd').forEach(x=>
 function th(b){H=!H;b.classList.toggle('on',H);ap()}
 function tl(b){L=!L;b.classList.toggle('on',L);
   b.textContent=L?'Hide not-yet-eligible':'Show not-yet-eligible';ap()}
+function tn(b){N=!N;b.classList.toggle('on',N);ap()}
 function rs(){if(confirm('Clear all Applied/Pass marks?')){M={};sv();ap()}}
 // Marks live in this device's localStorage, which means the ledger never
 // learns what he ticked. This hands them back: download rn-marks.json,
@@ -529,6 +568,7 @@ function ap(){
     if(D&&c.dataset.d!==D)vis=false;
     if(q&&c.dataset.s.indexOf(q)<0)vis=false;
     if(H&&mark)vis=false;
+    if(N&&c.dataset.n!=='1')vis=false;
     c.classList.toggle('hid',!vis);
     c.classList.toggle('done',!!mark);
     // A Best-bets card is a second copy of a job that also appears in its
@@ -576,6 +616,9 @@ def _card(j: dict, pinned: bool = False) -> str:
     elig = {"now": "1", "soon": "s"}.get(group_for(j["tier"]), "0")
     blob = f"{j['title']} {j['employer']} {j['location']} {j.get('key','')}".lower()
     badge = '<span class="v">VERIFIED</span>' if j["tier"] == "A_open" else ""
+    new = is_new(j)
+    if new:
+        badge += '<span class="n">NEW</span>'
     det = f'<div class="det">{esc(j["details"])}</div>' if j.get("details") else ""
     # A posting that states no requirement says so. The evidence ships with
     # the verdict, always — if the quote does not support the label, the
@@ -617,7 +660,8 @@ def _card(j: dict, pinned: bool = False) -> str:
     return (
         f'<div class="{cls}" data-g="{esc("__best" if pinned else j["tier"])}"'
         f' data-d="{esc(j["drive"])}"'
-        f' data-k="{esc(j["key"])}" data-elig="{elig}" data-s="{esc(blob)}">'
+        f' data-k="{esc(j["key"])}" data-elig="{elig}" data-s="{esc(blob)}"'
+        f' data-n="{"1" if new else "0"}">'
         f'<div class="h"><a href="{esc(j["url"])}" target="_blank"'
         f' rel="noopener">{esc(j["title"])}</a>{badge}{ref_html}</div>'
         f'<div class="m">{esc(j["employer"])} &middot; {esc(j["location"])}'
@@ -629,8 +673,13 @@ def _card(j: dict, pinned: bool = False) -> str:
         f'</div></div>')
 
 
-def render_page(jobs: list, scanned_at: str) -> str:
-    """`jobs` is a list of plain dicts — see build_rows() in run_scan."""
+def render_page(jobs: list, scanned_at: str, applications=None) -> str:
+    """`jobs` is a list of plain dicts — see build_rows() in run_scan.
+
+    `applications` is a list of {"employer", "role"} dicts for the
+    "Your applications" box at the top. Employer and role only: the page
+    is public.
+    """
     jobs = sorted(jobs, key=lambda j: (TIER_RANK.get(j["tier"], 99),
                                        -float(j.get("score") or 0),
                                        DRIVE_RANK.get(j.get("drive", ""), 9),
@@ -638,6 +687,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
     elig = [j for j in jobs if j["tier"] in ELIGIBLE]
     soon = [j for j in jobs if j["tier"] in REACHABLE_SOON]
     near = sum(1 for j in elig if DRIVE_RANK.get(j.get("drive", ""), 9) <= 2)
+    fresh = sum(1 for j in elig if is_new(j))
 
     out = [
         '<!doctype html><html lang="en"><head><meta charset="utf-8">',
@@ -652,6 +702,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
         f'<style>{_CSS}</style></head><body>',
         '<header><h1>RN Jobs</h1>',
         f'<div class="sub"><b id="cnt">{len(elig)}</b> to apply to &middot; '
+        f'{fresh} new &middot; '
         f'{len(soon)} reachable soon &middot; '
         f'{near} within 90 min &middot; scanned {esc(scanned_at)}</div>',
         '<div class="f">',
@@ -659,6 +710,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
         '<button class="fd" onclick="fd(this,\'&lt;30\')">&lt;30 min</button>',
         '<button class="fd" onclick="fd(this,\'30-60\')">30-60</button>',
         '<button class="fd" onclick="fd(this,\'60-90\')">60-90</button>',
+        '<button onclick="tn(this)">New only</button>',
         '<button class="on" onclick="th(this)">Hide handled</button>',
         '<button onclick="tl(this)">Show not-yet-eligible</button>',
         '<input id="q" placeholder="search title, employer, city" '
@@ -666,6 +718,7 @@ def render_page(jobs: list, scanned_at: str) -> str:
         '<button onclick="ex()">Export marks</button>',
         '<button onclick="rs()">Reset</button>',
         '</div></header><main>',
+        _apps_box(applications),
     ]
 
     # Best bets: the highest-scoring jobs he can actually apply to today.
@@ -699,7 +752,8 @@ def render_page(jobs: list, scanned_at: str) -> str:
     out.append('<div class="empty" id="empty" style="display:none">'
                'Nothing matches those filters.</div></main>')
     out.append(f'<footer>{len(jobs)} postings &middot; '
-               f'Applied/Pass marks are saved on this device &mdash; '
-               f'use Export marks to fold them into the ledger</footer>')
+               f'Applied/Pass taps are saved on this device. To record one '
+               f'everywhere, tell Claude in your job-tracker chat, or use '
+               f'Export marks</footer>')
     out.append(f'<script>{_JS}</script></body></html>')
     return "".join(out)
