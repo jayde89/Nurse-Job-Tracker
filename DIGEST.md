@@ -1,12 +1,12 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-11-08 10:30 UTC. 494 shown._
+_Scanned 2026-11-08 19:46 UTC. 491 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
 **53 you can apply to now** — Level I, new grad or residency, no
 experience required, or basic experience that is not acute care, and not
 already in your pile. 22 more are reachable soon (6 to 12 months
-of general experience). 419 need acute experience or more years;
+of general experience). 416 need acute experience or more years;
 they are at the bottom, to watch, not to apply to.
 Nothing sent yet.
 
@@ -112,7 +112,7 @@ You reach a year in 2027, so they are close, but not today's list.
 | <30 | [Registered Nurse [Experienced Nurses] (2320) - Citywide - H00083](https://jobs.smartrecruiters.com/CityAndCountyOfSanFrancisco1/3743990015109716-registered-nurse-experienced-nurses-2320-citywide-h00083)<br>Public Health · Full-time | City & County of San Francisco | San Francisco | Experience required, not acute | At least one (1) year of experience working as a Registered Nurse. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 
-## Needs acute experience — 419
+## Needs acute experience — 416
 
 Acute or specialty-unit experience, a Level II or higher grade, or years
 of experience. Kept here so every posting is recorded, not to apply to.
@@ -152,7 +152,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | 30-60 | [Clinical RN II, Cardiac Specialty Care, Part Time (36 hour week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Cardiac-Specialty-Care--Part-Time--36-hour-week---Days_JR102428)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Cardiac Specialty Care, Part Time (36 hour week), Days |
 | 30-60 | [Clinical RN II, NICU, Part Time (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--NICU--Part-Time--36-Hour-Week---Days_JR102427)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, NICU, Part Time (36 Hour Week), Days |
 | 30-60 | [Clinical RN II, NICU, Part Time, (36 hour week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--NICU--Part-Time---36-hour-week---Nights_JR102426)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, NICU, Part Time, (36 hour week), Nights |
-| 30-60 | [Clinical RN II, LDRP, Part-Time, (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--LDRP--Part-Time---36-Hour-Week---Days_JR102417)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, LDRP, Part-Time, (36 Hour Week), Days |
 | 30-60 | [Clinical RN II, Medical and Surgical Care, Part-Time, (36 Hour Week), Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Medical-and-Surgical-Care--Part-Time---36-Hour-Week---Days_JR102413)<br>Part-time · Days · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Medical and Surgical Care, Part-Time, (36 Hour Week), Days |
 | 30-60 | [Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Cardiac-Specialty-Care--Part-Time---36-Hour-Week---nights_JR102408)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Cardiac Specialty Care, Part-Time, (36 Hour Week), nights |
 | 30-60 | [Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Greenbrae-CA/Clinical-RN-II--Intensive-Care--Part-Time---36-Hour-Week---Nights_JR102132)<br>Part-time · Nights · $93.17–$119.18/hr | MarinHealth | Greenbrae, CA | Level II role | Clinical RN II, Intensive Care, Part-Time, (36 Hour Week), Nights |
@@ -307,8 +306,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | 90-120 | [ICU RN](https://www.commonspirit.careers/job/merced/icu-rn/35300/102958114112)<br>Medical / Surgical ICU · Full-time | CommonSpirit / Dignity Health | Merced, CA | Level I / new grad | ...ient rights, privacy, or care coordination. Job Requirements Required. Completion of New Graduate Nurse Residency Program. or minimum of one (!) ye |
 | 90-120 | [RN](https://www.commonspirit.careers/job/merced/rn/35300/100812813520)<br>Labor And Delivery Services · Full-time | CommonSpirit / Dignity Health | Merced, CA | Level I / new grad | ...and delivery experience will have six (6) months from hire to obtain certification. New Grad or RN with no prior L&D experience will have twenty-fo |
 | 90-120 | [On Call Nurse Hospice](https://www.commonspirit.careers/job/carmichael/on-call-nurse-hospice/35300/101652129024)<br>Hospice · On-call | CommonSpirit / Dignity Health | Carmichael, CA | Experience required, not acute | Minimum One (1) year Hospice nursing (LVN or RN) experience in the past five (5) years. |
-| 90-120 | [RN Break Relief Telemetry](https://www.commonspirit.careers/job/carmichael/rn-break-relief-telemetry/35300/102868121856)<br>Cardiac Telemetry · Part-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | One (1) year of experience as an RN within an acute care hospital. |
-| 90-120 | [Nurse Cardiac Cath Lab](https://www.commonspirit.careers/job/carmichael/nurse-cardiac-cath-lab/35300/102868118304)<br>Cardiac Catheterization Services · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Minimum one (1) year critical care RN experience within the last three (3) years. |
 | 90-120 | [Nurse Emergency](https://www.commonspirit.careers/job/carmichael/nurse-emergency/35300/102243307488)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Two (2) years recent experience in an Emergency department as a RN within the last five (5) years. |
 | 90-120 | [Nurse Emergency](https://www.commonspirit.careers/job/carmichael/nurse-emergency/35300/101260015040)<br>Emergency Services · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Two (2) years recent experience in an Emergency department as a RN within the last five (5) years. |
 | 90-120 | [Nurse Family Birth Center](https://www.commonspirit.careers/job/carmichael/nurse-family-birth-center/35300/102243307584)<br>Family Birth Center · Full-time | CommonSpirit / Dignity Health | Carmichael, CA | Acute care required | Minimum One (1) year of Labor & Delivery and Postpartum RN experience from an accredited hospital. |
