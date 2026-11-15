@@ -1,6 +1,6 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-11-14 20:06 UTC. 483 shown._
+_Scanned 2026-11-15 01:03 UTC. 483 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
 **50 you can apply to now** — Level I, new grad or residency, no
@@ -113,9 +113,9 @@ You reach a year in 2027, so they are close, but not today's list.
 | 90-120 | [RN Fellow - 7820 SRMH Oncology - Feb 2027](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/467671)<br>Full-time | Providence | Santa Rosa, CA | Experience required, not acute | If you are an RN ready to transition to a new Nursing specialty and have more than 12 months of continuous RN work experience, the Providence Clinical |
 | 90-120 | [RN Fellow - 7820 SRMH Medical Surgical - Feb 2027](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/467688)<br>Full-time | Providence | Santa Rosa, CA | Experience required, not acute | If you are an RN ready to transition to a new Nursing specialty and have more than 12 months of continuous RN work experience, the Providence Clinical |
 | 90-120 | [RN - Cardiac Cath - Part Time Day](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/467705)<br>Part-time · Day | Providence | Santa Rosa, CA | Experience required, not acute | 1 year of Nursing experience. |
-| 90-120 | [RN - NICU - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/470412)<br>Full-time · Night | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [RN - Medical Surgical 3E Oncology - Full Time Day](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/463693)<br>Full-time · Day | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [RN - ICU - Full-time Nights](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/465255)<br>Full-time · Nights | Providence | Healdsburg, CA | Experience required, not acute | 1 year of nursing experience. |
+| 90-120 | [RN - NICU - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/470412)<br>Full-time · Night | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [RN - Emergency Services - Full Time Night](https://evac.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/462476)<br>Full-time · Night | Providence | Santa Rosa, CA | Experience required, not acute | 1 year Nursing experience. |
 | 90-120 | [Registered Nurse (RN) – L&D](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603026873)<br>Part-time · Nights | Tenet Health | Turlock, CA | Experience required, not acute | One year of Labor & Delivery experience required. |
 | 90-120 | [Registered Nurse (RN) – L&D](https://eodr.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/2603024131)<br>Part-time · Nights | Tenet Health | Turlock, CA | Experience required, not acute | One year of Labor & Delivery experience required. |
