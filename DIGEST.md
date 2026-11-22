@@ -1,12 +1,12 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-11-22 01:19 UTC. 514 shown._
+_Scanned 2026-11-22 11:25 UTC. 513 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
 **55 you can apply to now** — Level I, new grad or residency, no
 experience required, or basic experience that is not acute care, and not
 already in your pile. 33 more are reachable soon (6 to 12 months
-of general experience). 426 need acute experience or more years;
+of general experience). 425 need acute experience or more years;
 they are at the bottom, to watch, not to apply to.
 Nothing sent yet.
 
@@ -125,7 +125,7 @@ You reach a year in 2027, so they are close, but not today's list.
 | <30 | [Registered Nurse-OBGYN-Fertility-Center for Reproductive Health (Care Team Nurses)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11774) | UCSF Health | San Francisco, CA | Experience required, not acute | At least one year of recent Reproductive Endocrine and Infertility nursing experience with patient case management and education. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 
-## Needs acute experience — 426
+## Needs acute experience — 425
 
 Acute or specialty-unit experience, a Level II or higher grade, or years
 of experience. Kept here so every posting is recorded, not to apply to.
@@ -249,7 +249,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | 60-90 | [RN Float Pool](https://www.commonspirit.careers/job/santa-cruz/rn-float-pool/35300/102013915120)<br>Nursing Administration · Per diem | CommonSpirit / Dignity Health | Santa Cruz, CA | Acute care required | Associate Of Nursing and One year hospital experience, upon hire or. |
 | 60-90 | [Cardiac Surgery RN](https://www.commonspirit.careers/job/stockton/cardiac-surgery-rn/35300/97446688608)<br>CVOR · Full-time | CommonSpirit / Dignity Health | Stockton, CA | Acute care required | One (1) year recent acute care experience. |
 | 60-90 | [Clinical Nurse III - Emergency Department](https://www.governmentjobs.com/careers/santaclara/jobs/5543300/clinical-nurse-iii-emergency-department)<br>County-Wide Recruitment | County of Santa Clara | San Jose | Acute care required | Three (3) years of full-time Registered Nurse (RN) experience, of which one (1) year must have been within the last three (3) years, in an accredited  |
-| 60-90 | [Per Diem Clinical Nurse - Progressive Care](https://www.governmentjobs.com/careers/santaclara/jobs/5541387/per-diem-clinical-nurse-progressive-care)<br>County-Wide Recruitment · Per diem | County of Santa Clara | San Jose | Acute care required | Per Diem Clinical Nurse would acquire the qualifications listed for this position by possessing a valid California Registered Nurse license and at lea |
 | 60-90 | [RN STAFF 3 (CATH LAB)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/188632)<br>Full-time · $61.61–$80.53/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Acute care required | Unit Specific: Medical-Surgical, Orthopedic, Telemetry Units: Must have and maintain national certification in medical-surgical care or critical care  |
 | 60-90 | [RN STAFF 2 (ICU-PD)](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/268082)<br>Per diem · $72.47–$87.32/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Acute care required | To qualify as an RN II, must have 6 months acute care experience within the last two years. |
 | 60-90 | [RN STAFF 3 (ER) PD - NIGHTS](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/199001)<br>Per diem · Nights · $73.93–$91.06/hr | Dameron Hospital (AAM) | Stockton, CA 95203 | Acute care required | Unit Specific: Medical-Surgical, Orthopedic, Telemetry Units: Must have and maintain national certification in medical-surgical care or critical care  |
