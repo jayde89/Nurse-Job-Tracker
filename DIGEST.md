@@ -1,16 +1,16 @@
 # Staff RN openings within two hours of Oakland
 
-_Scanned 2026-11-23 01:47 UTC. 502 shown._
+_Scanned 2026-11-23 12:32 UTC. 500 shown._
 _Sources: 28/29 ok_ — failed: US Dept of Veterans Affairs
 
-**54 you can apply to now** — Level I, new grad or residency, no
+**55 you can apply to now** — Level I, new grad or residency, no
 experience required, or basic experience that is not acute care, and not
 already in your pile. 33 more are reachable soon (6 to 12 months
-of general experience). 415 need acute experience or more years;
+of general experience). 412 need acute experience or more years;
 they are at the bottom, to watch, not to apply to.
 Nothing sent yet.
 
-## Worth applying to now — 54
+## Worth applying to now — 55
 
 Open to you today. Hospital roles come first; skilled nursing sits below
 them, and postings that state no requirement come last.
@@ -26,6 +26,7 @@ them, and postings that state no requirement come last.
 | 30-60 | [STAFF NURSE I](https://careers-ahmchealth.icims.com/jobs/27190/staff-nurse-i/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Level I / new grad | ...ional nursing. Baccalaureate degree in Nursing preferred. EXPERIENCE: Staff Nurse I– New grad or less than six months as a Registered Nurse experie |
 | 30-60 | [STAFF NURSE I](https://careers-ahmchealth.icims.com/jobs/27189/staff-nurse-i/job?in_iframe=1)<br>Seton Medical Center | Seton Medical Center (AHMC) | Daly City, CA | Level I / new grad | ...ional nursing. Baccalaureate degree in Nursing preferred. EXPERIENCE: Staff Nurse I– New grad or less than six months as a Registered Nurse experie |
 | 60-90 | [Registered Nurse (R.N.)](https://recruiting.paylocity.com/recruiting/jobs/Details/3756510)<br>Long-term acute care · Full-time · Night · $50.00–$55.00/hr | Central Valley Specialty Hospital | Modesto, CA | Level I / new grad | ...ionate and dedicated Registered Nurses (RNs) to join our dynamic healthcare team. We encourage new RNs to apply, as we are committed to fostering a |
+| 90-120 | [RN, Full Time Regular, Dayshift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/75844)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
 | 30-60 | [Registered Nurse](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/294975)<br>Long-term acute care · Full-time · $55.50–$73.39/hr | Kentfield Hospital (AAM) | Kentfield, CA 94904-1418 | No experience required | Previous acute care experience is strongly preferred. |
 | 30-60 | [Registered Nurse](https://www.paycomonline.net/v4/ats/web.php/portal/6E98B18765E97222DA6D2EA19DFDE450/jobs/335544)<br>Long-term acute care · Full-time · $55.50–$73.39/hr | Kentfield Hospital (AAM) | Kentfield, CA 94904-1418 | No experience required | Previous acute care experience is strongly preferred. |
 | 60-90 | [RN Surgery - Full-time, Dayshift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/73978)<br>Full-time · Day | Adventist Health | Lodi, CA | No experience required | Acute care facility experience: Preferred. |
@@ -79,9 +80,12 @@ posting, and they no longer appear in the other lists.
 
 _Nothing sent yet. Set Status to applied in applications.csv._
 
-## New since last scan — 0
+## New since last scan — 2
 
-_Nothing new this run._
+| Drive | Role | Employer | Location | Requirements | Evidence |
+|---|---|---|---|---|---|
+| 90-120 | [RN, Full Time Regular, Dayshift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/75844)<br>Full-time · Day | Adventist Health | Saint Helena, CA | No experience required | Acute care facility experience: Preferred. |
+| 30-60 | [RN, Per Diem, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/75733)<br>Per diem · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 
 ## Reachable soon — 33
 
@@ -124,7 +128,7 @@ You reach a year in 2027, so they are close, but not today's list.
 | <30 | [Registered Nurse - Pediatric Radiology (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11790) | UCSF Health | Oakland, CA | Experience required, not acute | Required Qualifications: Minimum of one (1) year of previous pediatrics experience as a registered nurse within the last 5 years. |
 | <30 | [NURSE PRACT PD](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9299)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum of one (1) year of clinical experience as an NP in the same specialty and setting. |
 
-## Needs acute experience — 415
+## Needs acute experience — 412
 
 Acute or specialty-unit experience, a Level II or higher grade, or years
 of experience. Kept here so every posting is recorded, not to apply to.
@@ -339,8 +343,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | 90-120 | [Staff Nurse II, Pediatrics](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Staff-Nurse-II--Pediatrics_R-146884)<br>Part-time · Nights · $78.31–$103.71/hr | Sutter Health | Roseville | Level II role | Staff Nurse II, Pediatrics |
 | 90-120 | [Staff Nurse II, Medical / Surgical Acute](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Staff-Nurse-II--Medical---Surgical-Acute_R-146360-1)<br>Part-time · Nights · $78.31–$103.71/hr | Sutter Health | Roseville | Level II role | Staff Nurse II, Medical / Surgical Acute |
 | 90-120 | [Staff Nurse II, Vineyard View Suites](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Vineyard-View-Suites_R-145019-1)<br>Full-time · Nights · $80.00–$106.14/hr | Sutter Health | Santa Rosa | Level II role | Staff Nurse II, Vineyard View Suites |
-| 90-120 | [Ambulatory Services Nurse II, Operating Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Ambulatory-Services-Nurse-II--Operating-Room_R-146573)<br>Part-time · Day / Evening · $71.73–$100.42/hr | Sutter Health | Roseville | Level II role | Ambulatory Services Nurse II, Operating Room |
-| 90-120 | [Ambulatory Services Nurse II, Operating Room](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Ambulatory-Services-Nurse-II--Operating-Room_R-146906)<br>Part-time · Days · $71.73–$100.42/hr | Sutter Health | Roseville | Level II role | Ambulatory Services Nurse II, Operating Room |
 | 90-120 | [Staff Nurse II, Postpartum](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Roseville/Staff-Nurse-II--Postpartum_R-145636)<br>Part-time · Nights · $78.31–$103.71/hr | Sutter Health | Roseville | Level II role | Staff Nurse II, Postpartum |
 | 90-120 | [Registered Nurse II, ICU](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Auburn/Registered-Nurse-II--ICU_R-146288)<br>Part-time · Nights · $77.94–$103.74/hr | Sutter Health | Auburn | Level II role | Registered Nurse II, ICU |
 | 90-120 | [Staff Nurse II, Horizon View](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Santa-Rosa/Staff-Nurse-II--Horizon-View_R-144356-1)<br>Full-time · Days · $80.00–$106.14/hr | Sutter Health | Santa Rosa | Level II role | Staff Nurse II, Horizon View |
@@ -460,7 +462,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | <30 | [Staff Nurse II, House Float](https://wd1.myworkdaysite.com/recruiting/sutterhealth/SH/job/Castro-Valley/Staff-Nurse-II--House-Float_R-136586-1)<br>Part-time · Nights · $81.26–$109.95/hr | Sutter Health | Castro Valley | Level II role | Staff Nurse II, House Float |
 | <30 | [Registered Nurse - Adult Infusion](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11327) | UCSF Health | San Francisco, CA | No experience required | Two (2) or more years of recent RN adult clinical Oncology Nursing experience. Two (2) or more years of recent outpatient infusion experience. Experie |
 | <30 | [Registered Nurse - MZ Infusion](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11333) | UCSF Health | San Francisco, CA | Experience required, not acute | Minimum 1 year of recent outpatient Infusion experience administering chemotherapy/biotherapy within last 3 years. |
-| <30 | [Registered Nurse- Neurology Clinic](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11464) | UCSF Health | San Francisco, CA | Experience required, not acute | Required qualifications: Two (2) or more years of recent Ambulatory RN experience back-office setting. |
 | <30 | [Registered Nurse- Neurology Clinic](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/8915)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | Required qualifications: Two (2) or more years of recent Ambulatory RN experience back-office setting. |
 | <30 | [Registered Nurse - OR](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11004)<br>Full-time | UCSF Health | San Francisco, CA | Experience required, not acute | 3-5 recent years Adult Operating Room (OR) RN clinical experience (required), with emphasis in General, Urology, GYN, endocrine, abdominal transplant  |
 | <30 | [Registered Nurse - IR (FT, 10 hr day shift and weekends, PCMB)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11052)<br>Full-time · Day | UCSF Health | San Francisco, CA | Acute care required | 2 years experience in either IR, ICU, ED, PACU, or procedural area. |
@@ -474,7 +475,6 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | <30 | [Registered Nurse - Neuro ICU](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11419) | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum two years of recent (within the past 4 years) adult Neuro Critical Care (ICU) clinical RN experience. |
 | <30 | [Registered Nurse - Pediatric Med-Surg - C5](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11605) | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of 3 years of recent inpatient RN experience with pediatric medical-surgical patients, specifically patients with acu |
 | <30 | [Registered Nurse - Transfer Center (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11668)<br>Full-time | UCSF Health | Oakland, CA | Acute care required | Required Qualifications: Minimum of three (3) years of recent experience in Emergency / Pediatric / Neonatal Critical Care Patient Transport as a regi |
-| <30 | [Registered Nurse - IR (FT, 10hr, MB)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11756)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | 2 years experience in either IR, ICU, ED, PACU, or procedural area. |
 | <30 | [Registered Nurse - ED](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11880)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: Minimum of two (2) years of RN clinical experience in an Emergency Department setting. |
 | <30 | [Registered Nurse - PICU (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/11881) | UCSF Health | Oakland, CA | Acute care required | Required qualifications: A minimum of two (2) years of PICU registered nurse experience OR a pediatric clinical preceptorship. |
 | <30 | [Registered Nurse - PCICU - BCH (Mission Bay)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/7152)<br>Full-time | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: A minimum of two (2) years of recent RN experience in a Pediatric Cardiac ICU. |
@@ -482,6 +482,7 @@ of experience. Kept here so every posting is recorded, not to apply to.
 | <30 | [Registered Nurse - IR (FT, 10hr day shift)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9038)<br>Full-time · Day | UCSF Health | San Francisco, CA | Acute care required | 2 years experience in either IR, ICU, ED, PACU, or procedural area. |
 | <30 | [Registered Nurse - Pediatric Critical Care Float Pool (BCH-Oakland)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9743) | UCSF Health | Oakland, CA | Acute care required | Required qualifications: At least 5 years of pediatric critical care (PICU) neonatal critical care will be considered (NICU) RN experience required. |
 | <30 | [Registered Nurse - Birth Center (FT, night shift)](https://iazuqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/9796)<br>Full-time · Night | UCSF Health | San Francisco, CA | Acute care required | Required Qualifications: A minimum of 2 years of recent full-time clinical RN labor and delivery experience in an inpatient setting including high-ris |
+| 30-60 | [RN, Per Diem, Day Shift](https://ecvz.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/75733)<br>Per diem · Day | Adventist Health | Vallejo, CA | Requirements unclear | For more than 30 years, Adventist Health Vallejo has been helping people of all ages reach their fullest potential. |
 | 30-60 | [Nurse (RN) - Clinical Practice and Operations, Clinical Operations, Full Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/Novato-CA/Nurse--RN----Clinical-Practice-and-Operations--Clinical-Operations--Full-Time--Days_JR102479)<br>Full-time · Days · $62.78–$78.47/hr | MarinHealth | Novato, CA | Experience required, not acute | Minimum of 3 years in a clinical nursing role; |
 | 30-60 | [Nurse (RN), Pediatrics, (San Rafael/Novato), Full-Time, Days](https://mymarinhealth.wd5.myworkdayjobs.com/MHCareers/job/San-Rafael-CA/Nurse--RN---Pediatrics---San-Rafael-Novato---Full-Time--Days_JR102279)<br>Full-time · Days · $58.68–$73.84/hr | MarinHealth | San Rafael, CA (+1 more) | Experience required, not acute | • Three to five years of practical RN experience; |
 | 30-60 | [RN](https://pacs.wd108.myworkdayjobs.com/pacs/job/Tiburon-Hills-Care-Center/RN_JR183728)<br>Skilled nursing · Full-time / Part-time · $55–$65/hr | PACS Group | Tiburon Hills Care Center | Requirements unclear | 2+ years of nursing experience (SNF preferred). |
